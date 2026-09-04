@@ -1,0 +1,4956 @@
+{
+ "meta": {
+  "title": "Linux-Mastery",
+  "version": "2.0",
+  "updated": "2026-09-04",
+  "_editGuide": "YE FILE FRONTEND + TERMINAL + ANSWERS KA SINGLE SOURCE OF TRUTH HAI. Edit karo: build scripts (build_part1.py, build_part2.py, build_part3.py) ko badlo, phir 'python3 build.py' chalao — index.html + terminal + answers sab auto-update. Ya seedha content.json edit karo (valid JSON rakhna)."
+ },
+ "vfs": {
+  "home": "/home/learner",
+  "user": "learner",
+  "hostname": "lab-01",
+  "dirs": [
+   "/bin",
+   "/etc",
+   "/home",
+   "/home/learner",
+   "/home/learner/lab",
+   "/home/learner/lab/data",
+   "/tmp",
+   "/usr",
+   "/usr/bin",
+   "/var",
+   "/var/log",
+   "/proc",
+   "/dev",
+   "/run",
+   "/srv",
+   "/srv/lab",
+   "/opt",
+   "/root"
+  ],
+  "files": {
+   "/etc/motd": "Linux-Mastery LAB — authorized sandbox\nRed Line active: sirf lab.local aur localhost targets allowed.\nTerminal mein 'help' type karo.",
+   "/etc/hostname": "lab-01",
+   "/etc/os-release": "PRETTY_NAME=\"Linux-Mastery Lab (Debian 12)\"\nVERSION_ID=\"12\"\nID=debian",
+   "/etc/passwd": "root:x:0:0:root:/root:/bin/bash\nlearner:x:1000:1000:Learner:/home/learner:/bin/bash\nnobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin",
+   "/etc/hosts": "127.0.0.1 localhost\n10.8.0.5 lab.local lab-01",
+   "/home/learner/welcome.txt": "Welcome to the Linux-Mastery lab, learner.\n\nThis is a SAFE, authorized sandbox. Red Line: no external targets.\nStart with: ls, cat notes.txt, then do the Level tasks.\nTip: terminal (bottom-right) mein 'help' type karo.",
+   "/home/learner/notes.txt": "Study notes — Level 2 (Filesystem):\n1. ls by default sirf visible files dikhata hai.\n2. Hidden files dot '.' se start hote hain.\n3. Try: ls -a\n4. Lab task: /home/learner mein hidden file dhundo.",
+   "/home/learner/.secret_note": "Flag: hidden_file_found\n\nHidden files dot se start hoti hain. ls -a ya find . -name '.*'\nLevel 2 core done: files, hidden files, directories samajh aa gaye.",
+   "/home/learner/.bash_history": "ls\ncd /var/log\ncat auth.log\nsudo journalctl -u sshd\ngrep -i failed /var/log/auth.log\nssh learner@lab.local\ncurl -i http://lab.local/\nfind /home -name '.*' -type f\nchmod 640 lab/permfile.txt\nps aux | grep nginx",
+   "/home/learner/lab/permfile.txt": "INSECURE: is file ke permissions world-writable hain (mode 666).\nLevel 3 task: 'chmod 640 /home/learner/lab/permfile.txt' se fix karo.\n[mode:666]",
+   "/home/learner/lab/data/dupes.txt": "nginx\npostgres\nredis\nnginx\nsshd\nredis\nnginx\nmysql\nsshd\nnginx",
+   "/home/learner/lab/data/servers.csv": "ip,host,os,port\n10.8.0.5,web-01,debian,80\n10.8.0.6,db-01,ubuntu,5432\n10.8.0.7,cache-01,alpine,6379\n10.8.0.8,api-01,debian,8080\n10.8.0.9,log-01,fedora,9200\n10.8.0.10,auth-01,debian,443",
+   "/home/learner/lab/recon/raw_output.txt": "WEB-01.LAB.LOCAL\nweb-01.lab.local\nAPI-01.lab.local\nweb-01.lab.local\napi-01.LAB.local\ndb-01.lab.local\nWEB-01.lab.local\napi-01.lab.local\nDB-01.LAB.LOCAL\nweb-01.lab.local\nlog-01.lab.local\napi-01.lab.local",
+   "/var/log/sys.log": "Sep 04 07:00:01 lab-01 systemd[1]: Started Daily apt upgrade.\nSep 04 07:02:11 lab-01 kernel: [  120.4] eth0: link up\nSep 04 07:10:45 lab-01 systemd[1]: Started nginx - high performance web server.\nSep 04 07:11:02 lab-01 sshd[1834]: Server listening on 0.0.0.0 port 22.\nSep 04 07:15:30 lab-01 systemd[1]: memory pressure detected on /\nSep 04 07:18:00 lab-01 CRON[2210]: (root) CMD (debian-sa1 1)\nSep 04 07:22:14 lab-01 kernel: [ 1100.7] out of memory: Killed process 2455 (stress-ng)\nSep 04 07:25:00 lab-01 systemd[1]: Stopping lab service...",
+   "/var/log/auth.log": "Sep 04 07:05:12 lab-01 sshd[1834]: Failed password for root from 203.0.113.15 port 51234 ssh2\nSep 04 07:05:19 lab-01 sshd[1834]: Failed password for root from 203.0.113.15 port 51235 ssh2\nSep 04 07:05:26 lab-01 sshd[1834]: Failed password for root from 203.0.113.15 port 51236 ssh2\nSep 04 07:05:33 lab-01 sshd[1834]: Failed password for root from 203.0.113.15 port 51237 ssh2\nSep 04 07:06:01 lab-01 sshd[1834]: Connection closed by 203.0.113.15 port 51237 [preauth]\nSep 04 07:12:40 lab-01 sshd[1901]: Accepted publickey for learner from 10.8.0.10 port 40122 ssh2: ED25519\nSep 04 07:12:40 lab-01 sshd[1901]: pam_unix(sshd:session): session opened for user learner(uid=1000)\nSep 04 07:30:00 lab-01 sudo[2010]: learner : TTY=pts/0 ; PWD=/home/learner ; USER=root ; COMMAND=/usr/bin/journalctl -u sshd\nSep 04 07:41:22 lab-01 sshd[1901]: pam_unix(sshd:session): session closed for user learner\nSep 04 07:50:10 lab-01 sshd[2100]: Failed password for invalid user admin from 198.51.100.7 port 33012 ssh2",
+   "/var/log/app.log": "2026-09-04T07:00:12Z INFO  Starting lab-service v1.4.2\n2026-09-04T07:00:13Z INFO  Listening on 127.0.0.1:8080\n2026-09-04T07:05:00Z WARN  Slow query: 2.3s (users table)\n2026-09-04T07:10:45Z ERROR Connection refused: db-01:5432\n2026-09-04T07:11:02Z INFO  Reconnected to db-01:5432\n2026-09-04T07:20:30Z ERROR Disk quota exceeded for /var/log/app\n2026-09-04T07:25:00Z INFO  Log rotated: app.log.1.gz\n2026-09-04T07:30:00Z WARN  Memory usage 87% (limit 100%)",
+   "/var/log/nginx/access.log": "10.8.0.10 - - [04/Sep/2026:07:01:22 +0000] \"GET / HTTP/1.1\" 200 512\n10.8.0.10 - - [04/Sep/2026:07:02:10 +0000] \"GET /index.html HTTP/1.1\" 200 512\n203.0.113.42 - - [04/Sep/2026:07:05:33 +0000] \"GET /admin HTTP/1.1\" 403 152\n203.0.113.42 - - [04/Sep/2026:07:05:41 +0000] \"GET /wp-login.php HTTP/1.1\" 404 175\n203.0.113.42 - - [04/Sep/2026:07:06:02 +0000] \"GET /.env HTTP/1.1\" 403 152\n10.8.0.10 - - [04/Sep/2026:07:12:40 +0000] \"GET /api/users HTTP/1.1\" 200 128\n198.51.100.7 - - [04/Sep/2026:07:20:15 +0000] \"POST /login HTTP/1.1\" 401 88\n198.51.100.7 - - [04/Sep/2026:07:20:22 +0000] \"POST /login HTTP/1.1\" 401 88\n10.8.0.10 - - [04/Sep/2026:07:30:00 +0000] \"GET /healthz HTTP/1.1\" 200 2\n10.8.0.10 - - [04/Sep/2026:07:45:11 +0000] \"GET /favicon.ico HTTP/1.1\" 404 175",
+   "/proc/version": "Linux version 6.1.0-21-lm (build@lab) (gcc 12.2.0) #1 SMP Linux-Mastery Lab",
+   "/srv/lab/index.html": "<!doctype html><html><body><h1>Lab Service v1.4</h1><p>Authorized lab endpoint.</p></body></html>",
+   "/srv/lab/.env": "DB_HOST=db-01\nDB_PASSWORD=sup3rS3cret-LabOnly\nAPI_KEY=lm-lab-0001\nSECRET=do-not-put-in-git",
+   "/srv/lab/api_users.json": "[\n  {\"user\": \"alice\", \"role\": \"admin\", \"last_seen\": \"2026-09-03\"},\n  {\"user\": \"bob\", \"role\": \"user\", \"last_seen\": \"2026-09-04\"}\n]"
+  }
+ },
+ "man": {
+  "ls": "ls [-a] [-l] [-h] [path] — directory listing. -a: hidden files dikhao, -l: long format (perms/owner/size), -h: human-readable sizes.",
+  "cd": "cd [path] — directory change. cd .. parent, cd ~ home, cd - last dir.",
+  "cat": "cat <file...> — file print karo. Multiple files join ho jaate hain. Bade files ke liye less/head/tail use karo.",
+  "grep": "grep [-i] [-n] [-c] [-v] [-r] <pattern> [file] — text search. -i: case-insensitive, -n: line number, -c: count, -v: invert. File na do to stdin padhta hai.",
+  "find": "find [path] [-name pattern] [-type f|d] [-perm nnn] — filesystem tree search. Example: find /home -name '*.txt' -type f",
+  "head": "head [-n N] [file] — pehle N lines (default 10).",
+  "tail": "tail [-n N] [file] — aakhri N lines (default 10). Live: tail -f file.",
+  "sort": "sort [-r] [-n] [-u] [file] — lines sort. -r reverse, -n numeric, -u unique. uniq se pehle hamesha sort.",
+  "uniq": "uniq [-c] [file] — adjacent duplicate lines collapse. Pehle sort karo warna kaam nahi karega!",
+  "cut": "cut -d<delim> -f<N> [file] — fields extract. Example: cut -d, -f2 servers.csv",
+  "tr": "tr <set1> <set2> — characters translate. tr 'A-Z' 'a-z' lowercase. 'tr -d' delete set.",
+  "wc": "wc [-l] [-w] [-c] [file] — lines / words / bytes count.",
+  "sed": "sed 's/pattern/replacement/' [file] — stream editor. Line-by-line transform. -e multiple scripts.",
+  "awk": "awk '{print $1, $3}' [file] — field processor. $0 = full line, $N = field, NR = line number. BEGIN/END blocks.",
+  "jq": "jq [filter] [file] — JSON processor. jq . = pretty print, jq .user[0].role = path extract. Security data processing ka core.",
+  "ps": "ps aux — all processes (PID, USER, %CPU, CMD). Custom: ps -o pid,ppid,user,cmd ax",
+  "top": "top — live process monitor. CPU/MEM sorted. q to quit (lab mein snapshot milta hai).",
+  "free": "free [-h] — memory: total/used/free/buff-cache. -h human readable.",
+  "df": "df [-h] — filesystem space usage per mount.",
+  "du": "du [-sh] [path] — actual directory/file sizes. du -sh * = top-level sizes.",
+  "ip": "ip addr | ip route | ip neigh | ip link — interfaces, routes, neighbors. ifconfig/route ka modern replacement.",
+  "ss": "ss -tlnp — listening TCP sockets + owning process. ss -tan — all TCP connections + states.",
+  "ping": "ping [-c N] <host> — ICMP reachability test. LAB RULE: sirf lab.local / localhost allowed (Red Line).",
+  "dig": "dig <host> [A|MX|TXT] — DNS query. +short = concise, +trace = full resolution journey.",
+  "host": "host <name> — simple DNS lookup. host -t MX example.com = mail records.",
+  "curl": "curl [-i] [-v] [-X METHOD] [-H header] [-d data] <url> — HTTP client. -i: headers dikhao. LAB RULE: sirf http://lab.local/* aur localhost:8080.",
+  "nmap": "nmap [opts] <target> — network discovery (ports/services). LAB RULE: sirf lab.local. External target = RED LINE violation.",
+  "tcpdump": "tcpdump [-i any] <filter> — packet capture. -n: no DNS resolve, -c N: N packets. LAB RULE: lab traffic only.",
+  "strace": "strace [-p <pid>] [cmd] — system calls trace. -c: summary, -e trace=openat: filter. Permission/network debugging ka weapon.",
+  "lsof": "lsof [-i :port] [-p <pid>] [-u user] — list open files. lsof -i :8080 = kaun us port pe hai. lsof +L1 = deleted-but-open files.",
+  "journalctl": "journalctl [-u unit] [-n N] [--since '10 min ago'] [-p err] — systemd journal logs. Log investigation ka core tool.",
+  "systemctl": "systemctl start|stop|restart|status|enable <unit> — services manage. daemon-reload config change ke baad.",
+  "chmod": "chmod <octal|symbolic> <file> — permissions. Octal: 755=rwxr-xr-x, 640=rw-r-----. -R recursive. SUID: +4000.",
+  "chown": "chown [user][:group] <file> — ownership change (root). -R recursive.",
+  "ssh": "ssh [-i key] user@host — encrypted remote shell. ssh-keygen -t ed25519 keys banata hai.",
+  "man": "man <topic> — manual pages padho. Available: ls cd cat grep find head tail sort uniq cut tr wc sed awk jq ps top free df du ip ss ping dig host curl nmap tcpdump strace lsof journalctl systemctl chmod chown ssh man"
+ },
+ "levels": [
+  {
+   "id": 0,
+   "t": "Linux Mental Model",
+   "ph": 1,
+   "g": [
+    {
+     "h": "सीखेंगे / You Will Learn",
+     "i": [
+      [
+       "Linux kya hai?",
+       "Linux ek open-source monolithic kernel hai jo hardware ko manage karta hai — processes, memory, files, network sab iske through. GNU tools + Linux kernel milkar GNU/Linux OS banta hai."
+      ],
+      [
+       "Kernel kya karta hai?",
+       "Kernel hardware ke saath user-space ke beech ka bridge hai: process scheduling, memory management, device drivers, system calls. uname -r se version milta hai."
+      ],
+      [
+       "Distribution kya hoti hai?",
+       "Distribution = kernel + packages + package manager + default configs ka bundle. Ubuntu (apt), Fedora (dnf), Arch (pacman) — sab alag distros, same kernel family."
+      ],
+      [
+       "GNU/Linux relationship",
+       "Kernel (Linus Torvalds) + user tools jaise bash, grep, coreutils (GNU project) milkar poora OS banta hai. Isliye technically sahi naam 'GNU/Linux' hai."
+      ],
+      [
+       "User space vs kernel space",
+       "Kernel space (ring 0) mein direct hardware access hai; user space (ring 3) mein aapke apps chalte hain. Isolation isliye taaki app crash se system na toote. strace -c ls se dono ka interaction dekho."
+      ],
+      [
+       "Processes",
+       "Process = running program ka instance. Har process ka apna PID, address space, file descriptors. ps aux se live dekho."
+      ],
+      [
+       "Files",
+       "Linux mein 'everything is a file' — disk, network socket, terminal, USB device, sab file interface se access hote hain (regular, device, FIFO, socket nodes)."
+      ],
+      [
+       "File descriptors",
+       "Har process ke open resources ko numbers milte hain: 0=stdin, 1=stdout, 2=stderr. ls -l /proc/self/fd se apne shell ke FDs dekho."
+      ],
+      [
+       "System calls",
+       "Apps kernel se directly nahi baat kar sakte — syscalls (read, write, open, execve) ka use karte hain. strace -c ls se live syscall traffic dekho."
+      ],
+      [
+       "Shell",
+       "Shell (bash/zsh) aapke commands ko parse karke processes start karta hai. Ye OS nahi, ek user-space program hai. echo $SHELL se verify karo."
+      ],
+      [
+       "Terminal",
+       "Terminal = interface jisse shell tak input/output hota hai (TTY/PTY). Purane CRT ka digital version; aaj Ctrl+Alt+T ya tmux/zellij."
+      ],
+      [
+       "Environment",
+       "Environment variables (PATH, HOME, USER...) har process ko config dete hain. env se dekho, export VAR=val se set karo — child processes tak jaate hain."
+      ],
+      [
+       "/proc aur /sys ka purpose",
+       "/proc = running kernel ka live view virtual files mein (processes, memory, network). /sys = devices/drivers ka view. cat /proc/cpuinfo, ls /sys/class/net try karo."
+      ],
+      [
+       "Linux architecture",
+       "Layers: Hardware → kernel (drivers, scheduler, VFS, network stack) → system services (systemd, dbus) → user apps. Yahi layering Linux ke stable hone ki wajah hai."
+      ]
+     ]
+    }
+   ],
+   "lab": {
+    "n": "Host Profiling (terminal practice)",
+    "d": "Virtual lab host ka profile banao: uname, whoami, ip addr, ss -tlnp. Ye 'Mission 1 — Identify' ka chhota version hai."
+   },
+   "tasks": [
+    {
+     "t": "Host profile karo: uname -a, whoami, hostname run karo",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "^uname( -a)?$"
+      },
+      {
+       "k": "cmd",
+       "re": "^whoami$"
+      },
+      {
+       "k": "cmd",
+       "re": "^hostname"
+      }
+     ]
+    },
+    {
+     "t": "Network dekho: ip addr aur ip route",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "^ip addr"
+      },
+      {
+       "k": "cmd",
+       "re": "^ip route"
+      }
+     ]
+    },
+    {
+     "t": "Listening services inventory: ss -tlnp",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "^ss.*-tlnp"
+      }
+     ]
+    }
+   ],
+   "lx": {
+    "hi": "Aapko Linux sirf commands ka collection nahi, balki ek complete operating-system architecture ke roop mein samajh aa gaya.",
+    "en": "You now understand Linux as an operating-system architecture rather than just a collection of commands."
+   }
+  },
+  {
+   "id": 1,
+   "t": "Terminal Mastery",
+   "ph": 1,
+   "g": [
+    {
+     "h": "Topics",
+     "i": [
+      [
+       "Bash fundamentals",
+       "Bash commands line-by-line parse aur execute karta hai. #!/bin/bash shebang se scripts bante hain; bash script.sh ya ./script.sh se chalte hain."
+      ],
+      [
+       "shell parsing",
+       "Shell line ko tokens karta hai, phir operators se split: pipe, redirect, background, keyword expansion. Debug ke liye set -x (xtrace) use karo."
+      ],
+      [
+       "quoting",
+       "Single quotes = literal (koi expansion nahi), double quotes = variables expand, $(...) = command substitution. echo '$HOME' vs echo \"$HOME\" difference dekho."
+      ],
+      [
+       "escaping",
+       "Backslash agle character ko literal banata hai: \\, \" aur ' — sab backslash se escape hote hain. echo \"a\\nb\" se real line break milta hai."
+      ],
+      [
+       "globbing",
+       "Patterns: * (kuch bhi), ? (ek char), [abc] (character set). ls *.txt, ls [a-c]* try karo. Glob fail ho to output khali — nullglob se control hota hai."
+      ],
+      [
+       "command expansion",
+       "Expansion ka order: brace {a,b} → tilde ~ → variables → command substitution. ls -l {/etc,/home} try karo."
+      ],
+      [
+       "command substitution",
+       "$(cmd) — command run karke uska output text mein replace karo. echo $(date); nested bhi chalta hai: $(cat notes.txt | wc -l)."
+      ],
+      [
+       "environment variables",
+       "Shell se processes tak jaane wale key=value pairs. export MY_VAR=hi — child processes ko bhi dikhega. env | grep PATH se dekho."
+      ],
+      [
+       "aliases",
+       "alias ll='ls -la' se shortcut. Dhyaan: non-interactive scripts mein aliases expand nahi hote — uske liye functions use karo."
+      ],
+      [
+       "functions",
+       "myfunc() { echo \"hi $1\"; } — reusable blocks with parameters. Scripts mein maintainability isi se aati hai."
+      ],
+      [
+       "history",
+       "Commands ki list: history, Ctrl+R se search, !123 se re-run. HISTSIZE/HISTFILE se control hota hai."
+      ],
+      [
+       "readline",
+       "Terminal editing shortcuts: Ctrl+A (start), Ctrl+E (end), Ctrl+W (word delete), Ctrl+U (line delete), Ctrl+K (end tak delete)."
+      ],
+      [
+       "terminal control",
+       "stty size, clear, colors (escape sequences), tput. stty -a se poore terminal settings dekho."
+      ]
+     ]
+    },
+    {
+     "h": "Advanced",
+     "i": [
+      [
+       "stdin",
+       "Program ko input ka source (keyboard ya pipe). cat bina args ke stdin se padhta hai. grep x < file se file stdin ban jaati hai."
+      ],
+      [
+       "stdout",
+       "Default output stream (fd 1). command > out.txt ise file mein bhejta hai. Programs apna normal output isi par dete hain."
+      ],
+      [
+       "stderr",
+       "Error stream (fd 2) — stdout se alag taaki errors clean output se mix na hon. cmd 2> err.log chala kar dekho."
+      ],
+      [
+       "file descriptors",
+       "0/1/2 ke alawa extra FDs bhi: exec 3> log.txt se naya FD kholo. lsof -p $$ se process ke saare FDs dekho."
+      ],
+      [
+       "pipelines",
+       "cmd1 | cmd2 — cmd1 ka stdout, cmd2 ko stdin. ps aux | grep ssh classic. set -o pipefail se har stage ka exit status matter kare."
+      ],
+      [
+       "process substitution",
+       "<(cmd) / >(cmd) — process ko file jaisa treat karo. diff <(ls /) <(ls /tmp) — bina temp files ke compare."
+      ],
+      [
+       "here-documents",
+       "cat <<EOF ... EOF — multi-line stdin. Scripts mein config/templates inline likhne ke liye perfect. <<-EOF leading tabs ignore karta hai."
+      ],
+      [
+       "here-strings",
+       "cmd <<< \"text\" — single-line stdin. grep x <<< \"abc axd\" — quick inline test."
+      ],
+      [
+       "redirection",
+       "> overwrite, >> append, 2>&1 errors ko stdout mein merge. cmd > out.txt 2> err.log — classic split pattern."
+      ],
+      [
+       "exit status",
+       "$? = last command ka exit code (0=success, non-zero=fail). cmd1 && cmd2 (sirf success par) aur cmd1 || fallback."
+      ]
+     ]
+    }
+   ],
+   "lab": {
+    "n": "Gamified Milestone",
+    "d": "OverTheWire Bandit (Levels 0→10) — har level ek password hunt. Terminal practice: redirection + pipes yahan naturally aate hain."
+   },
+   "tasks": [
+    {
+     "t": "Redirection: echo se /tmp/l1.txt banao, phir cat se padho",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "^echo .*>"
+      },
+      {
+       "k": "fs",
+       "p": "/tmp/l1.txt",
+       "c": ""
+      }
+     ]
+    },
+    {
+     "t": "Pipeline: ls /usr/bin | head -5 (pipe + head combine karo)",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "\\| head"
+      }
+     ]
+    },
+    {
+     "t": "Exit status: $? check karo — jo bhi command chala ho, phir echo $?",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "^echo \\$\\?"
+      }
+     ]
+    }
+   ],
+   "lx": {
+    "hi": "Aap terminal mein confidently kaam kar sakte hain aur shell command ko Linux ke internal data flow ke saath samajh sakte hain.",
+    "en": "You can confidently operate the terminal and understand how shell commands interact through Linux data streams and processes."
+   }
+  },
+  {
+   "id": 2,
+   "t": "Filesystem Deep Dive",
+   "ph": 1,
+   "g": [
+    {
+     "h": "Core",
+     "i": [
+      [
+       "absolute/relative paths",
+       "Absolute /etc/passwd root se shuru; relative notes.txt current directory se. pwd + realpath file se verify karo."
+      ],
+      [
+       "directories",
+       "Directory bhi file hai — sirf name→inode entries ki list. ls -l mein pehla character d hota hai."
+      ],
+      [
+       "hidden files",
+       "Dot . se shuru hote files hidden hain. ls -a se dikhao. .bashrc, .ssh, .secret_note aise hi files hain."
+      ],
+      [
+       "links",
+       "Hard link = same inode ka doosra naam; symlink = target path point karne wala chhota file. ls -li se inodes compare karo."
+      ],
+      [
+       "permissions",
+       "rwx × user/group/others. chmod 750 file, ls -l se dekho. Ye access control ki first line of defense hai."
+      ],
+      [
+       "metadata",
+       "File ki info — size, owner, timestamps (atime/mtime/ctime), inode number. stat file se sab milta hai."
+      ]
+     ]
+    },
+    {
+     "h": "Advanced",
+     "i": [
+      [
+       "inode",
+       "Filesystem ka unique number jo content + metadata point karta hai. Rename ho to inode wahi. ls -i, inode usage: df -i."
+      ],
+      [
+       "directory entries",
+       "Directory ke andar name → inode number ki mapping hoti hai. find . -maxdepth 1 entries dikhata hai."
+      ],
+      [
+       "hard links",
+       "Same inode ke multiple names (same filesystem mein). ln file link banata hai. Data tab tak rehta hai jab tak koi link na ho."
+      ],
+      [
+       "symbolic links",
+       "ln -s target link — path store karta hai, target alag file. Broken symlink possible hai. readlink -f se resolve karo."
+      ],
+      [
+       "mount points",
+       "Directory jahan doosra filesystem attach hota hai. mount, findmnt, df -h se dekho. /boot, /home, USB sab mounts."
+      ],
+      [
+       "filesystem types",
+       "ext4, xfs, btrfs, tmpfs, procfs, sysfs. blkid + findmnt -o TARGET,FSTYPE se identify karo."
+      ],
+      [
+       "/proc",
+       "Running kernel ka live view — processes, memory, network stats. cat /proc/uptime try karo."
+      ],
+      [
+       "/sys",
+       "Devices aur drivers ka view — network interfaces, USB. cat /sys/class/net/eth0/address MAC dega."
+      ],
+      [
+       "/dev",
+       "Device nodes — hardware access ke file interfaces. ls -l /dev | head dekho."
+      ],
+      [
+       "/run",
+       "Runtime state — PID files, sockets, boot-time info. Reboot par empty ho jaata hai. ls /run."
+      ]
+     ]
+    },
+    {
+     "h": "Commands",
+     "i": [
+      [
+       "ls",
+       "List files; -a hidden, -l long, -h human, -R recursive. ls -lah /etc."
+      ],
+      [
+       "stat",
+       "Metadata: size, owner, perms, timestamps, inode. stat /etc/passwd."
+      ],
+      [
+       "find",
+       "Tree search + filters: find /home -name '*.txt' -type f. -mtime, -size +10M, -perm bhi."
+      ],
+      [
+       "file",
+       "File type guess: file /bin/ls → 'ELF 64-bit executable'."
+      ],
+      [
+       "mount",
+       "Filesystems attach/detach. mount | grep /home current mounts."
+      ],
+      [
+       "df",
+       "Disk space per mount: df -h (space), df -i (inodes)."
+      ],
+      [
+       "du",
+       "Actual sizes: du -sh * top-level, du -ah | sort -h | tail largest files."
+      ],
+      [
+       "lsblk",
+       "Block devices tree: lsblk -f (fstype + mounts)."
+      ],
+      [
+       "blkid",
+       "Device ki fs type + UUID: blkid /dev/sda1."
+      ]
+     ]
+    }
+   ],
+   "lab": {
+    "n": "Filesystem Forensics Lab",
+    "d": "Investigate: unusual files, links, mounts. Pehla goal — /home/learner mein hidden file dhundo."
+   },
+   "tasks": [
+    {
+     "t": "Hidden file dhundo: ls -a /home/learner (ya find se)",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "(ls -a /home/learner|find /home/learner)"
+      }
+     ]
+    },
+    {
+     "t": "Us hidden file ko padho: cat /home/learner/.secret_note",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "cat /home/learner/\\.secret_note"
+      }
+     ]
+    },
+    {
+     "t": "Metadata dekho: stat /home/learner/notes.txt",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "^stat /home/learner/notes.txt"
+      }
+     ]
+    },
+    {
+     "t": "Forensics: find se /home mein saare .txt files dhundo",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "find /home .*\\.txt"
+      }
+     ]
+    }
+   ],
+   "lx": {
+    "hi": "Aap Linux filesystem ko surface level par nahi, balki inode, metadata, links aur mounts ke level par samajhte hain.",
+    "en": "You understand Linux filesystems beyond basic navigation, including inodes, metadata, links, mounts, and virtual filesystems."
+   }
+  },
+  {
+   "id": 3,
+   "t": "Permissions & Linux Access Control",
+   "ph": 2,
+   "g": [
+    {
+     "h": "Topics",
+     "i": [
+      [
+       "UID/GID",
+       "User/Group identity numbers — files inhi numbers se verify hoti hain, usernames sirf display ke liye. id se apna dekho."
+      ],
+      [
+       "ownership",
+       "Har file ka ek owner + group. chown user:group file (root chahiye). ls -l mein dikhta hai."
+      ],
+      [
+       "rwx",
+       "Read (content), Write (modify), Execute (run / enter directory). Directory ke liye x = andar ja sakte ho."
+      ],
+      [
+       "octal permissions",
+       "r=4, w=2, x=1 → sum: 755 = rwxr-xr-x, 640 = rw-r-----. chmod 755 script.sh."
+      ],
+      [
+       "chmod",
+       "Permissions change — symbolic (chmod u+x f) ya octal (chmod 640 f). -R recursive."
+      ],
+      [
+       "chown",
+       "Owner/group change (root only). chown -R user:group dir."
+      ],
+      [
+       "umask",
+       "Naye files/dirs par default permissions ka mask. umask 022 → files 644, dirs 755. umask -S readable format."
+      ],
+      [
+       "sudo",
+       "Doosre user (default root) se commands. sudoers policy check hoti hai. sudo -l se apni allowed commands dekho."
+      ]
+     ]
+    },
+    {
+     "h": "Advanced",
+     "i": [
+      [
+       "SUID",
+       "File execute hone par owner ki privileges le leti hai (e.g. /usr/bin/passwd). SUID binaries = attack surface. find / -perm -4000 2>/dev/null."
+      ],
+      [
+       "SGID",
+       "File: group owner ki permissions; Directory: naye files usi group ke. find / -perm -2000."
+      ],
+      [
+       "sticky bit",
+       "Directory mein sirf apni file delete kar sakte ho (jaise /tmp). find / -perm -1000."
+      ],
+      [
+       "ACL",
+       "Standard permissions ke upar per-user/per-group access. setfacl -m u:bob:rwx file, getfacl file."
+      ],
+      [
+       "extended attributes",
+       "Files par metadata keys (security contexts etc.). getfattr -d file."
+      ],
+      [
+       "Linux capabilities",
+       "Root ke powers ko 38 chhote capabilities mein split (CAP_NET_ADMIN...). getcap /usr/bin/capsh — precise privilege control."
+      ],
+      [
+       "privilege boundaries",
+       "Ownership + permissions + capabilities + LSM (AppArmor/SELinux) — sab milkar decide karte hain kaun kya kar sakta hai. Misconfigured system lab se seekho."
+      ]
+     ]
+    }
+   ],
+   "lab": {
+    "n": "Security Lab — Intentionally Misconfigured System",
+    "d": "/home/learner/lab/permfile.txt world-writable (666) hai — Fix: chmod 640. Phir explain karo KYUN dangerous tha."
+   },
+   "tasks": [
+    {
+     "t": "Insecure file inspect karo: stat /home/learner/lab/permfile.txt",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "stat /home/learner/lab/permfile"
+      }
+     ]
+    },
+    {
+     "t": "FIX: chmod 640 se permissions theek karo",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "chmod 640 .*permfile"
+      },
+      {
+       "k": "fs",
+       "p": "/home/learner/lab/permfile.txt",
+       "c": "[mode:640]"
+      }
+     ]
+    },
+    {
+     "t": "Audit: /home mein hidden files dhundo (find -name '.*')",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "find /home.*\\..*"
+      }
+     ]
+    }
+   ],
+   "lx": {
+    "hi": "Aap samajhte hain ki Linux mein \"kaun kya access kar sakta hai\" kaise decide hota hai.",
+    "en": "You understand how Linux determines who can access, execute, modify, or administer resources."
+   }
+  },
+  {
+   "id": 4,
+   "t": "Processes & Internals",
+   "ph": 2,
+   "g": [
+    {
+     "h": "Topics",
+     "i": [
+      [
+       "PID",
+       "Process ID — running process ka unique number. echo $$ se apne shell ka PID."
+      ],
+      [
+       "PPID",
+       "Parent Process ID — kaun is process ko start kiya. ps -o pid,ppid,cmd -p $$."
+      ],
+      [
+       "process tree",
+       "Parent-child hierarchy. ps axjf se tree view."
+      ],
+      [
+       "foreground/background",
+       "FG = terminal block; cmd & se BG start, Ctrl+Z hold, bg resume, fg wapas."
+      ],
+      [
+       "jobs",
+       "Current shell ki jobs: jobs list, %1 se job reference."
+      ],
+      [
+       "signals",
+       "Process events: SIGTERM (15) graceful kill, SIGKILL (9) force, SIGINT (2) = Ctrl+C. kill -15 <pid>."
+      ],
+      [
+       "process states",
+       "R running, S sleeping, D uninterruptible (disk wait), Z zombie, T stopped. ps -o stat,comm ax."
+      ]
+     ]
+    },
+    {
+     "h": "Advanced",
+     "i": [
+      [
+       "/proc/<pid>",
+       "Har process ka virtual dir: cmdline, status, fd/, environ. cat /proc/self/status try karo."
+      ],
+      [
+       "process namespaces",
+       "Isolated PID views — containers isi se kaam karte hain. lsns se dekho (root)."
+      ],
+      [
+       "file descriptors (process)",
+       "Process ke open files/sockets: ls -l /proc/self/fd, lsof -p $$."
+      ],
+      [
+       "environment inspection",
+       "Process ki env: cat /proc/self/environ (null-separated) — tr se readable banao."
+      ],
+      [
+       "zombie processes",
+       "Exit ho gaya par parent ne wait() nahi kiya — entry rehti hai. ps aux | awk '$8 ~ /Z/'. Cleanup = parent ka exit."
+      ],
+      [
+       "orphan processes",
+       "Parent mar gaya → systemd (PID 1) adopt kar leta hai. Problem nahi, but awareness chahiye."
+      ],
+      [
+       "scheduling basics",
+       "CFS scheduler, nice values (-20..19). nice -n 10 cmd, renice se priority."
+      ],
+      [
+       "resource limits",
+       "Per-process limits: memory, files, CPU. ulimit -a dekho."
+      ]
+     ]
+    },
+    {
+     "h": "Tools",
+     "i": [
+      [
+       "ps",
+       "Process snapshot: ps aux (everything), ps -ef, ps -o pid,ppid,user,cmd ax."
+      ],
+      [
+       "top",
+       "Live monitor — CPU/mem sorted. -u user filter."
+      ],
+      [
+       "htop",
+       "Interactive colorized top — filters, kill, search."
+      ],
+      [
+       "pgrep",
+       "Name se PID: pgrep -af python (full cmd), pgrep -x sshd exact."
+      ],
+      [
+       "strace",
+       "Syscalls trace: strace -p <pid>, strace -c ls. Permission issues ka weapon."
+      ],
+      [
+       "lsof",
+       "Open files: lsof -i :8080 (port), lsof -p <pid>."
+      ],
+      [
+       "fuser",
+       "Kaun file/port use kar raha: fuser 8080/tcp."
+      ]
+     ]
+    }
+   ],
+   "lab": {
+    "n": "Process Investigation",
+    "d": "Unknown process identify karo: kaun, parent kaun, kya kar raha. Port 8080 ke process ko dhundo."
+   },
+   "tasks": [
+    {
+     "t": "Saare processes dekho: ps aux (ya ps ax)",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "^ps (aux|ax|ef)"
+      }
+     ]
+    },
+    {
+     "t": "Port 8080 kaun use kar raha? ss -tlnp (ya lsof -i :8080)",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "(ss.*tlnp|lsof -i :8080)"
+      }
+     ]
+    },
+    {
+     "t": "Apne shell ka /proc inspect karo: cat /proc/self/status",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "/proc/self"
+      }
+     ]
+    }
+   ],
+   "lx": {
+    "hi": "Aap Linux system ke andar chal rahe processes ko inspect aur troubleshoot kar sakte hain.",
+    "en": "You can inspect, understand, and troubleshoot running Linux processes and their relationships."
+   }
+  },
+  {
+   "id": 5,
+   "t": "System Administration",
+   "ph": 2,
+   "g": [
+    {
+     "h": "Topics",
+     "i": [
+      [
+       "services",
+       "Background daemons (sshd, nginx...). systemctl list-units --type=service se inventory."
+      ],
+      [
+       "systemd",
+       "Init system (PID 1) — services, mounts, sockets, timers units ke roop mein. systemctl status sshd."
+      ],
+      [
+       "boot process",
+       "BIOS/UEFI → bootloader (GRUB) → kernel → initramfs → systemd → default target. systemd-analyze blame se slow boot."
+      ],
+      [
+       "targets",
+       "Units ke groups — multi-user.target (servers), graphical.target (desktop). systemctl get-default."
+      ],
+      [
+       "timers",
+       "systemd ka cron-like scheduling. systemctl list-timers."
+      ],
+      [
+       "logs",
+       "journal + /var/log files. journalctl -u sshd -n 50 — recent unit logs."
+      ],
+      [
+       "service dependencies",
+       "Kaun kisse depend karti hai: systemctl list-dependencies sshd."
+      ]
+     ]
+    },
+    {
+     "h": "Advanced",
+     "i": [
+      [
+       "unit files",
+       "/etc/systemd/system/*.service — ExecStart, After=, WantedBy=. systemctl cat sshd se padho."
+      ],
+      [
+       "service hardening",
+       "Unit mein: ProtectSystem=strict, NoNewPrivileges=yes, User=nobody. systemd-analyze security sshd score dega."
+      ],
+      [
+       "startup dependencies",
+       "After=/Wants=/Requires= — order aur auto-start. Circular deps = boot issues."
+      ],
+      [
+       "system recovery",
+       "Emergency mode: systemctl rescue ya systemd.unit=emergency boot arg. Root password reset isi se."
+      ],
+      [
+       "resource limits (systemd)",
+       "Unit level: MemoryMax=, CPUQuota=. systemctl show sshd -p MemoryMax."
+      ],
+      [
+       "scheduled tasks",
+       "cron (crontab -e) ya systemd timers. * * * * * cmd syntax."
+      ]
+     ]
+    },
+    {
+     "h": "Tools",
+     "i": [
+      [
+       "systemctl",
+       "start/stop/restart/enable/disable/status. daemon-reload config change ke baad."
+      ],
+      [
+       "journalctl",
+       "-u unit, -n N, --since '10 min ago', -p err. Log investigation ka core."
+      ],
+      [
+       "systemd-analyze",
+       "blame (slow units), critical-chain, verify (unit files)."
+      ],
+      [
+       "crontab",
+       "User scheduled tasks: crontab -e edit, crontab -l view."
+      ]
+     ]
+    }
+   ],
+   "lab": {
+    "n": "Broken Linux Server",
+    "d": "Observe → Diagnose → Root cause → Fix → Verify → Document. Lab host ke logs mein OOM kill + failed service dhundo."
+   },
+   "tasks": [
+    {
+     "t": "Service logs dekho: journalctl (lab snapshot)",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "^journalctl"
+      }
+     ]
+    },
+    {
+     "t": "Failed logins timeline: cat /var/log/auth.log | grep Failed",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "grep.*[Ff]ailed"
+      }
+     ]
+    },
+    {
+     "t": "Disk status: df -h",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "^df -h"
+      }
+     ]
+    }
+   ],
+   "lx": {
+    "hi": "Aap Linux server ko operate, diagnose aur recover kar sakte hain.",
+    "en": "You can operate, diagnose, repair, and document Linux server environments."
+   }
+  },
+  {
+   "id": 6,
+   "t": "Networking Deep Dive",
+   "ph": 2,
+   "g": [
+    {
+     "h": "Fundamentals",
+     "i": [
+      [
+       "OSI model",
+       "7-layer reference: Physical→DataLink→Network→Transport→Session→Presentation→Application. Troubleshooting mein layer-by-layer approach seekhoge."
+      ],
+      [
+       "TCP/IP model",
+       "Practical 4-layer: Network Access→Internet→Transport→Application. Real protocols isi ke upar chalte hain."
+      ],
+      [
+       "IPv4",
+       "32-bit address (dotted quad). Private ranges: 10/8, 172.16/12, 192.168/16. ip addr se apna dekho."
+      ],
+      [
+       "IPv6",
+       "128-bit address — IPv4 exhaustion ki wajah se. ip -6 addr, typical prefix /64."
+      ],
+      [
+       "subnetting",
+       "Network ko CIDR se chhote networks mein divide: /24 = 256 addresses. ip route show se apne subnets dekho."
+      ],
+      [
+       "routing",
+       "Packet ka path — next-hop gateway decide karna. ip route get <ip> se path test karo (lab mein lab.local)."
+      ],
+      [
+       "ARP",
+       "IP → MAC resolution local network mein. ip neigh cache dikhata hai. ARP spoofing = attack vector (sirf theory mein)."
+      ],
+      [
+       "ICMP",
+       "Control/error messages — ping isi par. Ping ka reply ICMP echo-request/reply hai."
+      ],
+      [
+       "TCP",
+       "Reliable, ordered, connection-oriented. Retransmissions + ACKs. Web traffic mostly TCP."
+      ],
+      [
+       "UDP",
+       "Fast, unreliable, connectionless — DNS, VoIP. ss -uap se UDP sockets dekho."
+      ]
+     ]
+    },
+    {
+     "h": "Advanced",
+     "i": [
+      [
+       "TCP handshake",
+       "SYN → SYN-ACK → ACK (3-way). tcpdump -i any 'tcp[tcpflags] & (tcp-syn) != 0' se dekho (lab traffic)."
+      ],
+      [
+       "connection states",
+       "LISTEN, ESTABLISHED, TIME_WAIT, CLOSE_WAIT... ss -tan se dekho. TIME_WAIT bahut ho to server issue."
+      ],
+      [
+       "ephemeral ports",
+       "Client side ka temporary port (32768–60999). Har naye outbound connection ke liye naya port."
+      ],
+      [
+       "sockets",
+       "Network communication ka endpoint (IP:port + protocol). ss -tlnp — kaunsa process kaunse port pe."
+      ],
+      [
+       "routing tables",
+       "Destination → interface/gateway mapping. ip route show, ip route get <ip>."
+      ],
+      [
+       "MTU",
+       "Max packet size per hop. Chhota MTU + DF flag = timeout issues. ping -M do -s 1472 se test."
+      ],
+      [
+       "fragmentation",
+       "Bade packet ko chhote pieces mein (IP level). tcpdump mein 'frag offset != 0' filter."
+      ],
+      [
+       "DNS resolution",
+       "Domain → IP: resolver → root → TLD → authoritative. dig +trace se full journey dekho."
+      ],
+      [
+       "caching",
+       "DNS results cache hote hain (OS + resolver), TTL expire par fresh query. resolvectl flush-caches."
+      ],
+      [
+       "TLS fundamentals",
+       "Encrypted channel: handshake (certs, key exchange) → symmetric session. curl -v https:// se steps dekho."
+      ]
+     ]
+    },
+    {
+     "h": "Tools",
+     "i": [
+      [
+       "ip",
+       "ip addr, ip route, ip neigh, ip link — modern networking CLI (ifconfig/route ka replacement)."
+      ],
+      [
+       "ss",
+       "Sockets: ss -tlnp (listening + process), ss -tan (connections). netstat se faster."
+      ],
+      [
+       "ping",
+       "ICMP reachability: ping -c 4 lab.local. Block ho to aage ki layers check karo."
+      ],
+      [
+       "traceroute",
+       "Hop-by-hop path (TTL expiry). traceroute lab.local; ICMP block par -T (TCP mode)."
+      ],
+      [
+       "dig",
+       "DNS power tool: dig lab.local A, +short, +trace, dig @server."
+      ],
+      [
+       "host",
+       "dig ka simple wrapper: host -t MX example.com."
+      ],
+      [
+       "tcpdump",
+       "Raw packet capture: tcpdump -i any port 80 -n. Packet forensics ka core tool."
+      ]
+     ]
+    }
+   ],
+   "lab": {
+    "n": "Packet Analysis + Network Diagnosis",
+    "d": "Lab host ki connectivity verify karo: ping, dig, traceroute, ss, tcpdump — sab sirf lab.local par (Red Line)."
+   },
+   "tasks": [
+    {
+     "t": "Reachability: ping -c 3 lab.local",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "ping .*lab\\.local"
+      }
+     ]
+    },
+    {
+     "t": "DNS: dig lab.local (ya host lab.local)",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "^(dig|host) lab\\.local"
+      }
+     ]
+    },
+    {
+     "t": "Connections: ss -tan",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "^ss -tan"
+      }
+     ]
+    },
+    {
+     "t": "Packet capture (lab only): tcpdump -i any host lab.local",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "^tcpdump"
+      }
+     ]
+    }
+   ],
+   "lx": {
+    "hi": "Aap network ko sirf IP aur port ke level par nahi, packet aur connection behavior ke level par samajh sakte hain.",
+    "en": "You can analyze networking at the packet and connection level rather than merely thinking in terms of IP addresses and ports."
+   }
+  },
+  {
+   "id": 7,
+   "t": "HTTP & Web From Linux",
+   "ph": 2,
+   "g": [
+    {
+     "h": "Topics",
+     "i": [
+      [
+       "HTTP request",
+       "Method + URL + Headers + optional body. curl -i http://lab.local/ se raw request/response dekho."
+      ],
+      [
+       "HTTP response",
+       "Status line + headers + body. Status code (200/404/500) turant batata hai kya hua."
+      ],
+      [
+       "methods",
+       "GET (read), POST (send/create), PUT (update), DELETE (remove), HEAD (headers only), OPTIONS (capabilities)."
+      ],
+      [
+       "headers",
+       "Metadata: Host, User-Agent, Accept, Cookie, Authorization... curl -vI se dekho. Security headers (HSTS, CSP) yahi se check hote hain."
+      ],
+      [
+       "cookies",
+       "Server → client ka state (Set-Cookie). Sessions isi se track hote hain. curl -c jar -b jar se manage karo."
+      ],
+      [
+       "redirects",
+       "301 permanent, 302 temporary, 307/308. curl -L follow karta hai. Open redirects = security issue."
+      ],
+      [
+       "status codes",
+       "2xx success, 3xx redirect, 4xx client error (401/403/404), 5xx server error. Bug hunting mein 403/404 patterns dhundo."
+      ],
+      [
+       "HTTPS",
+       "HTTP + TLS — encrypted. curl -v https:// se handshake dekho. Cert errors, mixed content dhundo."
+      ],
+      [
+       "TLS basics",
+       "Cert chain, CAs, expiration. echo | openssl s_client -connect host:443 se inspect (theory + lab)."
+      ]
+     ]
+    },
+    {
+     "h": "Linux Workflow",
+     "i": [
+      [
+       "curl",
+       "Swiss-army HTTP: -i headers, -v verbose, -X POST -d data, -H header, -o file. Lab ka #1 tool."
+      ],
+      [
+       "wget",
+       "Downloads + recursion: wget -r -l 1 url. Bada content save karne ke liye."
+      ],
+      [
+       "grep/sed/awk/jq",
+       "Response dump → grep filter → sed clean → awk columns → jq JSON. curl -s url | jq .user."
+      ]
+     ]
+    },
+    {
+     "h": "Advanced",
+     "i": [
+      [
+       "request/response debugging",
+       "curl -v + --trace-ascii file — wire-level log. Headers order, redirects, TLS sab dikhta hai."
+      ],
+      [
+       "proxy concepts",
+       "Requests third-party se pass hote hain (forward/reverse). curl -x http://proxy:8080 url. Burp isi principle par."
+      ],
+      [
+       "authentication headers",
+       "Authorization: Basic (base64 — encrypted NAHI!), Bearer tokens, API keys. curl -u user:pass, curl -H 'Authorization: Bearer t'."
+      ],
+      [
+       "content negotiation",
+       "Accept headers se client preference, server Content-Type se reply. curl -H 'Accept: application/json'."
+      ],
+      [
+       "JSON APIs",
+       "REST endpoints jo JSON dete hain. curl -s url | jq '.[0]' — auth, rate limits, error shapes samjho."
+      ],
+      [
+       "WebSockets concepts",
+       "Full-duplex persistent connection (HTTP upgrade). Browser devtools wscat view. Realtime apps isi par."
+      ],
+      [
+       "HTTP/2 concepts",
+       "Multiplexing, header compression. curl --http2 -v. HTTP/3 = QUIC (UDP)."
+      ]
+     ]
+    }
+   ],
+   "lab": {
+    "n": "HTTP Investigation Lab",
+    "d": "lab.local service par: root, /api/users, /admin fetch karo — status codes compare karo. Phir hidden /srv/lab/.env ko HTTP se dhoondo (path traversal mindset, sirf lab par)."
+   },
+   "tasks": [
+    {
+     "t": "Root fetch karo: curl -i http://lab.local/",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "curl.*lab\\.local/?$"
+      }
+     ]
+    },
+    {
+     "t": "API test: curl http://lab.local/api/users | jq .",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "curl.*api/users"
+      }
+     ]
+    },
+    {
+     "t": "403 verify: curl -sI http://lab.local/admin | head -1",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "curl.*admin"
+      }
+     ]
+    }
+   ],
+   "lx": {
+    "hi": "Aap browser ke peeche hone wale HTTP communication ko terminal se inspect aur analyze kar sakte hain.",
+    "en": "You can inspect and analyze browser-style HTTP communication directly from the Linux terminal."
+   }
+  },
+  {
+   "id": 8,
+   "t": "Bash Programming",
+   "ph": 2,
+   "g": [
+    {
+     "h": "Topics",
+     "i": [
+      [
+       "variables",
+       "NAME=value set; $NAME expand; ${NAME:-default} fallback. Scripts mein set -u se unset use fail ho jaata hai."
+      ],
+      [
+       "conditions",
+       "if [ condition ]; then ... fi; [[ ]] bash-extended (regex, &&). [ -f file ] file checks."
+      ],
+      [
+       "loops",
+       "for x in ...; do ...; done, while [ cond], until. Range: for i in {1..5}."
+      ],
+      [
+       "functions",
+       "Reusable + parameters + return. local variables mat bhulo."
+      ],
+      [
+       "arrays",
+       "arr=(a b c), ${arr[0]}, ${#arr[@]} length. Associative: declare -A."
+      ],
+      [
+       "arguments",
+       "$1..$9, $@ saare, $# count, shift. getopts se -flags parse karo."
+      ],
+      [
+       "exit codes",
+       "0 success; 1+ failure. Custom: exit 2 bad args. Professional scripts isi se padhe jaate hain."
+      ]
+     ]
+    },
+    {
+     "h": "Advanced",
+     "i": [
+      [
+       "robust quoting",
+       "Har variable double-quote: \"$var\" — spaces/newlines safe. Script top: set -euo pipefail (holy trinity)."
+      ],
+      [
+       "error handling",
+       "set -e (fail-fast), set -o pipefail (pipe mein bhi), || fallback, if ! cmd; then. Silent failures = prod pain."
+      ],
+      [
+       "traps",
+       "trap 'cleanup' EXIT — exit/signal par run. Temp files delete, locks release."
+      ],
+      [
+       "temp files",
+       "tmp=$(mktemp); trap mein delete. Predictable /tmp names = symlink attack risk."
+      ],
+      [
+       "parallel execution",
+       "cmd & + wait; xargs -P4 parallel. CPU-heavy jobs fast — resource limits dhyan mein."
+      ],
+      [
+       "logging",
+       "log(){ echo \"[$(date -Iseconds)] $*\"; } — timestamped output, >> log file 2>&1. Debugging ki bread & butter."
+      ],
+      [
+       "input validation",
+       "Numbers: [[ $x =~ ^[0-9]+$ ]]; paths: realpath -e. Untrusted input = injection risk — hamesha validate."
+      ],
+      [
+       "script portability",
+       "#!/usr/bin/env bash, POSIX-safe syntax. Alpine/Debian dono par chalna chahiye."
+      ]
+     ]
+    },
+    {
+     "h": "Tools",
+     "i": [
+      [
+       "grep/sed/awk",
+       "Filter → transform → fields. Text processing ki backbone."
+      ],
+      [
+       "cut/sort/uniq",
+       "Fields extract → sort → dedupe. Report pipelines mein daily use."
+      ],
+      [
+       "xargs",
+       "List ko batch commands mein convert: ls | xargs -I{} wc -l {}."
+      ],
+      [
+       "jq",
+       "JSON processing — API output ka clean handling."
+      ]
+     ]
+    }
+   ],
+   "lab": {
+    "n": "Project — Linux Investigation Toolkit",
+    "d": "/tmp/profile.sh script banao jo uname, ip addr, ss -tlnp, df -h, ps aux ka summary chhapaye. Echo + > se shuru karo."
+   },
+   "tasks": [
+    {
+     "t": "Script banao: echo '#!/bin/bash' > /tmp/profile.sh (phir aur lines >> se add karo)",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "echo.*> /tmp/profile\\.sh"
+      },
+      {
+       "k": "fs",
+       "p": "/tmp/profile.sh",
+       "c": "#!/bin/bash"
+      }
+     ]
+    },
+    {
+     "t": "Processing practice: cat /home/learner/lab/data/dupes.txt | sort | uniq -c | sort -rn",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "uniq -c"
+      }
+     ]
+    },
+    {
+     "t": "head/tail combo: cat /var/log/app.log | head -3",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "head -"
+      }
+     ]
+    }
+   ],
+   "lx": {
+    "hi": "Aap repetitive Linux tasks ko Bash scripts ke through automate kar sakte hain.",
+    "en": "You can automate repetitive Linux operations using reliable Bash scripts."
+   }
+  },
+  {
+   "id": 9,
+   "t": "Python for Linux & Security Automation",
+   "ph": 2,
+   "g": [
+    {
+     "h": "Topics",
+     "i": [
+      [
+       "Python basics",
+       "Indentation-based, dynamically typed. python3 script.py. Bash se zyada structured — complex logic ke liye."
+      ],
+      [
+       "variables",
+       "Dynamic types: x = 5, s = 'hi'. f-strings: f'User {user}'. Naming: snake_case."
+      ],
+      [
+       "functions",
+       "def f(a, b=1): return a+b — defaults, *args, **kwargs. Docstrings likho."
+      ],
+      [
+       "modules",
+       "import os, json, subprocess, requests. Standard library + pip. pip install -r requirements.txt."
+      ],
+      [
+       "exceptions",
+       "try/except/finally — specific exceptions catch karo (except FileNotFoundError). Bare except = debugging death."
+      ],
+      [
+       "files",
+       "open('f') as f: f.read() — context manager (auto close). pathlib.Path modern way."
+      ],
+      [
+       "JSON",
+       "json.load(f), json.dumps(obj, indent=2). API work ka 90% isi se."
+      ],
+      [
+       "regex",
+       "re.findall, re.search, re.sub — patterns se dhundo (emails, IPs, tokens)."
+      ],
+      [
+       "subprocess",
+       "subprocess.run(['ip','addr'], capture_output=True). shell=True avoid karo (injection risk)."
+      ],
+      [
+       "HTTP clients",
+       "requests.get(url) — status, json(), timeouts hamesha set karo. Web automation ka core."
+      ]
+     ]
+    },
+    {
+     "h": "Advanced",
+     "i": [
+      [
+       "sockets",
+       "Raw TCP/UDP: socket.socket(), bind/connect/send/recv. Custom protocols, scanners isi se."
+      ],
+      [
+       "concurrent requests",
+       "concurrent.futures.ThreadPoolExecutor — parallel HTTP without raw threads ka complexity. Rate limit dhyan rakh kar."
+      ],
+      [
+       "structured logging",
+       "logging module: levels (DEBUG..ERROR), formatters, file handlers. Ad-hoc print() se hamesha better."
+      ],
+      [
+       "CLI applications",
+       "argparse/typer — flags, subcommands, auto --help. Professional tooling."
+      ],
+      [
+       "API integration",
+       "Auth (tokens), pagination, retries (exponential backoff), error handling — real APIs isi se handle hote hain."
+      ],
+      [
+       "parsing large datasets",
+       "Chunked/line-by-line reading, generators — 10GB logs bhi process hote hain bina RAM exhaust kiye."
+      ]
+     ]
+    }
+   ],
+   "lab": {
+    "n": "Project — CLI Security Data Analyzer",
+    "d": "Lab logs (duplicates wale) ko clean → normalize → dedupe → report. Pehle Bash pipeline se, phir Python script se same kaam."
+   },
+   "tasks": [
+    {
+     "t": "Data dhundo: cat /home/learner/lab/data/servers.csv",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "cat .*servers\\.csv"
+      }
+     ]
+    },
+    {
+     "t": "Count ERROR lines: grep -c ERROR /var/log/app.log",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "grep -c ERROR /var/log/app\\.log"
+      }
+     ]
+    },
+    {
+     "t": "Normalize: cat /home/learner/lab/recon/raw_output.txt | tr 'A-Z' 'a-z' | sort -u",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "tr 'A-Z' 'a-z'"
+      }
+     ]
+    }
+   ],
+   "lx": {
+    "hi": "Aap Bash ke saath Python ka use karke sophisticated Linux/security automation tools bana sakte hain.",
+    "en": "You can combine Bash and Python to build sophisticated Linux and security automation tools."
+   }
+  },
+  {
+   "id": 10,
+   "t": "Git & Engineering Workflow",
+   "ph": 2,
+   "g": [
+    {
+     "h": "Topics",
+     "i": [
+      [
+       "Git fundamentals",
+       "Version control — snapshots. git init, git status, git add, git commit."
+      ],
+      [
+       "branches",
+       "Cheap pointers to commits. git branch dev, git switch -c feature. Parallel work ka foundation."
+      ],
+      [
+       "commits",
+       "Atomic, descriptive (imperative: 'Add login validation'). Har commit = working state."
+      ],
+      [
+       "diffs",
+       "git diff (unstaged), git diff --staged, git diff HEAD~1. Code review culture isi par."
+      ],
+      [
+       "merges",
+       "git merge — fast-forward ya merge commit. Conflicts manually resolve. Rebase = linear history (team convention follow karo)."
+      ],
+      [
+       "tags",
+       "Release markers: git tag v1.0.0. SemVer: MAJOR.MINOR.PATCH."
+      ],
+      [
+       "remotes",
+       "git remote -v, git push origin main, git pull. GitHub/GitLab connection."
+      ]
+     ]
+    },
+    {
+     "h": "Advanced",
+     "i": [
+      [
+       ".gitignore",
+       "Push NAHI karna: *.log, .env, __pycache__/. Secrets protect karne ka first step."
+      ],
+      [
+       "clean commit history",
+       "WIP commits squash karo, rebase se linear. Future-you ko thank you."
+      ],
+      [
+       "debugging with git",
+       "git bisect — bad commit binary search. git log -p changes trace. git stash current work park karo."
+      ],
+      [
+       "rollback",
+       "git checkout -- file (discard), git revert <sha> (safe inverse commit). Force push se bacho."
+      ],
+      [
+       "collaboration",
+       "Fork/PR flow, code review, conventional commits. Team workflow."
+      ],
+      [
+       "documentation",
+       "README + docs ko code ke saath update karo. Doc drift = project death."
+      ]
+     ]
+    },
+    {
+     "h": "Security",
+     "i": [
+      [
+       "secrets commit NA karna",
+       "API keys/passwords repo mein NAHI. Accidentally push hua? git filter-repo + secret ROTATE karo — history delete se safe nahi hota."
+      ],
+      [
+       "configuration separation",
+       "Code = repo, secrets = env vars / secret manager. .env.example provide karo, .env ignore."
+      ],
+      [
+       "safe credential handling",
+       "CI/CD: encrypted secrets; local: credential helpers, keychain. Hardcoded = compromised."
+      ]
+     ]
+    }
+   ],
+   "lab": {
+    "n": "Workflow Practice",
+    "d": "Apne lab environment ki 'audit trail' banao: .bash_history inspect karo aur interesting commands filter karo."
+   },
+   "tasks": [
+    {
+     "t": "History dekho: history",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "^history$"
+      }
+     ]
+    },
+    {
+     "t": "Audit: grep se .bash_history mein ssh commands dhundo: grep ssh /home/learner/.bash_history",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "grep.*bash_history"
+      }
+     ]
+    },
+    {
+     "t": "Version control mindset: cat /home/learner/.bash_history | wc -l",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "bash_history.*wc|wc.*bash_history"
+      }
+     ]
+    }
+   ],
+   "lx": {
+    "hi": "Aap apne scripts, tools aur projects ko professional software-engineering workflow mein manage kar sakte hain.",
+    "en": "You can manage Linux/security projects using a professional software-engineering workflow."
+   }
+  },
+  {
+   "id": 11,
+   "t": "SSH & Remote Linux",
+   "ph": 2,
+   "g": [
+    {
+     "h": "Topics",
+     "i": [
+      [
+       "SSH architecture",
+       "Client-server encrypted channel (port 22). Key exchange → authentication → encrypted session."
+      ],
+      [
+       "keys",
+       "ssh-keygen -t ed25519 — public (server par) + private (sirf aapke paas). Private key = password, protect karo."
+      ],
+      [
+       "authentication",
+       "Password (weak) → public key (standard) → 2FA (best). sshd_config mein PasswordAuthentication no."
+      ],
+      [
+       "host verification",
+       "Pehli baar server ka fingerprint known_hosts mein save. MITM detect karne ke liye fingerprints compare karo."
+      ],
+      [
+       "SSH configuration",
+       "~/.ssh/config: Host lab / HostName / User / IdentityFile. 100 servers, 1 config file."
+      ],
+      [
+       "port forwarding concepts",
+       "Remote port ko local tunnel: ssh -L 8080:localhost:80 remote → local:8080 = remote's 80."
+      ]
+     ]
+    },
+    {
+     "h": "Advanced",
+     "i": [
+      [
+       "agent",
+       "ssh-agent + ssh-add — private keys memory mein (with passphrase), multiple hops bina re-auth."
+      ],
+      [
+       "ProxyJump",
+       "ProxyJump jump — intermediate host ke through auto tunnel. Bastion flows ke liye."
+      ],
+      [
+       "bastion hosts",
+       "Single entry point internal network mein. Sab traffic yahan se — audit + control point."
+      ],
+      [
+       "tunnels",
+       "Encrypted pipes: -L (local), -R (remote), -D (SOCKS). Insecure services ko tunnel se safe banao."
+      ],
+      [
+       "secure remote administration",
+       "Key-only + 2FA + jump host + hardened sshd. Production level discipline."
+      ]
+     ]
+    }
+   ],
+   "lab": {
+    "n": "Remote Infrastructure Lab",
+    "d": "Client → Jump Host → Lab Server. Lab mein: apna ed25519 keypair generate karo aur key files inspect karo."
+   },
+   "tasks": [
+    {
+     "t": "Key generate karo: ssh-keygen -t ed25519 -f /home/learner/.ssh/id_ed25519 -N ''",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "ssh-keygen"
+      },
+      {
+       "k": "fs",
+       "p": "/home/learner/.ssh/id_ed25519",
+       "c": ""
+      }
+     ]
+    },
+    {
+     "t": "Key pair verify karo: ls -la /home/learner/.ssh/",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "ls -la /home/learner/\\.ssh"
+      }
+     ]
+    },
+    {
+     "t": "Auth logs audit: grep -i accepted /var/log/auth.log",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "grep.*accepted /var/log/auth\\.log"
+      }
+     ]
+    }
+   ],
+   "lx": {
+    "hi": "Aap remote Linux infrastructure ko securely access aur manage kar sakte hain.",
+    "en": "You can securely access and administer remote Linux infrastructure."
+   }
+  },
+  {
+   "id": 12,
+   "t": "Linux Security Architecture",
+   "ph": 3,
+   "g": [
+    {
+     "h": "Topics",
+     "i": [
+      [
+       "authentication",
+       "Kaun ho (identity proof): passwords, keys, 2FA, certificates. fail2ban brute force se bachao."
+      ],
+      [
+       "authorization",
+       "Kya kar sakte ho (access rights): RBAC, permissions, capabilities. Auth ≠ Authz — dono alag."
+      ],
+      [
+       "least privilege",
+       "Sirf utna access jitna zaroori. Services ko specific user se chalao, root scripts se avoid karo."
+      ],
+      [
+       "attack surface",
+       "Har exposed port, service, file, user = attack vector. ss -tlnp se apna surface inventory karo — phir kam karo."
+      ],
+      [
+       "secure defaults",
+       "Off by default, lock by default. Naya service? Pehle harden karo, phir production."
+      ]
+     ]
+    },
+    {
+     "h": "Advanced",
+     "i": [
+      [
+       "capabilities",
+       "Root ke 38 powers ko split — sirf required capability do. capsh --print, setcap."
+      ],
+      [
+       "namespaces",
+       "Isolated views (PID, NET, MNT, UTS...). Containers = namespaces + cgroups."
+      ],
+      [
+       "cgroups",
+       "Resource limits (CPU, memory, IO) per group. systemd-run --scope -p MemoryMax=100M cmd."
+      ],
+      [
+       "seccomp concepts",
+       "Syscall filter — process ko allowed syscalls se ruko. Docker default se use karta hai."
+      ],
+      [
+       "MAC concepts",
+       "Mandatory Access Control — user ki permissions se upar, kernel-level policy. DAC (rwx) se strong."
+      ],
+      [
+       "AppArmor",
+       "Ubuntu ka MAC — profile-based (per-app paths/capabilities). aa-status se dekho."
+      ],
+      [
+       "SELinux fundamentals",
+       "RHEL/Fedora ka MAC — labels + policy. getenforce, ausearch."
+      ]
+     ]
+    }
+   ],
+   "lab": {
+    "n": "Linux Hardening Lab",
+    "d": "Lab host ka attack surface inventory karo: listening services + exposed files. Phir explain karo kaunsi service kis risk ko represent karti hai."
+   },
+   "tasks": [
+    {
+     "t": "Attack surface: ss -tlnp (listening services)",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "^ss.*-tlnp"
+      }
+     ]
+    },
+    {
+     "t": "Exposed secrets dhundo: find /srv -name '.env' -type f",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "find /srv.*\\.env"
+      }
+     ]
+    },
+    {
+     "t": "Users audit: cat /etc/passwd | grep -v nologin",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "cat /etc/passwd"
+      }
+     ]
+    }
+   ],
+   "lx": {
+    "hi": "Aap Linux security ko commands ke bajay security architecture aur defense mechanisms ke perspective se samajhte hain.",
+    "en": "You understand Linux security through architecture, isolation, access control, and defensive mechanisms."
+   }
+  },
+  {
+   "id": 13,
+   "t": "Containers & Linux Isolation",
+   "ph": 3,
+   "g": [
+    {
+     "h": "Topics",
+     "i": [
+      [
+       "containers kya hain?",
+       "Lightweight isolated process environments — same kernel, separate user-space. VM se fast, VM se flexible."
+      ],
+      [
+       "images",
+       "Read-only layered template (filesystem + config). docker pull, docker images."
+      ],
+      [
+       "containers (docker)",
+       "Running instance of image. docker run -it --rm alpine sh."
+      ],
+      [
+       "namespaces/cgroups",
+       "Isolation (namespaces) + limits (cgroups) = container. Bina dono ke sirf 'chhota VM' nahi banta."
+      ],
+      [
+       "container filesystem",
+       "Union FS (layers) — base shared, top writable. docker history image se layers dekho."
+      ],
+      [
+       "docker (images/volumes/networks/env)",
+       "docker build, -v mounts (persistent data), --network (isolation), -e env vars. Core operations."
+      ]
+     ]
+    },
+    {
+     "h": "Advanced",
+     "i": [
+      [
+       "container isolation",
+       "Namespaces (visibility) + cgroups (resources) + seccomp (syscalls) + capabilities (privileges) — 4 lines of defense."
+      ],
+      [
+       "capabilities (docker)",
+       "Root container ≠ full root. --cap-drop=ALL --cap-add=NET_BIND_SERVICE."
+      ],
+      [
+       "root vs rootless",
+       "Rootless = unprivileged user daemon chalata hai — host blast radius kam. Production mein prefer karo."
+      ],
+      [
+       "container security",
+       "Non-root user, read-only fs (--read-only), no --privileged, network policies."
+      ],
+      [
+       "image hygiene",
+       "Small base (alpine/distroless), pinned versions, no secrets in layers, image scanning. Attack surface = image size."
+      ]
+     ]
+    }
+   ],
+   "lab": {
+    "n": "Container Security Lab",
+    "d": "Lab mein 'container-like' process isolation observe karo: ps se processes dekho, /proc se isolation check karo."
+   },
+   "tasks": [
+    {
+     "t": "Running workloads dekho: ps aux | grep -v grep | head -15",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "ps aux"
+      }
+     ]
+    },
+    {
+     "t": "Isolation check: cat /proc/self/cgroup",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "/proc/self/cgroup"
+      }
+     ]
+    },
+    {
+     "t": "Resource limits: ulimit -a",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "^ulimit"
+      }
+     ]
+    }
+   ],
+   "lx": {
+    "hi": "Aap modern Linux environments mein containers aur isolation mechanisms ko samajh sakte hain.",
+    "en": "You understand containers, Linux isolation, and basic container security."
+   }
+  },
+  {
+   "id": 14,
+   "t": "Linux Logging & Digital Forensics",
+   "ph": 3,
+   "g": [
+    {
+     "h": "Topics",
+     "i": [
+      [
+       "system logs",
+       "/var/log/syslog + journal — boots, services, kernel. journalctl -b last boot se."
+      ],
+      [
+       "authentication logs",
+       "/var/log/auth.log — logins, sudo, failures. grep 'Failed password' auth.log | sort | uniq -c = brute force detect."
+      ],
+      [
+       "application logs",
+       "App ke apne logs (access.log, app.log). Standard format: timestamp + level + message."
+      ],
+      [
+       "timestamps",
+       "UTC vs local — timezone bugs forensic timeline todte hain. date -u, timedatectl."
+      ],
+      [
+       "log rotation",
+       "Purane logs compress/archive (logrotate) — disk full + missing evidence dono se bachao."
+      ]
+     ]
+    },
+    {
+     "h": "Advanced",
+     "i": [
+      [
+       "event correlation",
+       "Multiple logs ko timeline pe jodho: auth + app + network = full picture. awk se timestamp sort."
+      ],
+      [
+       "process timeline",
+       "Kaunsa process kab chala: journal + /proc + history. journalctl _COMM=python."
+      ],
+      [
+       "network evidence",
+       "conntrack, DNS queries, pcap — external activity ka proof. tcpdump -w se capture, baad mein analyze."
+      ],
+      [
+       "filesystem metadata",
+       "atime/mtime/ctime — file kab chhui/modified. stat, find -newer — timeline building."
+      ],
+      [
+       "suspicious activity indicators",
+       "New SUID binary, unknown cron, unusual port, off-hours root login, log deletion attempts. Baseline se deviation dhundo."
+      ]
+     ]
+    },
+    {
+     "h": "Tools",
+     "i": [
+      [
+       "journalctl/grep/awk/sed",
+       "Forensic pipeline: collect (journalctl/find) → filter (grep) → transform (awk/sed)."
+      ],
+      [
+       "find/stat",
+       "Files dhundo + metadata (timestamps, owner, size)."
+      ],
+      [
+       "lsof",
+       "Kaun kya hold kar raha — open files/ports/processes."
+      ]
+     ]
+    }
+   ],
+   "lab": {
+    "n": "Capstone — Incident Investigation",
+    "d": "Lab host compromised hai: auth.log mein brute force + access.log mein probing. Timeline banao: kab attack, kya target, kis se, success hua ya nahi."
+   },
+   "tasks": [
+    {
+     "t": "Brute force dhundo: grep -c 'Failed password' /var/log/auth.log",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "grep.*Failed password.*auth\\.log"
+      }
+     ]
+    },
+    {
+     "t": "Attacker IP dhundo: grep 'Failed' /var/log/auth.log | awk '{print $(NF-3)}' | sort -u",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "awk.*\\{print"
+      }
+     ]
+    },
+    {
+     "t": "Web probing: cat /var/log/nginx/access.log | grep -E '403|404'",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "access\\.log.*(403|404)"
+      }
+     ]
+    },
+    {
+     "t": "Timeline: head -5 /var/log/auth.log (timestamps compare karo)",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "(head|tail).*auth\\.log"
+      }
+     ]
+    }
+   ],
+   "lx": {
+    "hi": "Aap Linux system mein hone wali activity ko logs aur artifacts se investigate kar sakte hain.",
+    "en": "You can investigate Linux activity using logs, process information, filesystem artifacts, and timelines."
+   }
+  },
+  {
+   "id": 15,
+   "t": "Bug Hunter Linux Workflow",
+   "ph": 3,
+   "g": [
+    {
+     "h": "Workflow",
+     "i": [
+      [
+       "Scope",
+       "In-scope assets ki written list — domain, IPs, endpoints, time window. Bina scope ke koi step illegal."
+      ],
+      [
+       "Environment",
+       "Apna lab: proxies, notes, data dirs, tool configs. Reproducible workspace = professional."
+      ],
+      [
+       "Asset Information",
+       "Subdomains, IPs, services, tech stack ka inventory. Structured data banta hai."
+      ],
+      [
+       "DNS",
+       "Subdomain enumeration, records (A, CNAME, TXT), old/unused assets dhundo — naya attack surface."
+      ],
+      [
+       "HTTP",
+       "Headers, cookies, methods, redirects, status patterns. curl -sI batch mein — misconfigs surface hote hain."
+      ],
+      [
+       "Data Processing",
+       "Raw → normalize (lowercase, sort, dedupe) → structure (CSV/JSON). Unstructured data = no findings."
+      ],
+      [
+       "Manual Verification",
+       "Auto-flag ko manually confirm — false positives kam karo. Har finding reproduce karo."
+      ],
+      [
+       "Evidence",
+       "Screenshots + raw HTTP + timestamps + commands used. Evidence = proof of impact."
+      ],
+      [
+       "Report",
+       "Title, severity, steps, impact, recommendation, evidence. Clear report = patched + paid."
+      ]
+     ]
+    },
+    {
+     "h": "Learner Ko Sikhaya Jayega",
+     "i": [
+      [
+       "scope reading",
+       "Program scope ka legal document hai. 'api.example.com' vs '*.example.com' — difference huge. Pehla step hamesha scope."
+      ],
+      [
+       "authorization",
+       "Written permission (bug bounty program, contract). Red Line ke bina koi tool nahi."
+      ],
+      [
+       "asset organization",
+       "Subdomains/assets categories mein: web, API, mobile, deprecated. Spreadsheet/DB maintain karo."
+      ],
+      [
+       "terminal workflow",
+       "Commands consistent (aliases, scripts) — har run reproducible. history = audit trail."
+      ],
+      [
+       "data normalization",
+       "Lowercase, trim, scheme add — duplicates detect hon. tr '[:upper:]' '[:lower:]' | sort -u."
+      ],
+      [
+       "deduplication",
+       "sort | uniq, awk '!seen[$0]++'. 10k raw → 1k unique. Time saver + cleaner report."
+      ],
+      [
+       "evidence collection",
+       "Har step ka output save: curl -s -i url > evidence/001.txt. Timestamp + context note."
+      ],
+      [
+       "reproducibility",
+       "3rd person aapke steps se same result de — commands + order + environment documented. Science, not magic."
+      ],
+      [
+       "responsible reporting",
+       "Private disclosure, no public disclosure before fix, no data exfiltration. Trust = career."
+      ]
+     ]
+    }
+   ],
+   "lab": {
+    "n": "Scope + Safe Practice",
+    "d": "Practice target sirf lab.local (local/authorized). Raw recon output ko normalize + dedupe karke clean report banao."
+   },
+   "tasks": [
+    {
+     "t": "Normalize + dedupe: cat /home/learner/lab/recon/raw_output.txt | tr 'A-Z' 'a-z' | sort -u > /tmp/clean.txt",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "tr 'A-Z' 'a-z'"
+      },
+      {
+       "k": "fs",
+       "p": "/tmp/clean.txt",
+       "c": "web-01.lab.local"
+      }
+     ]
+    },
+    {
+     "t": "Count unique assets: wc -l /tmp/clean.txt",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "wc -l /tmp/clean\\.txt"
+      }
+     ]
+    }
+   ],
+   "lx": {
+    "hi": "Aap authorized bug-hunting workflow mein Linux ko scope se report tak systematic tareeke se use kar sakte hain.",
+    "en": "You can use Linux systematically in an authorized bug-hunting workflow — from scope reading to professional reporting."
+   }
+  },
+  {
+   "id": 16,
+   "t": "Advanced Recon Automation",
+   "ph": 3,
+   "g": [
+    {
+     "h": "Topics",
+     "i": [
+      [
+       "pipeline architecture",
+       "Stages: input → validate → collect → normalize → dedupe → analyze → verify → report. Har stage isolated + testable."
+      ],
+      [
+       "input validation",
+       "Target list format check (domains? URLs?) — invalid reject + log. Garbage in = garbage out."
+      ],
+      [
+       "output normalization",
+       "Format standardize: lowercase, trim, scheme add. Har stage same shape = simple integration."
+      ],
+      [
+       "parallelization",
+       "xargs -P / Python threads — bade lists fast. Rate limits + error handling ke saath, warna self-DoS."
+      ],
+      [
+       "retries",
+       "Transient failures par backoff: 1s, 2s, 4s... for i in 1 2 3; do cmd && break; sleep 2; done."
+      ],
+      [
+       "rate limiting",
+       "Requests per second control — target ko mat todo, logs mein mat ghoomo. sleep 0.1 per request."
+      ],
+      [
+       "error handling",
+       "Har stage ka exit code check, failures log + report. Pipeline crash ≠ silent skip."
+      ],
+      [
+       "structured output",
+       "CSV/JSON/JSONL — human + machine readable. Downstream analysis isi par depend karta hai."
+      ]
+     ]
+    }
+   ],
+   "lab": {
+    "n": "Authorized Recon Pipeline",
+    "d": "Input (raw_output.txt) → Validation → Normalization → Deduplication → Report (/tmp/report.txt). Crash gracefully + reproducible output."
+   },
+   "tasks": [
+    {
+     "t": "Validation: raw file check — head -3 /home/learner/lab/recon/raw_output.txt",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "head -3 /home/learner/lab/recon/raw_output"
+      }
+     ]
+    },
+    {
+     "t": "Normalize + dedupe + count: ... | sort -u | tee /tmp/report.txt | wc -l",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "sort -u.*report|report.*sort -u"
+      },
+      {
+       "k": "fs",
+       "p": "/tmp/report.txt",
+       "c": "web-01.lab.local"
+      }
+     ]
+    },
+    {
+     "t": "Structured output verify karo: cat /tmp/report.txt",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "cat /tmp/report\\.txt"
+      }
+     ]
+    }
+   ],
+   "lx": {
+    "hi": "Aap security workflows ko reliable automation pipelines mein convert kar sakte hain.",
+    "en": "You can transform repetitive security workflows into reliable, maintainable automation pipelines."
+   }
+  },
+  {
+   "id": 17,
+   "t": "Linux Debugging Mastery",
+   "ph": 3,
+   "g": [
+    {
+     "h": "Problems",
+     "i": [
+      [
+       "application crash",
+       "Logs (journalctl), core dumps, strace — kaunsi syscall fail hui. dmesg | tail se OOM killer check."
+      ],
+      [
+       "permission error",
+       "EACCES/EPERM — ownership, mode, capabilities, SELinux/AppArmor. stat file, getenforce, audit logs."
+      ],
+      [
+       "network failure",
+       "Layer by layer: interface → IP → route → DNS → port → service. ip, ip route, dig — har layer test."
+      ],
+      [
+       "service failure",
+       "systemctl status → journalctl -u → config → dependencies. 90% config ya resource issue."
+      ],
+      [
+       "high CPU",
+       "top -P → kaunsa process → strace -c syscalls → code level. Thread vs process distinguish karo."
+      ],
+      [
+       "memory issue",
+       "free -h, ps aux --sort=-%mem | head — leak? OOM? dmesg | grep -i oom."
+      ],
+      [
+       "disk full",
+       "df -h kaunsa fs → du -sh top dirs → deleted-but-open files (lsof +L1) → logs rotate."
+      ],
+      [
+       "process stuck",
+       "State D? Zombie? ps -o stat,cmd -p pid → strace -p kya kar raha → open FDs (lsof)."
+      ]
+     ]
+    },
+    {
+     "h": "Debugging Tools",
+     "i": [
+      [
+       "strace",
+       "Syscalls live trace — permission/network crashes ki root cause. -e filter, -c summary."
+      ],
+      [
+       "lsof",
+       "Open files/ports — 'kaun kya lock kar raha'. lsof -i :PORT, lsof +L1 deleted files."
+      ],
+      [
+       "ss",
+       "Socket states — connection leaks, TIME_WAIT storm. ss -tan state time-wait | wc -l."
+      ],
+      [
+       "journalctl",
+       "Service logs timeline — -u unit -S since. Failure ke exact time ka context."
+      ],
+      [
+       "dmesg",
+       "Kernel ring buffer — hardware, OOM, I/O errors. dmesg -T timestamps ke saath."
+      ],
+      [
+       "ps/top",
+       "Process state, CPU, mem — first step of almost every problem."
+      ],
+      [
+       "gdb",
+       "Crash post-mortem: core file load, backtrace, variables. gdb ./app core.1234 → bt."
+      ]
+     ]
+    },
+    {
+     "h": "Methodology",
+     "i": [
+      [
+       "Symptom",
+       "Kya galat hai — user report/error message se shuru."
+      ],
+      [
+       "Evidence",
+       "Logs, state, metrics collect karo — guess mat karo."
+      ],
+      [
+       "Hypothesis",
+       "Evidence se 1-2 possible causes."
+      ],
+      [
+       "Experiment",
+       "Controlled test se hypothesis verify/reject karo."
+      ],
+      [
+       "Root Cause",
+       "Asli wajah — surface symptom nahi."
+      ],
+      [
+       "Fix",
+       "Minimal, targeted fix."
+      ],
+      [
+       "Regression Test",
+       "Dobara na ho — test case add karo."
+      ]
+     ]
+    }
+   ],
+   "lab": {
+    "n": "Debugging Simulation",
+    "d": "Lab host mein: OOM kill hua hai (sys.log), memory 87% (app.log), disk pressure. Systematically root cause pahuncho — evidence se, guess se nahi."
+   },
+   "tasks": [
+    {
+     "t": "Evidence 1: dmesg (lab snapshot — OOM line dhundo)",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "^dmesg"
+      }
+     ]
+    },
+    {
+     "t": "Evidence 2: grep -i oom /var/log/sys.log",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "grep.*oom /var/log/sys\\.log"
+      }
+     ]
+    },
+    {
+     "t": "CPU/MEM top offenders: ps aux --sort=-%cpu | head -5",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "ps aux.*sort"
+      }
+     ]
+    },
+    {
+     "t": "Disk: du -sh /var/log/*",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "du -sh /var/log"
+      }
+     ]
+    }
+   ],
+   "lx": {
+    "hi": "Aap \"command yaad\" karne ke bajay system behavior ko observe karke unknown problems solve kar sakte hain.",
+    "en": "You can solve unfamiliar Linux problems through evidence-driven debugging rather than memorizing commands."
+   }
+  },
+  {
+   "id": 18,
+   "t": "Advanced Linux Internals",
+   "ph": 3,
+   "g": [
+    {
+     "h": "Topics",
+     "i": [
+      [
+       "system calls",
+       "User↔kernel ka sirf interface. strace -c frequency dekho. Kaunsa syscall slow/failed — performance + security dono."
+      ],
+      [
+       "virtual memory concepts",
+       "Har process ko apna 48-bit address space — kernel pages ko physical RAM se map karta hai. Isolation + overcommit."
+      ],
+      [
+       "process memory",
+       "Text (code), data, heap, stack, mmap regions. cat /proc/self/maps layout dekho. Leaks yahan milte hain."
+      ],
+      [
+       "file descriptors",
+       "Open resources ka handle table — files, pipes, sockets. Limits: ulimit -n. Leak = FD exhaustion."
+      ],
+      [
+       "sockets",
+       "Network endpoints — kernel ka socket layer. ss -p kaunsa process. Buffer sizes, states — tuning."
+      ],
+      [
+       "signals",
+       "Async events — kill, pause, segfault. kill -l list. trap (bash) / signal handlers (C)."
+      ],
+      [
+       "scheduling",
+       "CFS — fair time slices. Priority (nice), CPUQuota=. Latency-sensitive apps ke liye critical."
+      ]
+     ]
+    },
+    {
+     "h": "Advanced Tools",
+     "i": [
+      [
+       "strace/ltrace/gdb",
+       "Syscalls (strace) + library calls (ltrace) + code level (gdb) — 3 layers of debug visibility."
+      ],
+      [
+       "readelf",
+       "ELF structure: headers, sections, symbols, dynamic entries. readelf -d lib dependencies."
+      ],
+      [
+       "objdump",
+       "Disassembly + sections. objdump -d machine code. Vulnerability research mein."
+      ],
+      [
+       "nm",
+       "Symbols list (defined/undefined). nm -D lib.so — exported functions."
+      ],
+      [
+       "strings",
+       "Printable text binary se — hardcoded paths, URLs, versions. strings /usr/bin/ls | grep -i key."
+      ]
+     ]
+    },
+    {
+     "h": "Concepts",
+     "i": [
+      [
+       "ELF binaries",
+       "Linux executable format — headers + sections (.text, .data, .dynamic). file se type, readelf se detail."
+      ],
+      [
+       "dynamic linking",
+       "Binary runtime mein libraries load karta hai. ldd /bin/ls — kaunsi libs."
+      ],
+      [
+       "shared libraries",
+       ".so files — memory sharing + updates. Versioning (libc.so.6). ld.so.preload = injection vector."
+      ],
+      [
+       "loader",
+       "ld-linux.so — process start pe libraries find + map karta hai. LD_PRELOAD = powerful + dangerous."
+      ],
+      [
+       "symbols",
+       "Function/variable names — debugging + linking ke liye. Strip ho to symbols gayab → gdb mushkil."
+      ],
+      [
+       "debugging concepts",
+       "Evidence-driven: reproduce → isolate → bisect → fix. Guesswork nahi, observation."
+      ]
+     ]
+    }
+   ],
+   "lab": {
+    "n": "Binary Investigation",
+    "d": "Binary blindly execute NAHI karo — pehle inspect karo: file type, strings, metadata. Lab: /bin aur /usr/bin ke binaries inspect karo."
+   },
+   "tasks": [
+    {
+     "t": "File type: file /usr/bin/ls",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "^file /usr/bin"
+      }
+     ]
+    },
+    {
+     "t": "Strings recon: strings /usr/bin/ls | head -20",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "strings /usr/bin"
+      }
+     ]
+    },
+    {
+     "t": "Memory layout: cat /proc/self/maps | head -10",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "/proc/self/maps"
+      }
+     ]
+    }
+   ],
+   "lx": {
+    "hi": "Aap Linux applications aur binaries ke operating-system level behavior ko samajhne ki foundation develop karte hain.",
+    "en": "You develop a foundation for understanding how Linux applications and binaries interact with the operating system."
+   }
+  },
+  {
+   "id": 19,
+   "t": "Secure Coding & Shell Safety",
+   "ph": 3,
+   "g": [
+    {
+     "h": "Topics",
+     "i": [
+      [
+       "unsafe input handling",
+       "User input ko bina validate/escape ke use karna — eval ke saath input = code execution. Input = data, hamesha."
+      ],
+      [
+       "quoting (security)",
+       "Unquoted vars = word splitting + globbing. rm $path (jaise path mein ; ho) vs rm \"$path\". Quoting = injection ke against."
+      ],
+      [
+       "command injection",
+       "Input shell command ka hissa ban jaaye: ping $user_input → ping; rm -rf ~. Mitigation: whitelist, no shell=True, escaping."
+      ],
+      [
+       "path handling",
+       "../ traversal, symlink attacks. realpath -e, base dir se resolve. Upload/download paths validate karo."
+      ],
+      [
+       "temp files (security)",
+       "Predictable /tmp/name = symlink race. mktemp hamesha, mktemp -d dirs ke liye. sticky bit + permissions."
+      ],
+      [
+       "permissions (security)",
+       "Scripts 644, dirs 755 — world-writable? Audit: find /home -perm -o+w 2>/dev/null."
+      ],
+      [
+       "secret management",
+       "Env vars from secret files (600) ya secret managers. Git mein hardcode = compromised. Exposure par rotate."
+      ],
+      [
+       "Bash security",
+       "set -euo pipefail, umask 077 scripts mein, no eval on input. Defense in depth in your scripts."
+      ]
+     ]
+    }
+   ],
+   "lab": {
+    "n": "Secure Script Review",
+    "d": "Lab host ko audit karo: world-writable files, hidden sensitive files, insecure patterns dhundo — jaise ek real reviewer karta."
+   },
+   "tasks": [
+    {
+     "t": "World-writable audit: find /home -type f -perm -o+w",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "find /home.*-o\\+w"
+      }
+     ]
+    },
+    {
+     "t": "Secrets dhundo: find /srv -name '.env'",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "find /srv.*\\.env"
+      }
+     ]
+    },
+    {
+     "t": "Insecure file check: stat /home/learner/lab/permfile.txt (ab 640 hona chahiye)",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "stat.*permfile"
+      }
+     ]
+    }
+   ],
+   "lx": {
+    "hi": "Aap Linux scripts ko sirf likhna nahi, balki securely review aur improve karna seekhte hain.",
+    "en": "You can review, identify weaknesses in, and securely improve Linux automation scripts."
+   }
+  },
+  {
+   "id": 20,
+   "t": "Final Bug Hunter Operating System",
+   "ph": 3,
+   "g": [
+    {
+     "h": "Mission",
+     "i": [
+      [
+       "Isolated, authorized enterprise-style lab",
+       "Lab host (lab-01) = aapka enterprise-style environment. Sab kya? Bas authorized + isolated."
+      ]
+     ]
+    },
+    {
+     "h": "Environment",
+     "i": [
+      [
+       "multiple Linux servers",
+       "Lab network: 10.8.0.0/24 (servers.csv mein inventory)."
+      ],
+      [
+       "web application",
+       "lab.local service (port 80 + 8080)."
+      ],
+      [
+       "DNS",
+       "lab.local → 10.8.0.5 (dig se verify)."
+      ],
+      [
+       "logs",
+       "/var/log — sys, auth, app, nginx access."
+      ],
+      [
+       "users",
+       "/etc/passwd — root, learner, nobody."
+      ],
+      [
+       "services",
+       "sshd (22), nginx (80), lab-service (8080) — ss -tlnp."
+      ],
+      [
+       "APIs",
+       "/api/users — JSON endpoint."
+      ],
+      [
+       "intentionally vulnerable components",
+       "permfile (666), exposed .env, brute-force attempts in logs."
+      ]
+     ]
+    },
+    {
+     "h": "Learner Independently",
+     "i": [
+      [
+       "Linux environment understand karna",
+       "uname, who, cat /etc/os-release — baseline banao."
+      ],
+      [
+       "network topology samajhni",
+       "ip a, ip r, ip neigh, dig — kaun kiske saath baat karta hai."
+      ],
+      [
+       "services inventory karna",
+       "ss -tlnp + ps aux — attack surface ka map."
+      ],
+      [
+       "HTTP behavior analyze karna",
+       "curl -i key routes par — misconfigs surface hote hain."
+      ],
+      [
+       "logs investigate karna",
+       "auth.log, access.log — suspicious patterns + timeline."
+      ],
+      [
+       "data process karna",
+       "awk/grep/jq → structured CSV/JSON."
+      ],
+      [
+       "automation scripts likhni",
+       "Profile collector, log filter, report generator."
+      ],
+      [
+       "security findings identify karna",
+       "Weak perms, exposed secrets, brute force — checklist + evidence."
+      ],
+      [
+       "findings safely reproduce karna",
+       "Controlled tarike se dobara — proof ke liye, side effects zero."
+      ],
+      [
+       "evidence collect karna",
+       "Commands + outputs + timestamps. Organized: findings/001-perms/."
+      ],
+      [
+       "impact explain karna",
+       "Kyoon important: data exposure? privilege escalation? Business terms mein."
+      ],
+      [
+       "professional report banana",
+       "Title, severity, summary, steps, evidence, impact, recommendation."
+      ],
+      [
+       "remediation suggest karni",
+       "Har finding ke saath fix: command/config + verification."
+      ]
+     ]
+    }
+   ],
+   "lab": {
+    "n": "Final Capstone",
+    "d": "Poora environment independently handle karo: profile → inventory → investigate → findings → report. Neeche ke 3 tasks minimum bar."
+   },
+   "tasks": [
+    {
+     "t": "Full profile: uname -a > /tmp/capstone.txt",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "uname -a > /tmp/capstone"
+      },
+      {
+       "k": "fs",
+       "p": "/tmp/capstone.txt",
+       "c": "Linux"
+      }
+     ]
+    },
+    {
+     "t": "Inventory add karo: ss -tlnp >> /tmp/capstone.txt",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "ss.*tlnp.*>>"
+      }
+     ]
+    },
+    {
+     "t": "Findings: exposed .env + brute force confirm karo (cat /srv/lab/.env, grep -c 'Failed' /var/log/auth.log)",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "cat /srv/lab/\\.env"
+      },
+      {
+       "k": "cmd",
+       "re": "grep -c 'Failed' /var/log/auth\\.log"
+      }
+     ]
+    }
+   ],
+   "lx": {
+    "hi": "Aap ek complete authorized enterprise-style Linux environment ko independently operate, investigate aur report kar sakte hain.",
+    "en": "You can independently operate, investigate, and report on a complete authorized enterprise-style Linux environment."
+   },
+   "eval": [
+    [
+     "Linux fundamentals",
+     "10%"
+    ],
+    [
+     "Filesystem & permissions",
+     "10%"
+    ],
+    [
+     "Processes & services",
+     "10%"
+    ],
+    [
+     "Networking",
+     "15%"
+    ],
+    [
+     "Bash / Python",
+     "15%"
+    ],
+    [
+     "Linux security",
+     "10%"
+    ],
+    [
+     "Debugging",
+     "10%"
+    ],
+    [
+     "Automation",
+     "10%"
+    ],
+    [
+     "Security lab",
+     "5%"
+    ],
+    [
+     "Professional report",
+     "5%"
+    ],
+    [
+     "Total",
+     "100%"
+    ]
+   ]
+  },
+  {
+   "id": 21,
+   "t": "HOST-READY: Linux Command & Concept Mastery",
+   "ph": 3,
+   "g": [
+    {
+     "h": "Goal",
+     "i": [
+      [
+       "Hindi",
+       "Is level ke baad learner ko Linux ki important command families, concepts aur workflows par practical mastery honi chahiye — kisi unfamiliar Linux host par documentation aur logical troubleshooting ke through independently kaam kar sake."
+      ],
+      [
+       "English",
+       "By the end of this level, the learner should have practical mastery of essential Linux command families, concepts, and workflows, and should be able to work independently on an unfamiliar Linux host using documentation and systematic troubleshooting."
+      ]
+     ]
+    }
+   ],
+   "tasks": [
+    {
+     "t": "Host-Ready: system profile banao — uname -a > /tmp/profile.txt && ip addr >> /tmp/profile.txt && ss -tlnp >> /tmp/profile.txt",
+     "checks": [
+      {
+       "k": "fs",
+       "p": "/tmp/profile.txt",
+       "c": "inet"
+      }
+     ]
+    },
+    {
+     "t": "Documentation mastery: man find (ya man grep) padho",
+     "checks": [
+      {
+       "k": "cmd",
+       "re": "^man (find|grep|ls|cat)"
+      }
+     ]
+    }
+   ],
+   "sub": true,
+   "subs": [
+    {
+     "id": "21.1",
+     "t": "Command Mastery Map",
+     "note": "Har command ke liye 6 cheezein master karo: What? (kya karta hai) · Why? (kab use) · Syntax · Options (kaise discover kare) · Combine (kaunse saath) · Troubleshoot (fail ho to kya).",
+     "six": [
+      "What?",
+      "Why?",
+      "Syntax",
+      "Options",
+      "Combine",
+      "Troubleshoot"
+     ]
+    },
+    {
+     "id": "21.2",
+     "t": "Navigation & Files",
+     "c": [
+      "pwd",
+      "ls",
+      "cd",
+      "tree",
+      "find",
+      "locate",
+      "file",
+      "stat",
+      "touch",
+      "mkdir",
+      "cp",
+      "mv",
+      "rm",
+      "ln",
+      "readlink",
+      "basename",
+      "dirname",
+      "realpath"
+     ],
+     "note": "Test: unknown directory structure — files locate, type identify, metadata inspect, links understand, move/copy, structure analyze. No GUI."
+    },
+    {
+     "id": "21.3",
+     "t": "Reading & Text Processing",
+     "c": [
+      "cat",
+      "less",
+      "more",
+      "head",
+      "tail",
+      "wc",
+      "sort",
+      "uniq",
+      "cut",
+      "tr",
+      "grep",
+      "sed",
+      "awk",
+      "xargs",
+      "tee"
+     ],
+     "note": "Test: large text/log file — Search → Filter → Extract → Transform → Sort → Deduplicate → Summarize."
+    },
+    {
+     "id": "21.4",
+     "t": "Input / Output & Pipes",
+     "c": [
+      ">",
+      ">>",
+      "<",
+      "2>",
+      "2>>",
+      "2>&1",
+      "|",
+      "tee"
+     ],
+     "note": "Concepts: stdin, stdout, stderr, file descriptors, pipelines, exit codes. Challenge: ek multi-stage command pipeline khud design karo."
+    },
+    {
+     "id": "21.5",
+     "t": "Users & Permissions",
+     "c": [
+      "whoami",
+      "id",
+      "who",
+      "w",
+      "groups",
+      "passwd",
+      "sudo",
+      "su",
+      "chmod",
+      "chown",
+      "chgrp",
+      "umask",
+      "getfacl",
+      "setfacl"
+     ],
+     "note": "Advanced: UID · GID · SUID · SGID · sticky bit · ACL · capabilities. Test: permission-denied scenario — guessing ke bina exactly KYUN denied hai determine karo."
+    },
+    {
+     "id": "21.6",
+     "t": "Processes",
+     "c": [
+      "ps",
+      "top",
+      "htop",
+      "pgrep",
+      "pkill",
+      "kill",
+      "killall",
+      "jobs",
+      "bg",
+      "fg",
+      "nohup",
+      "nice",
+      "renice"
+     ],
+     "note": "Advanced: lsof · fuser · strace. Process identify → parent-child → resource usage → open files → network correlate → troubleshoot."
+    },
+    {
+     "id": "21.7",
+     "t": "System Information",
+     "c": [
+      "uname",
+      "hostname",
+      "hostnamectl",
+      "uptime",
+      "date",
+      "arch",
+      "lscpu",
+      "free",
+      "df",
+      "du"
+     ],
+     "note": "Goal: ek fresh Linux host ka complete system profile generate karo."
+    },
+    {
+     "id": "21.8",
+     "t": "Services & Boot",
+     "c": [
+      "systemctl",
+      "systemd-analyze",
+      "journalctl",
+      "service"
+     ],
+     "note": "Status · start/stop/restart · enable/disable · logs · dependencies · failed services · boot analysis. Challenge: 'Service is down.' No instructions — root cause find karke recovery karo."
+    },
+    {
+     "id": "21.9",
+     "t": "Networking",
+     "c": [
+      "ip",
+      "ss",
+      "ping",
+      "traceroute",
+      "dig",
+      "host",
+      "curl",
+      "wget",
+      "tcpdump"
+     ],
+     "note": "Concepts: IP · subnet · gateway · routing · DNS · TCP/UDP · ports · sockets · interfaces · HTTP. Host-Ready Test: broken network — Interface → IP → Route → DNS → Port → Service → Application."
+    },
+    {
+     "id": "21.10",
+     "t": "Package Management",
+     "c": [
+      "apt",
+      "apt-cache",
+      "dpkg",
+      "dnf",
+      "rpm"
+     ],
+     "note": "Install · remove · update · search · package information · dependency troubleshooting · installed files identify karna. (Debian/Ubuntu + Fedora/RHEL)"
+    },
+    {
+     "id": "21.11",
+     "t": "Storage",
+     "c": [
+      "df",
+      "du",
+      "lsblk",
+      "blkid",
+      "mount",
+      "umount",
+      "findmnt"
+     ],
+     "note": "Concepts: partitions · filesystems · mount points · disk usage · inode usage. Challenge: 'Server disk full hai.' Root cause identify karo."
+    },
+    {
+     "id": "21.12",
+     "t": "Archives & Compression",
+     "c": [
+      "tar",
+      "gzip",
+      "gunzip",
+      "zip",
+      "unzip",
+      "xz"
+     ],
+     "note": "Archive create · extract · inspect · compression/decompression · safe handling of paths."
+    },
+    {
+     "id": "21.13",
+     "t": "Search & Investigation",
+     "c": [
+      "find",
+      "grep",
+      "locate",
+      "which",
+      "whereis",
+      "type",
+      "command"
+     ],
+     "note": "Test: 'Is machine par X kaha hai?' — appropriate search strategy khud select karo."
+    },
+    {
+     "id": "21.14",
+     "t": "Environment & Shell",
+     "c": [
+      "env",
+      "printenv",
+      "export",
+      "unset",
+      "source",
+      "alias",
+      "unalias",
+      "type",
+      "command"
+     ],
+     "note": "Master: $PATH · environment variables · shell configuration · aliases · functions · startup files."
+    },
+    {
+     "id": "21.15",
+     "t": "Bash Mastery",
+     "c": [
+      "variables",
+      "conditions",
+      "loops",
+      "functions",
+      "arrays",
+      "arguments",
+      "exit codes",
+      "case",
+      "getopts",
+      "trap"
+     ],
+     "note": "Aur samjho: $? · $1 · $@ · $# · $$ · $!  Final Challenge: ek useful Linux administration/investigation utility from scratch banao."
+    },
+    {
+     "id": "21.16",
+     "t": "Git",
+     "c": [
+      "git init",
+      "git clone",
+      "git status",
+      "git add",
+      "git commit",
+      "git log",
+      "git diff",
+      "git branch",
+      "git switch",
+      "git merge",
+      "git stash",
+      "git restore"
+     ],
+     "note": "Apne scripts aur projects Git ke through professionally maintain karo."
+    },
+    {
+     "id": "21.17",
+     "t": "SSH",
+     "c": [
+      "ssh",
+      "ssh-keygen",
+      "ssh-add",
+      "scp",
+      "sftp"
+     ],
+     "note": "Key authentication · host verification · SSH config · agent · remote commands · secure file transfer · jump hosts."
+    },
+    {
+     "id": "21.18",
+     "t": "Logs & Monitoring",
+     "c": [
+      "journalctl",
+      "dmesg",
+      "tail",
+      "grep",
+      "less",
+      "watch"
+     ],
+     "note": "Event → Timestamp → Process → User · Service → Network → Root Cause correlate karo."
+    },
+    {
+     "id": "21.19",
+     "t": "Security Utilities & Concepts",
+     "c": [
+      "ss",
+      "lsof",
+      "find",
+      "ps",
+      "journalctl",
+      "systemctl",
+      "chmod",
+      "chown",
+      "sudo"
+     ],
+     "note": "Concepts: least privilege · attack surface · exposed services · insecure permissions · secrets · authentication · authorization · logging · hardening."
+    },
+    {
+     "id": "21.20",
+     "t": "Binary & Application Investigation",
+     "c": [
+      "file",
+      "strings",
+      "ldd",
+      "readelf",
+      "objdump",
+      "nm",
+      "strace",
+      "ltrace"
+     ],
+     "note": "Binary ko blindly execute karne ke bajay uske basic structure aur behavior ko safely inspect karo."
+    },
+    {
+     "id": "21.21",
+     "t": "Containers",
+     "c": [
+      "images",
+      "containers",
+      "volumes",
+      "networks",
+      "environment",
+      "isolation"
+     ],
+     "note": "Linux concepts: namespaces · cgroups · capabilities · root/rootless · filesystem isolation."
+    },
+    {
+     "id": "21.22",
+     "t": "Documentation Mastery",
+     "c": [
+      "man command",
+      "command --help",
+      "info command",
+      "apropos keyword"
+     ],
+     "note": "Golden Rule: Unknown command ≠ blocked. Unknown command ka matlab = 'Now investigate the documentation.'"
+    },
+    {
+     "id": "21.23",
+     "t": "Command Chaining Mastery",
+     "note": "Final challenge mein individual commands nahi, workflow design karo: Collect → Filter → Transform → Sort → Deduplicate → Analyze → Report. Isse Linux ka Unix philosophy practically samajh aayega."
+    },
+    {
+     "id": "21.24",
+     "t": "Host-Ready Simulation",
+     "note": "Missions: 1. Identify (whoami/uname/arch/hostname) · 2. Understand (fs/users/permissions/processes/services) · 3. Network (interfaces/IP/routes/DNS/listening/HTTP) · 4. Diagnose (random failures) · 5. Automate (Bash/Python utility) · 6. Investigate (authorized lab) · 7. Report (Problem→Evidence→Analysis→Root Cause→Fix→Verification→Recommendation). No predefined tutorial."
+    }
+   ],
+   "done": {
+    "hi": "Command families confidently use karte hain · Unknown commands documentation se khud seekhte hain · Filesystem, users, processes, networking, logs, storage diagnose karte hain · Bash + Python se automate karte hain · SSH se remote manage karte hain · Security misconfigurations identify karte hain · Containers + isolation samajhte hain · Unknown host independently explore karte hain · Bug-hunting ke authorized workflows mein Linux effectively use karte hain.",
+    "en": "Confidently use essential command families · Learn unfamiliar commands through documentation · Investigate filesystem · Diagnose users/permissions · Troubleshoot processes & services · Isolate networking problems · Analyze logs · Automate with Bash · Build tooling with Python · Manage remote systems via SSH · Fix storage/package issues · Identify misconfigurations · Understand containers · Explore unfamiliar hosts independently · Apply Linux in authorized bug-hunting workflows."
+   }
+  }
+ ],
+ "hub": {
+  "levels": [
+   {
+    "id": 22,
+    "t": "Advanced Free Resource Hub",
+    "ph": 4,
+    "intro": "Resource Hub ka purpose sirf links dena nahi — har resource ke saath: What is it? · Why use it? · Prerequisite · Free status · Official source · Difficulty · Recommended level · Hands-on lab? · Related commands · Related security concepts · Next resource.",
+    "body": "resources",
+    "tasks": [
+     {
+      "t": "Official source verify karo: man dig (lab mein DNS tool ka official doc)",
+      "checks": [
+       {
+        "k": "cmd",
+        "re": "^man (dig|curl|nmap)"
+       }
+      ]
+     },
+     {
+      "t": "DNS resource practice: dig lab.local +short",
+      "checks": [
+       {
+        "k": "cmd",
+        "re": "dig lab\\.local"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": 23,
+    "t": "Tool Mastery Directory",
+    "ph": 4,
+    "intro": "Tool page 'Tool List' nahi, 'Tool Mastery' format hai. Har tool card: Name · Category · Free Status · Open Source? · Official Docs · Installation · Basic Usage · Important Options · Input · Output · Common Errors · Linux Integration · Security Use Case · Safe Lab · Related Tools · Difficulty.",
+    "body": "tools",
+    "tasks": [
+     {
+      "t": "Tool mastery: man grep padho, phir use karo: grep -n ERROR /var/log/app.log",
+      "checks": [
+       {
+        "k": "cmd",
+        "re": "^man grep"
+       },
+       {
+        "k": "cmd",
+        "re": "grep -n ERROR /var/log/app\\.log"
+       }
+      ]
+     },
+     {
+      "t": "Tool operate: find /etc -name 'motd' -type f",
+      "checks": [
+       {
+        "k": "cmd",
+        "re": "find /etc"
+       }
+      ]
+     },
+     {
+      "t": "Tool combine: cat /home/learner/lab/data/dupes.txt | sort | uniq -c",
+      "checks": [
+       {
+        "k": "cmd",
+        "re": "sort \\| uniq"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": 24,
+    "t": "Browser-Based Free Tools Hub",
+    "ph": 4,
+    "intro": "Browser par free utilities — Encoding/Decoding, Data (JSON), Regex, Web, Security references. SAKTAM: har online tool par privacy warning — neeche. Sensitive data ke liye LOCAL CLI alternatives hamesha pehla choice.",
+    "body": "browsertools",
+    "tasks": [
+     {
+      "t": "Local alternative practice: jq . /srv/lab/api_users.json (browser JSON formatter ki jagah)",
+      "checks": [
+       {
+        "k": "cmd",
+        "re": "jq . /srv/lab/api_users\\.json"
+       }
+      ]
+     },
+     {
+      "t": "Privacy mindset: secret ko browser tool mein paste NAHI — local dekho: cat /srv/lab/.env",
+      "checks": [
+       {
+        "k": "cmd",
+        "re": "cat /srv/lab/\\.env"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": 25,
+    "t": "Web Tool vs Local Tool",
+    "ph": 4,
+    "intro": "Advanced feature: har task ke liye browser tool aur Linux tool dono dekho. Learning objective: browser tools convenient hain, lekin professional workflow ke liye local tools + reproducibility zaroori.",
+    "body": "compare",
+    "tasks": [
+     {
+      "t": "Compare practice: DNS lookup LOCAL se — dig lab.local (browser DNS tool ki jagah)",
+      "checks": [
+       {
+        "k": "cmd",
+        "re": "dig lab\\.local"
+       }
+      ]
+     },
+     {
+      "t": "HTTP request LOCAL se: curl -sI http://lab.local/ | head -3",
+      "checks": [
+       {
+        "k": "cmd",
+        "re": "curl -sI http://lab\\.local"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": 26,
+    "t": "Resource Verification System",
+    "ph": 4,
+    "intro": "Har resource par 'Verified' badges — taaki aap ko pata ho resource kaunsa hai: official? open source? sach mein free? free tier? community edition? ya paid?",
+    "body": "verify",
+    "tasks": [
+     {
+      "t": "Verification habit: apne lab OS ka official info — cat /etc/os-release",
+      "checks": [
+       {
+        "k": "cmd",
+        "re": "cat /etc/os-release"
+       }
+      ]
+     },
+     {
+      "t": "Free status check: free -h (lab ka memory 'report' — tool output ki tarah read karo)",
+      "checks": [
+       {
+        "k": "cmd",
+        "re": "^free -h"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": 27,
+    "t": "Resource Quality Score",
+    "ph": 4,
+    "intro": "Har resource ko internal scoring — Authenticity 25% · Free Access 20% · Maintenance 15% · Hands-on 15% · Documentation 10% · Community 10% · Beginner Value 5%. Score se resource rank banta hai.",
+    "body": "quality",
+    "tasks": [
+     {
+      "t": "Score your lab: disk + memory + uptime collect karo (df -h, free -h, uptime)",
+      "checks": [
+       {
+        "k": "cmd",
+        "re": "^df -h"
+       },
+       {
+        "k": "cmd",
+        "re": "^free -h"
+       },
+       {
+        "k": "cmd",
+        "re": "^uptime"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": 28,
+    "t": "Learning Path From Resource Hub",
+    "ph": 4,
+    "intro": "Resource page overwhelm NAHI karega. 4 structured paths: Beginner → Intermediate → Advanced → Bug Hunter. Apna path dhundo, usi ko follow karo.",
+    "body": "paths",
+    "tasks": [
+     {
+      "t": "Beginner path step 1: file system explore — ls -a /home/learner",
+      "checks": [
+       {
+        "k": "cmd",
+        "re": "ls -a /home/learner"
+       }
+      ]
+     },
+     {
+      "t": "Beginner path step 2: logs padho — tail -5 /var/log/sys.log",
+      "checks": [
+       {
+        "k": "cmd",
+        "re": "tail -5 /var/log/sys\\.log"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": 29,
+    "t": "Don't Learn This Yet",
+    "ph": 4,
+    "intro": "Beginner ko advanced tools ki 100-item list dekar confuse NAHI karna. Rule: Prerequisite complete → unlock advanced resource. Isse learning structured rehti hai.",
+    "body": "dly",
+    "tasks": [
+     {
+      "t": "Structure maintain karo: history dekho — aapne ab tak kya kiya (audit trail)",
+      "checks": [
+       {
+        "k": "cmd",
+        "re": "^history$"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": 30,
+    "t": "Tool Dependency Map",
+    "ph": 4,
+    "intro": "Visual dependency graph — tool tab unlock hoga jab prerequisites complete hon. Linux → Bash/Networking/Web Security/Python ka tree.",
+    "body": "depmap",
+    "tasks": [
+     {
+      "t": "Dependency check: which bash (Bash Linux ki dependency hai)",
+      "checks": [
+       {
+        "k": "cmd",
+        "re": "^which bash"
+       }
+      ]
+     },
+     {
+      "t": "Which tools available: which curl dig nmap",
+      "checks": [
+       {
+        "k": "cmd",
+        "re": "^which (curl|dig|nmap)"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": 31,
+    "t": "Tool Challenge System",
+    "ph": 4,
+    "intro": "Har tool ke liye 5 stages: Identify (kya hai?) → Operate (basic) → Interpret (output samjho) → Combine (doosre tools ke saath) → Troubleshoot (fail ho to diagnose).",
+    "body": "stages",
+    "tasks": [
+     {
+      "t": "Stage 2 Operate: echo 'stage2 done' > /tmp/stage2.txt && cat /tmp/stage2.txt",
+      "checks": [
+       {
+        "k": "fs",
+        "p": "/tmp/stage2.txt",
+        "c": "stage2"
+       }
+      ]
+     },
+     {
+      "t": "Stage 4 Combine: cat /var/log/app.log | grep ERROR | wc -l",
+      "checks": [
+       {
+        "k": "cmd",
+        "re": "grep ERROR \\| wc"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": 32,
+    "t": "Can I Use This Tool? (Safety Gate)",
+    "ph": 4,
+    "intro": "Security tools ke liye context gate — har tool use se pehle platform batata hai: kahan use kar sakte ho. Ye platform ki default safety architecture ka part hai. Terminal mein bhi Red Line enforced hai — external target try karo, block hoga.",
+    "body": "gate",
+    "tasks": [
+     {
+      "t": "Safe target: ping -c 2 lab.local (allowed zone)",
+      "checks": [
+       {
+        "k": "cmd",
+        "re": "ping .*lab\\.local"
+       }
+      ]
+     },
+     {
+      "t": "RED LINE TEST: ping -c 2 8.8.8.8 try karo — dekho block kyun hua (safety gate demo)",
+      "checks": [
+       {
+        "k": "cmd",
+        "re": "ping .*8\\.8\\.8\\.8"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": 33,
+    "t": "Final 100% Ready Checklist + HOST READY Certification",
+    "ph": 4,
+    "intro": "Learner dashboard — 5 domains ka checklist. Sab complete karo → HOST READY certification unlock. Golden Rule: 'Tool mastery ≠ command memorization.'",
+    "body": "final",
+    "tasks": [
+     {
+      "t": "Final profile: uname -a > /tmp/hostready.txt && ip addr >> /tmp/hostready.txt && ss -tlnp >> /tmp/hostready.txt && df -h >> /tmp/hostready.txt",
+      "checks": [
+       {
+        "k": "fs",
+        "p": "/tmp/hostready.txt",
+        "c": "Linux"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "resourceCategories": [
+   {
+    "icon": "🐧",
+    "name": "Linux",
+    "items": [
+     "Linux fundamentals",
+     "Bash",
+     "GNU Coreutils",
+     "Filesystems",
+     "Permissions",
+     "Processes",
+     "systemd",
+     "Networking",
+     "Linux internals",
+     "Linux security",
+     "Containers"
+    ]
+   },
+   {
+    "icon": "🌐",
+    "name": "Networking",
+    "items": [
+     "TCP/IP",
+     "DNS",
+     "HTTP",
+     "TLS",
+     "Routing",
+     "Packet analysis",
+     "Network troubleshooting"
+    ]
+   },
+   {
+    "icon": "🔐",
+    "name": "Web Security",
+    "items": [
+     "OWASP",
+     "PortSwigger Academy",
+     "Hacker101",
+     "API security",
+     "Authentication",
+     "Authorization",
+     "Session security",
+     "Input validation",
+     "Business logic"
+    ]
+   },
+   {
+    "icon": "🧪",
+    "name": "Labs",
+    "items": [
+     "Web labs",
+     "Linux labs",
+     "CTFs",
+     "Network labs",
+     "Defensive labs",
+     "Local vulnerable applications"
+    ]
+   },
+   {
+    "icon": "🛠️",
+    "name": "Tools",
+    "items": [
+     "CLI tools",
+     "Web-testing tools",
+     "Network tools",
+     "Packet-analysis tools",
+     "DNS tools",
+     "Content-analysis tools",
+     "Automation tools"
+    ]
+   },
+   {
+    "icon": "📚",
+    "name": "References",
+    "items": [
+     "CVE",
+     "CWE",
+     "CVSS",
+     "RFCs",
+     "vendor documentation",
+     "security advisories"
+    ]
+   }
+  ],
+  "resources": [
+   {
+    "name": "OverTheWire Bandit",
+    "cat": "Linux",
+    "what": "25 progressive levels — har level par SSH box par password hunt. Linux commands ka gamified course.",
+    "why": "Pipes, redirection, permissions, SUID — sab naturally aate hain, boring lecture ke bina. Phase 1 (Levels 1-3) ka perfect companion.",
+    "prereq": "Level 0-1 complete (basic terminal: ls, cat, cd)",
+    "free": "100% Free",
+    "source": "overthewire.org/wargames/bandit",
+    "difficulty": "Beginner",
+    "level": "Levels 1-3",
+    "handsOn": "Yes — SSH lab, live machine",
+    "commands": [
+     "ssh",
+     "cat",
+     "grep",
+     "find",
+     "sudo",
+     "su",
+     "chmod"
+    ],
+    "concepts": [
+     "permissions",
+     "SUID/SGID",
+     "users & groups",
+     "command substitution"
+    ],
+    "next": "OverTheWire Natas (Web) → Level 7 ke baad",
+    "badges": [
+     "official",
+     "free"
+    ],
+    "stars": 5
+   },
+   {
+    "name": "The Odin Project",
+    "cat": "Linux",
+    "what": "Full-stack web development + Linux fundamentals ka free structured path.",
+    "why": "Terminal se lekar web tak — Linux ke 'Builder Phase' ke liye solid foundation. Hands-on exercises har section mein.",
+    "prereq": "Level 0 complete (mental model)",
+    "free": "100% Free",
+    "source": "theodinproject.com",
+    "difficulty": "Beginner",
+    "level": "Levels 0-2",
+    "handsOn": "Yes — local terminal exercises",
+    "commands": [
+     "ls",
+     "cd",
+     "mkdir",
+     "touch",
+     "man",
+     "grep"
+    ],
+    "concepts": [
+     "filesystem",
+     "shell basics",
+     "web basics"
+    ],
+    "next": "Level 1 Terminal Mastery → Level 2",
+    "badges": [
+     "official",
+     "free"
+    ],
+    "stars": 5
+   },
+   {
+    "name": "Linux Journey",
+    "cat": "Linux",
+    "what": "Interactive Linux tutorial — 100+ short lessons, beginner-friendly.",
+    "why": "Zero base ke liye best start. Har topic chhota, focused, example ke saath. Bina pressure ke foundation banta hai.",
+    "prereq": "None — absolute beginner OK",
+    "free": "100% Free",
+    "source": "linuxjourney.com",
+    "difficulty": "Beginner",
+    "level": "Level 0",
+    "handsOn": "Partial — terminal examples",
+    "commands": [
+     "ls",
+     "pwd",
+     "whoami",
+     "echo",
+     "man"
+    ],
+    "concepts": [
+     "kernel",
+     "filesystem",
+     "shell"
+    ],
+    "next": "OverTheWire Bandit",
+    "badges": [
+     "official",
+     "free"
+    ],
+    "stars": 4
+   },
+   {
+    "name": "GNU Manuals (Coreutils + Bash)",
+    "cat": "Linux",
+    "what": "Official documentation — GNU coreutils (ls, grep, find...) aur bash reference manual.",
+    "why": "Documentation mastery (Level 21.22) ka asli source. 'man command' ke peeche jo content hai, wahi asli reference hai.",
+    "prereq": "Level 1 complete (terminal basic)",
+    "free": "100% Free + Open Source",
+    "source": "gnu.org/manuals",
+    "difficulty": "All levels (reference)",
+    "level": "Level 21.22",
+    "handsOn": "No — reference manual",
+    "commands": [
+     "man",
+     "info",
+     "grep"
+    ],
+    "concepts": [
+     "reference skills",
+     "documentation mastery"
+    ],
+    "next": "Har level ke man pages",
+    "badges": [
+     "official",
+     "opensource",
+     "free"
+    ],
+    "stars": 5
+   },
+   {
+    "name": "Nmap (Official + Book)",
+    "cat": "Tools",
+    "what": "Nmap Reference Guide + 'Nmap Network Scanning' book (free PDF, official site par).",
+    "why": "Authorized network discovery ka gold standard. Tool card (Level 23) ke saath padho — usage se theory tak.",
+    "prereq": "Level 6 complete (networking fundamentals)",
+    "free": "100% Free + Open Source",
+    "source": "nmap.org/book",
+    "difficulty": "Intermediate",
+    "level": "Level 23.2",
+    "handsOn": "Yes — lab.local par safe scan",
+    "commands": [
+     "nmap",
+     "ip",
+     "ss"
+    ],
+    "concepts": [
+     "port scanning",
+     "service detection",
+     "attack surface"
+    ],
+    "next": "Wireshark (packet level)",
+    "badges": [
+     "official",
+     "opensource",
+     "free"
+    ],
+    "stars": 5
+   },
+   {
+    "name": "Wireshark (Official User's Guide)",
+    "cat": "Tools",
+    "what": "Packet analyzer ka official guide + live lab captures.",
+    "why": "'Packet capture ko READ karna' sikhata hai — filters copy nahi. Level 6/17 ka core skill. tcpdump ka visual version.",
+    "prereq": "Level 6 complete (TCP/IP, protocols)",
+    "free": "100% Free + Open Source",
+    "source": "wireshark.org/docs",
+    "difficulty": "Intermediate",
+    "level": "Level 23.2",
+    "handsOn": "Yes — lab traffic capture",
+    "commands": [
+     "tcpdump",
+     "ss",
+     "dig"
+    ],
+    "concepts": [
+     "packet analysis",
+     "protocol hierarchy",
+     "streams"
+    ],
+    "next": "Level 17 Debugging Mastery",
+    "badges": [
+     "official",
+     "opensource",
+     "free"
+    ],
+    "stars": 5
+   },
+   {
+    "name": "PortSwigger Web Security Academy",
+    "cat": "Web Security",
+    "what": "Burp Suite makers ka free web security academy — 60+ interactive labs (AppSec).",
+    "why": "Web security ka most structured FREE resource. Har topic: read → lab → solve. Level 7/15 ka perfect practice ground.",
+    "prereq": "Level 7 complete (HTTP basics) + burp community edition",
+    "free": "100% Free (labs + content)",
+    "source": "portswigger.net/web-security",
+    "difficulty": "Intermediate → Advanced",
+    "level": "Levels 12, 15-20",
+    "handsOn": "Yes — 60+ guided labs",
+    "commands": [
+     "curl",
+     "grep",
+     "jq"
+    ],
+    "concepts": [
+     "injection",
+     "auth flaws",
+     "business logic",
+     "OWASP Top 10"
+    ],
+    "next": "OWASP Juice Shop (local lab)",
+    "badges": [
+     "official",
+     "free"
+    ],
+    "stars": 5
+   },
+   {
+    "name": "OWASP (Top 10 + Juice Shop + SAM)",
+    "cat": "Web Security",
+    "what": "Web security ka standard: OWASP Top 10, Juice Shop (intentionally vulnerable app), SAM (Security Assessment Methodology).",
+    "why": "Juice Shop = LOCAL vulnerable app — Red Line ke andar full practice. Top 10 = bug hunting ki checklist. SAM = methodology.",
+    "prereq": "Level 7 + basic HTTP",
+    "free": "100% Free + Open Source",
+    "source": "owasp.org",
+    "difficulty": "Intermediate",
+    "level": "Levels 12, 15-20",
+    "handsOn": "Yes — Juice Shop local Docker lab",
+    "commands": [
+     "curl",
+     "docker",
+     "grep"
+    ],
+    "concepts": [
+     "OWASP Top 10",
+     "vulnerability classes",
+     "assessment methodology"
+    ],
+    "next": "TryHackMe Web paths",
+    "badges": [
+     "official",
+     "opensource",
+     "free"
+    ],
+    "stars": 5
+   },
+   {
+    "name": "TryHackMe",
+    "cat": "Labs",
+    "what": "Gamified guided hacking rooms + learning paths (Beginner → Bug Hunter).",
+    "why": "Guided labs mein step-by-step progress. Free tier beginner ke liye kaafi hai. 'Build before break' philosophy ke saath match karta hai.",
+    "prereq": "Level 0-1 (basics) — rooms khud guide karti hain",
+    "free": "Free tier (guided paths limited) — paid: all rooms",
+    "source": "tryhackme.com",
+    "difficulty": "Beginner → Advanced",
+    "level": "Levels 1-15",
+    "handsOn": "Yes — browser-based labs",
+    "commands": [
+     "nmap",
+     "grep",
+     "python3"
+    ],
+    "concepts": [
+     "CTF methodology",
+     "recon",
+     "exploitation basics"
+    ],
+    "next": "Hack The Box (unguided)",
+    "badges": [
+     "freetier"
+    ],
+    "stars": 4
+   },
+   {
+    "name": "Hack The Box",
+    "cat": "Labs",
+    "what": "Realistic CTF machines + Academy (structured courses). Free: limited machines + academy.",
+    "why": "TryHackMe ke baad 'unguided' practice — khud exploit dhundo. Bug hunter mindset isi se banta hai (scope ke andar).",
+    "prereq": "TryHackMe basics + Linux comfort",
+    "free": "Free tier (machines limited, academy free)",
+    "source": "hackthebox.com",
+    "difficulty": "Intermediate → Advanced",
+    "level": "Levels 15-21",
+    "handsOn": "Yes — full machines",
+    "commands": [
+     "nmap",
+     "ssh",
+     "grep",
+     "python3"
+    ],
+    "concepts": [
+     "CTF methodology",
+     "privilege escalation",
+     "recon at scale"
+    ],
+    "next": "Authorized bug bounty programs",
+    "badges": [
+     "freetier"
+    ],
+    "stars": 4
+   },
+   {
+    "name": "Cybrary",
+    "cat": "References",
+    "what": "Security training platform — free courses + labs (Security+, network, cloud).",
+    "why": "Video + labs combo. Security+ prep + hands-on labs free tier mein. Professor Messer ke saath pair karo.",
+    "prereq": "Level 12+ (security basics)",
+    "free": "Free tier (courses limited, labs included)",
+    "source": "cybrary.io",
+    "difficulty": "Intermediate",
+    "level": "Level 12-17",
+    "handsOn": "Yes — virtual labs",
+    "commands": [
+     "—"
+    ],
+    "concepts": [
+     "security+ topics",
+     "risk management",
+     "incident response"
+    ],
+    "next": "Security+ exam prep",
+    "badges": [
+     "freetier"
+    ],
+    "stars": 4
+   },
+   {
+    "name": "Professor Messer (Security+)",
+    "cat": "References",
+    "what": "CompTIA Security+ ka complete free video course + flashcards + practice exams.",
+    "why": "Security fundamentals ka most structured free video course. Level 12 (Security Architecture) ka perfect backup. Practice exams free hain.",
+    "prereq": "Level 12 (security basics)",
+    "free": "100% Free",
+    "source": "professormesser.com",
+    "difficulty": "Intermediate",
+    "level": "Level 12-17",
+    "handsOn": "Partial — labs par focus kam",
+    "commands": [
+     "—"
+    ],
+    "concepts": [
+     "security+ domains",
+     "risk",
+     "cryptography basics"
+    ],
+    "next": "Cybrary labs + PortSwigger",
+    "badges": [
+     "official",
+     "free"
+    ],
+    "stars": 5
+   },
+   {
+    "name": "RFC Editor",
+    "cat": "Networking",
+    "what": "Internet Standards ki official documents (RFCs) — TCP, DNS, HTTP sab yahan defined hain.",
+    "why": "Networking 'deep dive' ka source of truth. RFC 791 (IP), RFC 768 (UDP), RFC 9110 (HTTP). 'Why' samajhne ke liye.",
+    "prereq": "Level 6 (networking fundamentals)",
+    "free": "100% Free",
+    "source": "rfc-editor.org",
+    "difficulty": "Advanced (reference)",
+    "level": "Level 18-19",
+    "handsOn": "No — reference",
+    "commands": [
+     "curl",
+     "dig"
+    ],
+    "concepts": [
+     "protocol standards",
+     "RFC reading",
+     "networking theory"
+    ],
+    "next": "Level 18 Internals",
+    "badges": [
+     "official",
+     "free"
+    ],
+    "stars": 5
+   },
+   {
+    "name": "MITRE CWE",
+    "cat": "References",
+    "what": "Common Weakness Enumeration — vulnerability classes ka standard (CWE-79 XSS, CWE-89 SQLi, ...).",
+    "why": "Bug hunting mein findings ko classify karo + responsible reporting mein standard language. Har finding ka CWE ID.",
+    "prereq": "Level 15 (web security basics)",
+    "free": "100% Free",
+    "source": "cwe.mitre.org",
+    "difficulty": "All levels (reference)",
+    "level": "Levels 15-20",
+    "handsOn": "No — reference",
+    "commands": [
+     "—"
+    ],
+    "concepts": [
+     "vulnerability taxonomy",
+     "CWE mapping",
+     "reporting standards"
+    ],
+    "next": "CVSS (severity scoring)",
+    "badges": [
+     "official",
+     "free"
+    ],
+    "stars": 5
+   },
+   {
+    "name": "FIRST CVSS",
+    "cat": "References",
+    "what": "Common Vulnerability Scoring System — vulnerability severity ka standard (0-10).",
+    "why": "Report mein severity justify karo: CVSS vector (AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:N = 9.8). Professional reporting ka core.",
+    "prereq": "Level 20 (reporting basics)",
+    "free": "100% Free",
+    "source": "first.org/cvss",
+    "difficulty": "Intermediate (reference)",
+    "level": "Level 20",
+    "handsOn": "No — calculator + reference",
+    "commands": [
+     "—"
+    ],
+    "concepts": [
+     "severity scoring",
+     "impact analysis",
+     "reporting"
+    ],
+    "next": "NVD (CVE lookup)",
+    "badges": [
+     "official",
+     "free"
+    ],
+    "stars": 5
+   },
+   {
+    "name": "NVD (National Vulnerability Database)",
+    "cat": "References",
+    "what": "CVE (Common Vulnerabilities and Exposures) ka official database — NIST maintain karta hai.",
+    "why": "Known vulnerabilities lookup + CVSS scores. Bug hunting mein 'kya known hai' verify karo. Patch tracking ke liye.",
+    "prereq": "Level 15+ (vulnerability basics)",
+    "free": "100% Free",
+    "source": "nvd.nist.gov",
+    "difficulty": "All levels (reference)",
+    "level": "Levels 15-20",
+    "handsOn": "No — lookup tool",
+    "commands": [
+     "—"
+    ],
+    "concepts": [
+     "CVE lookup",
+     "patch management",
+     "known vulns"
+    ],
+    "next": "Vendor security advisories",
+    "badges": [
+     "official",
+     "free"
+    ],
+    "stars": 5
+   }
+  ],
+  "toolCategories": {
+   "title": "23.1 Linux Native Toolkit — built-in tools sabse pehle master karo",
+   "essential": [
+    "pwd",
+    "ls",
+    "cd",
+    "cp",
+    "mv",
+    "rm",
+    "mkdir",
+    "touch",
+    "cat",
+    "less",
+    "head",
+    "tail",
+    "grep",
+    "find",
+    "sort",
+    "uniq",
+    "cut",
+    "tr",
+    "sed",
+    "awk",
+    "xargs",
+    "tee"
+   ],
+   "system": [
+    "ps",
+    "top",
+    "htop",
+    "free",
+    "df",
+    "du",
+    "uptime",
+    "uname",
+    "hostname",
+    "lsblk"
+   ],
+   "networking": [
+    "ip",
+    "ss",
+    "ping",
+    "dig",
+    "host",
+    "curl",
+    "wget",
+    "tcpdump"
+   ],
+   "security": [
+    "sudo",
+    "chmod",
+    "chown",
+    "find",
+    "lsof",
+    "ss",
+    "journalctl",
+    "systemctl",
+    "strace",
+    "file"
+   ],
+   "note": "Mastery target: in commands ka PURPOSE aur COMBINATION samajhna chahiye — not necessarily every obscure flag memorize karna."
+  },
+  "tools": [
+   {
+    "name": "grep",
+    "cat": "Text Processing",
+    "free": "Free + Open Source",
+    "os": "Yes (GNU)",
+    "docs": "man grep + gnu.org",
+    "install": "Preinstalled (GNU coreutils)",
+    "basic": "grep -i 'error' /var/log/app.log",
+    "options": "-i (case-insensitive) · -n (line number) · -c (count) · -v (invert) · -r (recursive) · -E (extended regex)",
+    "input": "File ya stdin",
+    "output": "Matching lines (stdout)",
+    "errors": "'No such file' → path check; 'Binary file matches' → -a add karo",
+    "integration": "Pipelines ka core: cat f | grep x | wc -l; -o + cut + sort se structured output",
+    "securityUse": "Logs mein suspicious patterns, config audit, secret scan (grep -r 'password' .)",
+    "lab": "grep -c 'Failed password' /var/log/auth.log",
+    "related": [
+     "awk",
+     "sed",
+     "ripgrep"
+    ],
+    "difficulty": "Beginner"
+   },
+   {
+    "name": "find",
+    "cat": "Filesystem Search",
+    "free": "Free + Open Source",
+    "os": "Yes (GNU)",
+    "docs": "man find",
+    "install": "Preinstalled (findutils)",
+    "basic": "find /home -name '*.txt' -type f",
+    "options": "-name (pattern) · -type f/d/l · -perm (permissions) · -mtime (time) · -size · -user · -exec",
+    "input": "Start path + filters",
+    "output": "Matching paths (one per line)",
+    "errors": "'Permission denied' → sudo ya 2>/dev/null; broad search slow → -maxdepth limit",
+    "integration": "find | xargs rm (careful!); find -exec stat {} ; metadata batch",
+    "securityUse": "Hidden files (find . -name '.*'), SUID binaries (find / -perm -4000), world-writable (find / -perm -o+w)",
+    "lab": "find /home -name '.secret_note' -type f",
+    "related": [
+     "locate",
+     "grep",
+     "stat"
+    ],
+    "difficulty": "Beginner"
+   },
+   {
+    "name": "sed",
+    "cat": "Text Processing",
+    "free": "Free + Open Source",
+    "os": "Yes (GNU)",
+    "docs": "man sed",
+    "install": "Preinstalled (GNU sed)",
+    "basic": "sed 's/old/new/' file",
+    "options": "s/pattern/replacement/ (substitute) · -n (quiet) · -i (in-place) · d (delete line) · p (print) · -E (extended)",
+    "input": "File ya stdin",
+    "output": "Modified stream",
+    "errors": "'unescaped newline' → escaping check; -i bina backup ke destructive",
+    "integration": "cat f | sed 's/://g' | sort -u; log parsing pipelines mein",
+    "securityUse": "Log sanitization (secrets redact karo), config normalize, pattern replace in reports",
+    "lab": "sed 's/lab-01/LAB/g' /etc/hostname",
+    "related": [
+     "awk",
+     "grep",
+     "perl"
+    ],
+    "difficulty": "Intermediate"
+   },
+   {
+    "name": "awk",
+    "cat": "Text Processing",
+    "free": "Free + Open Source",
+    "os": "Yes (gawk)",
+    "docs": "man awk",
+    "install": "Preinstalled (gawk)",
+    "basic": "awk '{print $1, $3}' file",
+    "options": "{print $N} (field) · NR (line no) · /pattern/ (match) · -F (delimiter) · BEGIN/END blocks",
+    "input": "File ya stdin (whitespace/comma delimited)",
+    "output": "Processed lines",
+    "errors": "'syntax error' → quotes check; -F galat → field positions shift",
+    "integration": "grep x f | awk '{print $5}' | sort | uniq -c — classic report pipeline",
+    "securityUse": "Log correlation (IP + timestamp + action extract), CSV → report, dedup with seen[]",
+    "lab": "awk '{print $(NF-3)}' /var/log/auth.log | sort -u (attacker IPs)",
+    "related": [
+     "cut",
+     "sed",
+     "grep"
+    ],
+    "difficulty": "Intermediate"
+   },
+   {
+    "name": "jq",
+    "cat": "JSON Processing",
+    "free": "Free + Open Source",
+    "os": "Yes",
+    "docs": "stedolan.github.io/jq",
+    "install": "apt install jq",
+    "basic": "jq . file.json",
+    "options": ". (pretty) · .key (path) · .[] (array) · length · keys · map() · select() · -r (raw output)",
+    "input": "JSON (file ya stdin)",
+    "output": "Formatted/extracted JSON",
+    "errors": "'parse error' → input valid JSON nahi; path miss → keys se structure dekho",
+    "integration": "curl -s url | jq .data — API work ka core; > file se save",
+    "securityUse": "API response analysis, user enumeration data clean, JSON logs parse, token structures inspect",
+    "lab": "jq . /srv/lab/api_users.json",
+    "related": [
+     "python3 -m json.tool",
+     "yq"
+    ],
+    "difficulty": "Beginner"
+   },
+   {
+    "name": "ss",
+    "cat": "Networking (sockets)",
+    "free": "Free + Open Source",
+    "os": "Yes (iproute2)",
+    "docs": "man ss",
+    "install": "Preinstalled (iproute2)",
+    "basic": "ss -tlnp",
+    "options": "-t (TCP) · -u (UDP) · -l (listening) · -n (no resolve) · -p (process) · -tan (all + states) · state <state>",
+    "input": "Kernel socket state",
+    "output": "Socket list: state, local/peer addr, process",
+    "errors": "Empty → filter check; process column empty → sudo chahiye",
+    "integration": "ss -tlnp | grep :8080; ss -tan state time-wait | wc -l (leak detect)",
+    "securityUse": "Exposed services inventory (attack surface), connection states analyze, suspicious listeners",
+    "lab": "ss -tlnp (lab services: 22, 80, 8080)",
+    "related": [
+     "netstat",
+     "lsof",
+     "ip"
+    ],
+    "difficulty": "Beginner"
+   },
+   {
+    "name": "ip",
+    "cat": "Networking",
+    "free": "Free + Open Source",
+    "os": "Yes (iproute2)",
+    "docs": "man ip",
+    "install": "Preinstalled (iproute2)",
+    "basic": "ip addr",
+    "options": "addr (interfaces) · route (routes) · neigh (ARP) · link (state) · -s (stats) · -j (JSON)",
+    "input": "Kernel network state",
+    "output": "Interface/route/neighbor details",
+    "errors": "Permission → sudo (changes ke liye); empty route table → gateway check",
+    "integration": "ip addr | grep inet; ip route get <ip> (path trace); ip -j addr | jq (structured)",
+    "securityUse": "Interface audit, IP config verify, neighbor table (ARP anomalies), attack surface base",
+    "lab": "ip addr + ip route (lab-01: 10.8.0.5/24)",
+    "related": [
+     "ifconfig",
+     "ss",
+     "ping"
+    ],
+    "difficulty": "Beginner"
+   },
+   {
+    "name": "curl",
+    "cat": "HTTP/HTTPS",
+    "free": "Free + Open Source",
+    "os": "Yes",
+    "docs": "curl.se/docs",
+    "install": "Preinstalled",
+    "basic": "curl -i http://lab.local/",
+    "options": "-i (headers) · -v (verbose) · -X (method) · -H (header) · -d (data) · -L (follow redirect) · -c/-b (cookies) · -o (output) · --max-time",
+    "input": "URL (+ headers/data)",
+    "output": "Response (headers + body)",
+    "errors": "'(7) Failed to connect' → service down/DNS; '(6) Could not resolve' → DNS; '(35) SSL error' → cert",
+    "integration": "curl -s url | jq . (API); curl -o file url (download); loops se batch",
+    "securityUse": "Endpoint enumeration, auth testing (Bearer/Basic), redirect chains, cookie flags, error handling inspect",
+    "lab": "curl -i http://lab.local/ + /api/users + /admin",
+    "related": [
+     "wget",
+     "httpie",
+     "Burp"
+    ],
+    "difficulty": "Beginner"
+   },
+   {
+    "name": "dig",
+    "cat": "DNS",
+    "free": "Free + Open Source",
+    "os": "Yes (bind-utils)",
+    "docs": "man dig",
+    "install": "Preinstalled (bind9-dnsutils)",
+    "basic": "dig lab.local A",
+    "options": "+short · +trace (full journey) · +noall +answer · @server · -t (type: A/AAAA/MX/TXT/NS)",
+    "input": "Domain + type",
+    "output": "DNS answer (IP, TTL, server)",
+    "errors": "'SERVFAIL' → server issue; 'NXDOMAIN' → domain exist nahi; timeout → resolver",
+    "integration": "dig +short domain; dig +trace domain (resolution journey); loops se subdomain check",
+    "securityUse": "Subdomain recon, TXT records (SPF/DMARC), DNS enumeration, stale records dhundo",
+    "lab": "dig lab.local +short (10.8.0.5)",
+    "related": [
+     "host",
+     "nslookup",
+     "resolvectl"
+    ],
+    "difficulty": "Beginner"
+   },
+   {
+    "name": "tcpdump",
+    "cat": "Packet Analysis",
+    "free": "Free + Open Source",
+    "os": "Yes",
+    "docs": "tcpdump.org/manpages",
+    "install": "Preinstalled (tcpdump)",
+    "basic": "tcpdump -i any host lab.local -n",
+    "options": "-i (interface) · -n (no resolve) · -c (count) · -A (ASCII) · -w (save pcap) · -r (read pcap) · filter expressions",
+    "input": "Live traffic (kernel tap)",
+    "output": "Packet details (headers + optional payload)",
+    "errors": "'no permission' → sudo; 'no such device' → interface name; chup → filter galat",
+    "integration": "tcpdump -w cap.pcap & (background); baad mein Wireshark mein open; -A se HTTP payload",
+    "securityUse": "Packet forensics, protocol behavior verify, handshake/redirect observe, evidence capture (lab)",
+    "lab": "tcpdump -i any host lab.local -c 10 -n",
+    "related": [
+     "wireshark",
+     "tshark",
+     "ss"
+    ],
+    "difficulty": "Intermediate"
+   },
+   {
+    "name": "nmap",
+    "cat": "Network Discovery",
+    "free": "Free + Open Source",
+    "os": "Yes",
+    "docs": "nmap.org/book (free book)",
+    "install": "Preinstalled / apt install nmap",
+    "basic": "nmap -sT -p 22,80,8080 lab.local",
+    "options": "-sT (TCP connect) · -sU (UDP) · -sV (versions) · -p (ports) · -oN (output) · -sC (default scripts) · --max-rate",
+    "input": "Target (IP/domain) + options",
+    "output": "Open/closed ports + services",
+    "errors": "'Permission denied (UDP)' → sudo; timeout → target down; rate limit → --max-rate",
+    "integration": "nmap -oN scan.txt lab.local; grep open scan.txt; report mein use",
+    "securityUse": "AUTHORIZED targets only: service discovery, attack surface inventory, lab enumeration. External = RED LINE.",
+    "lab": "nmap -sT -p 22,80,8080 lab.local",
+    "related": [
+     "masscan",
+     "rustscan",
+     "ss"
+    ],
+    "difficulty": "Intermediate"
+   },
+   {
+    "name": "strace",
+    "cat": "Debugging (syscalls)",
+    "free": "Free + Open Source",
+    "os": "Yes",
+    "docs": "man strace",
+    "install": "apt install strace",
+    "basic": "strace -c ls",
+    "options": "-p (attach pid) · -c (summary) · -e trace=openat (filter) · -f (follow forks) · -s (string len) · -o (output file)",
+    "input": "Process (live ya new command)",
+    "output": "Syscall sequence + results",
+    "errors": "'Operation not permitted' → sudo (other users' processes); 'attach: ptrace' → kernel restriction",
+    "integration": "strace -c cmd (performance); strace -e trace=network cmd (network syscalls); logs ke saath correlate",
+    "securityUse": "Permission errors root cause, network behavior trace, malware behavior (lab), crash diagnosis",
+    "lab": "strace -c ls (lab host)",
+    "related": [
+     "ltrace",
+     "gdb",
+     "lsof"
+    ],
+    "difficulty": "Advanced"
+   },
+   {
+    "name": "journalctl",
+    "cat": "Logs",
+    "free": "Free + Open Source",
+    "os": "Yes (systemd)",
+    "docs": "man journalctl",
+    "install": "Preinstalled (systemd)",
+    "basic": "journalctl -u sshd -n 50",
+    "options": "-u (unit) · -n (last N) · --since '10 min ago' · -p (priority: err/warn) · -f (follow) · -b (last boot) · _COMM= (process)",
+    "input": "systemd journal (binary logs)",
+    "output": "Formatted log lines",
+    "errors": "'No journal files' → systemd journal enabled nahi; empty → filter too specific",
+    "integration": "journalctl -u X -p err --since '1 hour ago' | grep pattern; > file se evidence",
+    "securityUse": "Service failure diagnosis, auth events timeline, failure correlation, incident response",
+    "lab": "journalctl -n 20 (lab snapshot)",
+    "related": [
+     "systemctl",
+     "dmesg",
+     "grep",
+     "awk"
+    ],
+    "difficulty": "Beginner"
+   }
+  ],
+  "progressions": [
+   {
+    "tool": "Nmap",
+    "label": "Learning Progression",
+    "steps": [
+     "Basic discovery",
+     "Ports",
+     "Services",
+     "Versions",
+     "Output analysis",
+     "Automation"
+    ],
+    "note": "Authorized targets only. Lab: nmap -sT lab.local se shuru, phir -sV, phir -oN + grep."
+   },
+   {
+    "tool": "Wireshark",
+    "label": "Learning Progression",
+    "steps": [
+     "Capture",
+     "Packet",
+     "Protocol",
+     "Stream",
+     "Filter",
+     "Analyze"
+    ],
+    "note": "Packet capture ko READ karna sikhaya jayega — not simply filters copy karna. tcpdump se pcap banao, Wireshark mein open karo."
+   },
+   {
+    "tool": "tcpdump",
+    "label": "Goal",
+    "steps": [
+     "CLI capture",
+     "Filters",
+     "Pcap save/read",
+     "ASCII payload",
+     "Analysis"
+    ],
+    "note": "'GUI available na ho tab bhi network traffic investigate kar sako.' — yahi tcpdump ka mission hai."
+   },
+   {
+    "tool": "Burp Suite (Community)",
+    "label": "Learning Progression",
+    "steps": [
+     "Proxy",
+     "HTTP History",
+     "Repeater",
+     "Request Analysis",
+     "Response Analysis",
+     "Testing Workflow"
+    ],
+    "note": "Free/community capabilities clearly identify kiye jaate hain (Community: proxy, repeater, history, scanner limited; Pro: automated scanner, intruder, collaborator)."
+   },
+   {
+    "tool": "Browser Developer Tools",
+    "label": "Mandatory Category",
+    "steps": [
+     "Network tab",
+     "Headers",
+     "Cookies",
+     "Storage",
+     "Console",
+     "Sources",
+     "Application data"
+    ],
+    "note": "Bug hunter ko browser aur terminal DONO environments understand karne chahiye. Network tab = curl ka visual version."
+   },
+   {
+    "tool": "ProjectDiscovery Ecosystem",
+    "label": "Pipeline Concept",
+    "steps": [
+     "Input",
+     "Discovery",
+     "HTTP identification",
+     "Normalization",
+     "Analysis",
+     "Validation"
+    ],
+    "note": "Tools ko individual commands ki tarah nahi, PIPELINE ke roop mein teach kiya jayega. Important rule: ONLY AUTHORIZED TARGETS. Rate limits, scope aur safe automation bhi sikhaya jayega."
+   }
+  ],
+  "dataToolkit": {
+   "title": "23.5 Content & Data Processing — 'Security Data Processing Toolkit'",
+   "note": "Bug hunting mein raw output HUGE ho sakta hai. Isliye ye 9 tools ek toolkit ke roop mein: filter → transform → dedupe → report.",
+   "tools": [
+    "grep",
+    "sed",
+    "awk",
+    "cut",
+    "sort",
+    "uniq",
+    "tr",
+    "jq",
+    "xargs"
+   ],
+   "miniProject": {
+    "title": "Mini Project: 1000 → Report",
+    "desc": "Raw authorized lab output (1000 lines) convert karo: clean → normalized → deduplicated → categorized → into a report.",
+    "steps": [
+     "cat raw.txt | grep -v '^$' (clean)",
+     "tr 'A-Z' 'a-z' | sort (normalize + sort)",
+     "uniq -c (dedupe + count)",
+     "awk / cut se categories",
+     "report.txt mein save + wc -l verify"
+    ]
+   }
+  },
+  "browserTools": {
+   "categories": [
+    {
+     "icon": "🔤",
+     "name": "Encoding / Decoding",
+     "items": [
+      "Base64",
+      "URL encoding",
+      "Hex",
+      "HTML entities"
+     ]
+    },
+    {
+     "icon": "📦",
+     "name": "Data",
+     "items": [
+      "JSON formatter",
+      "JSON validator",
+      "JSON diff",
+      "XML formatter"
+     ]
+    },
+    {
+     "icon": "🔎",
+     "name": "Regex",
+     "items": [
+      "Regex tester",
+      "Regex debugger",
+      "Regex visualizer"
+     ]
+    },
+    {
+     "icon": "🌐",
+     "name": "Web",
+     "items": [
+      "HTTP status reference",
+      "HTTP header reference",
+      "MIME type reference",
+      "URL parser",
+      "JWT structure viewer"
+     ]
+    },
+    {
+     "icon": "🔐",
+     "name": "Security",
+     "items": [
+      "CVSS calculator",
+      "CWE lookup",
+      "CVE lookup",
+      "Hash identification/reference"
+     ]
+    }
+   ],
+   "privacyWarning": "NEVER paste passwords, session cookies, private API keys, authentication tokens, proprietary source code, personal information, ya koi bhi sensitive data into an untrusted third-party web tool. Sensitive data ke liye LOCAL CLI alternatives use karo (lab mein har browser tool ka local equivalent available hai)."
+  },
+  "compare": {
+   "title": "25 — Web Tool vs Local Tool (side-by-side)",
+   "rows": [
+    [
+     "Task",
+     "Browser (convenience)",
+     "Linux (professional)"
+    ],
+    [
+     "JSON format",
+     "Online formatter",
+     "jq ."
+    ],
+    [
+     "Regex test",
+     "Regex web tool",
+     "grep -E 'pattern'"
+    ],
+    [
+     "DNS lookup",
+     "DNS web tool",
+     "dig +short"
+    ],
+    [
+     "HTTP request",
+     "Web utility",
+     "curl -i"
+    ],
+    [
+     "Packet analysis",
+     "Online reference",
+     "tcpdump / Wireshark"
+    ],
+    [
+     "Encoding",
+     "Online tool",
+     "CLI utilities (base64, hexdump)"
+    ]
+   ],
+   "objectiveHi": "Learner ko samajhna hai ki convenience ke liye browser tools useful hain, lekin professional workflow ke liye local tools aur reproducibility important hain.",
+   "objectiveEn": "Learners should understand that browser tools are convenient, while local tooling provides better privacy, reproducibility, automation, and control."
+  },
+  "verifyBadges": [
+   {
+    "icon": "🟢",
+    "name": "Official",
+    "desc": "Resource project/organization ki OFFICIAL website. Fake lookalikes se bachav."
+   },
+   {
+    "icon": "🔵",
+    "name": "Open Source",
+    "desc": "Source code publicly available — audit kar sakte ho, fork kar sakte ho."
+   },
+   {
+    "icon": "🟣",
+    "name": "Free",
+    "desc": "Learning/resource access GENUINELY free — no hidden paywall."
+   },
+   {
+    "icon": "🟡",
+    "name": "Free Tier",
+    "desc": "Kuch functionality free, advanced functionality paid. Clear limit samjho."
+   },
+   {
+    "icon": "🟠",
+    "name": "Community Edition",
+    "desc": "Free edition exists but commercial editions bhi hain (Burp Community vs Pro)."
+   },
+   {
+    "icon": "🔴",
+    "name": "Paid",
+    "desc": "Resource ko 'free' section mein NAHI rakhna — is badge se mark hoga."
+   }
+  ],
+  "qualityScore": {
+   "weights": [
+    [
+     "Authenticity",
+     "25%"
+    ],
+    [
+     "Free Access",
+     "20%"
+    ],
+    [
+     "Maintenance",
+     "15%"
+    ],
+    [
+     "Hands-on",
+     "15%"
+    ],
+    [
+     "Documentation",
+     "10%"
+    ],
+    [
+     "Community",
+     "10%"
+    ],
+    [
+     "Beginner Value",
+     "5%"
+    ]
+   ],
+   "exampleBadge": {
+    "stars": "★★★★★",
+    "authenticity": "Official",
+    "access": "Free",
+    "handsOn": "Yes",
+    "maintenance": "Active",
+    "level": "Beginner → Advanced"
+   }
+  },
+  "paths": [
+   {
+    "name": "Beginner",
+    "icon": "🟢",
+    "steps": [
+     "Linux Basics",
+     "Terminal",
+     "Filesystem",
+     "Permissions",
+     "Networking",
+     "HTTP"
+    ]
+   },
+   {
+    "name": "Intermediate",
+    "icon": "🔵",
+    "steps": [
+     "Bash",
+     "Git",
+     "SSH",
+     "Web Security",
+     "Burp",
+     "OWASP"
+    ]
+   },
+   {
+    "name": "Advanced",
+    "icon": "🟣",
+    "steps": [
+     "Linux Internals",
+     "Networking Deep Dive",
+     "Python",
+     "Automation",
+     "Containers",
+     "Debugging",
+     "Security Architecture"
+    ]
+   },
+   {
+    "name": "Bug Hunter",
+    "icon": "🔴",
+    "steps": [
+     "Web Security",
+     "Labs",
+     "HTTP Analysis",
+     "Recon Concepts",
+     "Automation",
+     "Validation",
+     "Reporting"
+    ]
+   }
+  ],
+  "dontLearnYet": {
+   "items": [
+    "Abhi Kubernetes ki zarurat nahi. (Level 13 containers complete hone ke baad)",
+    "Abhi kernel development ki zarurat nahi. (Level 18 internals complete hone ke baad)",
+    "Abhi advanced reverse engineering ki zarurat nahi. (Level 17-18 debugging + binaries complete hone ke baad)",
+    "Abhi cloud infra (AWS/GCP) ki zarurat nahi. (Level 5 sysadmin solid hone ke baad)",
+    "Abhi mobile security ki zarurat nahi. (Web + Linux workflow complete hone ke baad)"
+   ],
+   "rule": "Prerequisite complete → unlock advanced resource. Isse learning structured rahegi — confusion nahi."
+  },
+  "dependencyMap": {
+   "root": "Linux",
+   "children": [
+    {
+     "name": "Bash",
+     "children": [
+      {
+       "name": "Automation"
+      }
+     ]
+    },
+    {
+     "name": "Networking",
+     "children": [
+      {
+       "name": "DNS"
+      },
+      {
+       "name": "TCP/IP"
+      },
+      {
+       "name": "HTTP"
+      }
+     ]
+    },
+    {
+     "name": "Web Security",
+     "children": [
+      {
+       "name": "Browser DevTools"
+      },
+      {
+       "name": "Burp"
+      },
+      {
+       "name": "OWASP"
+      }
+     ]
+    },
+    {
+     "name": "Python",
+     "children": [
+      {
+       "name": "Security Automation"
+      }
+     ]
+    }
+   ]
+  },
+  "challengeStages": [
+   {
+    "stage": 1,
+    "name": "Identify",
+    "desc": "What is this tool? Purpose, category, input/output. 2 minute mein samjho."
+   },
+   {
+    "stage": 2,
+    "name": "Operate",
+    "desc": "Basic operation. Lab mein 3-4 basic commands successfully chalaao."
+   },
+   {
+    "stage": 3,
+    "name": "Interpret",
+    "desc": "Output samjho. Har column/field ka meaning pata ho. Garbage output par panic nahi."
+   },
+   {
+    "stage": 4,
+    "name": "Combine",
+    "desc": "Doosre tools ke saath use karo. Pipeline mein fit ho. Real workflow mein lage."
+   },
+   {
+    "stage": 5,
+    "name": "Troubleshoot",
+    "desc": "Tool fail hone par diagnose karo. Error message se root cause nikalo."
+   }
+  ],
+  "safetyGate": [
+   {
+    "icon": "🟢",
+    "name": "Safe Local Lab",
+    "desc": "Use freely. Aapka lab-01 + lab.local — fully authorized, isolated environment."
+   },
+   {
+    "icon": "🟢",
+    "name": "CTF",
+    "desc": "Follow CTF rules. Challenge scope ke andar, rules read karo pehle."
+   },
+   {
+    "icon": "🟡",
+    "name": "Authorized Program",
+    "desc": "ONLY within written scope. Scope document bina koi tool nahi. Bug bounty = program ki rules."
+   },
+   {
+    "icon": "🔴",
+    "name": "Random Public Target",
+    "desc": "DO NOT test without authorization. Ye RED LINE hai — illegal + unethical."
+   }
+  ],
+  "checklist": {
+   "domains": [
+    {
+     "icon": "🐧",
+     "name": "Linux",
+     "items": [
+      "Terminal",
+      "Filesystem",
+      "Permissions",
+      "Users",
+      "Processes",
+      "Services",
+      "Logs",
+      "Storage",
+      "Packages",
+      "SSH"
+     ]
+    },
+    {
+     "icon": "🌐",
+     "name": "Networking",
+     "items": [
+      "IP",
+      "Subnet",
+      "Routing",
+      "DNS",
+      "TCP",
+      "UDP",
+      "Ports",
+      "Sockets",
+      "HTTP",
+      "TLS",
+      "Packet analysis"
+     ]
+    },
+    {
+     "icon": "💻",
+     "name": "Programming",
+     "items": [
+      "Bash",
+      "Regex",
+      "Text processing",
+      "JSON",
+      "Python",
+      "Git",
+      "Automation"
+     ]
+    },
+    {
+     "icon": "🔐",
+     "name": "Security",
+     "items": [
+      "Authentication",
+      "Authorization",
+      "Permissions",
+      "Least privilege",
+      "Linux hardening",
+      "Web security",
+      "API security",
+      "Logging",
+      "Vulnerability research",
+      "Responsible reporting"
+     ]
+    },
+    {
+     "icon": "🛠️",
+     "name": "Tools",
+     "items": [
+      "Linux native tools",
+      "Nmap",
+      "Wireshark",
+      "tcpdump",
+      "Burp Suite",
+      "Browser DevTools",
+      "DNS tools",
+      "HTTP tools",
+      "Security automation tools"
+     ]
+    }
+   ]
+  },
+  "certification": {
+   "title": "HOST READY — Linux Security & Bug Hunting",
+   "hi": "Aapko ek unfamiliar Linux host diya ja sakta hai. Aap system ko systematically understand, troubleshoot, automate aur authorized security lab ke context mein investigate kar sakte hain. Aap unfamiliar commands ke liye documentation use kar sakte hain aur bina blind copy-paste ke problem solve kar sakte hain.",
+   "en": "You can work on an unfamiliar Linux host, systematically understand and troubleshoot the system, automate routine tasks, and investigate authorized security-lab environments. You can use documentation to learn unfamiliar commands and solve problems without blindly relying on copy-paste instructions."
+  },
+  "goldenRule": {
+   "quote": "Tool mastery ≠ command memorization.",
+   "hi": "Mastery tab hai jab learner ko pata ho problem kya hai, evidence kaha milega, kaunsa tool choose karna hai, output ka meaning kya hai, aur result ko independently verify kaise karna hai.",
+   "en": "Mastery means knowing what the problem is, where to find evidence, which tool to choose, how to interpret its output, and how to independently verify the result."
+  }
+ }
+}
