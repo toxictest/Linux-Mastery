@@ -67,6 +67,25 @@
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
 
+
+# Bug Bounty vault: iframe-embeddable from the same site
+[[headers]]
+  for = "/bug-bounty-vault.html"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    Content-Security-Policy = "frame-ancestors 'self';"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# Notes import template: iframe-embeddable from the same site
+[[headers]]
+  for = "/notes-import.html"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    Content-Security-Policy = "frame-ancestors 'self';"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
 # Default: no frame embedding
 [[headers]]
   for = "/*"

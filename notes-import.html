@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notes Import Template — Bug Bounty Intake</title>
+<meta name="description" content="Local notes import template for personal bug bounty files, screenshots, PDFs, and structured summaries.">
+<style>
+:root{--bg:#071009;--panel:#0f1e16;--panel2:#12241a;--line:#214433;--line2:#2d634a;--text:#d9f4e6;--muted:#8ab09c;--green:#3bf4aa;--amber:#ffcf79;--red:#ff8a8a;--mono:"JetBrains Mono","Fira Code","Cascadia Code",Consolas,monospace}
+*{box-sizing:border-box;margin:0;padding:0} body{font-family:var(--mono);background:var(--bg);color:var(--text);line-height:1.65;padding:24px;background-image:radial-gradient(900px 480px at 82% -10%, rgba(59,244,170,.08), transparent 60%)}
+.wrap{max-width:1100px;margin:0 auto}.hero,.card{border:1px solid var(--line);background:var(--panel);border-radius:18px;padding:20px;box-shadow:0 16px 40px rgba(0,0,0,.22)}.hero{margin-bottom:16px}
+h1{font-size:clamp(28px,4vw,40px);margin-bottom:8px;color:#edfff5}h1 span{color:var(--green)}h2{font-size:22px;margin-bottom:10px;color:#effff6}p,li,label{color:var(--muted);font-size:13.6px}.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px;margin-top:16px}.span-12{grid-column:span 12}.span-6{grid-column:span 6}.span-4{grid-column:span 4}@media(max-width:860px){.span-6,.span-4{grid-column:span 12}}
+.badges,.actions,.chips{display:flex;gap:8px;flex-wrap:wrap}.badge,.chip,.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line2);border-radius:999px;padding:7px 12px;font-size:12px;background:rgba(59,244,170,.06);color:var(--text)}.badge.warn{color:var(--amber);border-color:rgba(255,207,121,.35);background:rgba(255,207,121,.07)}.btn{cursor:pointer;font-family:var(--mono);background:var(--panel2)}.btn.primary{background:var(--green);border-color:var(--green);color:#042012;font-weight:800}
+.field{display:grid;gap:8px}.field input,.field textarea,.field select{width:100%;background:#09150d;border:1px solid var(--line2);border-radius:12px;padding:12px;color:var(--text);font-family:var(--mono);font-size:13px;outline:none}.field textarea{min-height:130px;resize:vertical}.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--green)}
+.note,.ok,.warn{margin-top:12px;border-left:3px solid var(--amber);padding:10px 0 10px 12px;background:rgba(255,207,121,.06);font-size:13px;color:#ffe4b7}.ok{border-left-color:var(--green);background:rgba(59,244,170,.06);color:#d1fbe7}.warn{border-left-color:var(--red);background:rgba(255,138,138,.06);color:#ffd8d8}
+.preview{white-space:pre-wrap;background:#09150d;border:1px solid var(--line2);border-radius:12px;padding:14px;color:#d8f5e7;font-size:12.8px;min-height:160px}.footer{text-align:center;color:var(--muted);font-size:12px;margin-top:16px}a{color:var(--green)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <section class="hero">
+    <div class="badges">
+      <span class="badge">Personal notes intake</span>
+      <span class="badge">Local save</span>
+      <span class="badge">Markdown export</span>
+      <span class="badge warn">Bring your own lawful material</span>
+    </div>
+    <h1>Notes <span>Import Template</span></h1>
+    <p>Jab tum apni bug bounty personal files, screenshots, PDFs, ya raw notes bhejna chaho, to pehle unhe is template me structure kar sakte ho. Yeh page browser localStorage me save karta hai aur final output ko markdown-ready export me convert karta hai.</p>
+    <div class="actions" style="margin-top:14px">
+      <button class="btn primary" id="saveBtn">Save Local</button>
+      <button class="btn" id="exportBtn">Export Markdown</button>
+      <button class="btn" id="printBtn">Print</button>
+      <button class="btn" id="clearBtn">Clear</button>
+      <a class="btn" href="bug-bounty-vault.html">Bug Bounty Vault</a>
+      <a class="btn" href="index.html">Main Index</a>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Structured intake form</h2>
+    <div class="grid">
+      <div class="field span-4"><label>Program / Target</label><input id="program" placeholder="Example: private program name or personal lab"></div>
+      <div class="field span-4"><label>Source type</label><select id="sourceType"><option>Notes</option><option>PDF</option><option>Screenshots</option><option>Accepted Report</option><option>Tool Output</option><option>Mixed Bundle</option></select></div>
+      <div class="field span-4"><label>Vulnerability family</label><input id="family" placeholder="auth, xss, idor, ssrf, report, recon..."></div>
+      <div class="field span-6"><label>Scope / Boundary</label><textarea id="scope" placeholder="In-scope assets, allowed tests, important limits, auth context..."></textarea></div>
+      <div class="field span-6"><label>File names / references</label><textarea id="refs" placeholder="List the filenames, screenshot labels, PDF names, or raw note references."></textarea></div>
+      <div class="field span-12"><label>Raw notes / pasted content</label><textarea id="raw" placeholder="Paste your raw notes, copied highlights, or rough observations here."></textarea></div>
+      <div class="field span-6"><label>Evidence / commands / URLs</label><textarea id="evidence" placeholder="Requests, commands, screenshots, response diffs, URLs, steps..."></textarea></div>
+      <div class="field span-6"><label>Confusions / questions</label><textarea id="questions" placeholder="What is still unclear? What needs deeper explanation?"></textarea></div>
+      <div class="field span-12"><label>Desired output</label><textarea id="desired" placeholder="Hindi deep notes, English translation, revision sheet, checklist, report summary, weak-area tracker..."></textarea></div>
+    </div>
+    <div class="ok">Recommended habit: raw file names + raw notes + desired output always mention karo. Isse transformation fast aur precise hoti hai.</div>
+    <div class="warn">Boundary: private third-party paywalled material ko mirror karna allowed nahi hai. Tumhare apne lawful notes/materials ko structure karna allowed hai.</div>
+  </section>
+
+  <section class="card" style="margin-top:16px">
+    <h2>Markdown export preview</h2>
+    <div id="preview" class="preview"></div>
+    <div class="chips" style="margin-top:12px">
+      <span class="chip">Copy this into chat later</span>
+      <span class="chip">Use as repo note</span>
+      <span class="chip">Turn into deep Hindi notes</span>
+    </div>
+  </section>
+
+  <div class="footer">Notes Import Template — local-only helper for future personal bug bounty material transformation.</div>
+</div>
+<script>
+(() => {
+  const ids = ['program','sourceType','family','scope','refs','raw','evidence','questions','desired'];
+  const key = 'lm_notes_import_v1';
+  const els = Object.fromEntries(ids.map(id => [id, document.getElementById(id)]));
+  const preview = document.getElementById('preview');
+  function state(){ return Object.fromEntries(ids.map(id => [id, els[id]?.value || ''])); }
+  function render(){
+    const s = state();
+    const md = `# Personal Notes Intake
+
+- Program / Target: ${s.program}
+- Source type: ${s.sourceType}
+- Vulnerability family: ${s.family}
+
+## Scope / Boundary
+${s.scope}
+
+## File names / references
+${s.refs}
+
+## Raw notes
+${s.raw}
+
+## Evidence / commands / URLs
+${s.evidence}
+
+## Confusions / questions
+${s.questions}
+
+## Desired output
+${s.desired}
+`;
+    preview.textContent = md;
+  }
+  try {
+    const saved = JSON.parse(localStorage.getItem(key) || '{}');
+    ids.forEach(id => { if (els[id] && saved[id]) els[id].value = saved[id]; });
+  } catch {}
+  render();
+  ids.forEach(id => els[id]?.addEventListener('input', render));
+  document.getElementById('saveBtn')?.addEventListener('click', () => { try { localStorage.setItem(key, JSON.stringify(state())); } catch {} render(); });
+  document.getElementById('clearBtn')?.addEventListener('click', () => { ids.forEach(id => { if (els[id]) els[id].value = ''; }); try { localStorage.removeItem(key); } catch {} render(); });
+  document.getElementById('printBtn')?.addEventListener('click', () => window.print());
+  document.getElementById('exportBtn')?.addEventListener('click', async () => {
+    render();
+    try { await navigator.clipboard.writeText(preview.textContent); } catch {}
+  });
+})();
+</script>
+</body>
+</html>

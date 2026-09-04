@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bug Bounty Vault — Repo-Derived Study Map</title>
+<meta name="description" content="Original bug bounty vault built after reviewing the public bug-hunting repository, with detailed resources, tools, sources, and workflows.">
+<style>
+:root{
+  --bg:#071009; --bg2:#0c1711; --panel:#0f1e16; --panel2:#13271d; --line:#1e4031; --line2:#2d654c;
+  --text:#d9f4e6; --muted:#86ad99; --green:#3bf4aa; --amber:#ffcf79; --red:#ff8a8a; --cyan:#81e1ff;
+  --mono:"JetBrains Mono","Fira Code","Cascadia Code",Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--mono);background:var(--bg);color:var(--text);line-height:1.68;padding:24px;background-image:radial-gradient(1000px 500px at 82% -10%, rgba(59,244,170,.08), transparent 60%),linear-gradient(rgba(59,244,170,.03) 1px, transparent 1px),linear-gradient(90deg, rgba(59,244,170,.03) 1px, transparent 1px);background-size:auto,30px 30px,30px 30px}
+a{color:var(--green);text-decoration:none} a:hover{text-decoration:underline}
+.wrap{max-width:1240px;margin:0 auto}
+.hero,.card,.toc,.bar,.tiny{border:1px solid var(--line);background:var(--panel);border-radius:18px;box-shadow:0 16px 40px rgba(0,0,0,.22)}
+.hero{padding:22px;margin-bottom:16px}
+.k{color:var(--green);font-size:12px;letter-spacing:2px;text-transform:uppercase}
+h1{font-size:clamp(28px,4vw,42px);line-height:1.14;margin:10px 0 8px;color:#ecfff5}
+h1 span{color:var(--green)}
+h2{font-size:clamp(21px,3vw,30px);color:#effff6;margin-bottom:10px} h3{font-size:16px;color:#effff6;margin-bottom:10px}
+p,li,td{color:var(--muted);font-size:13.6px}.sub{max-width:92ch}
+.badges,.actions,.chips,.toc-links,.filter-row{display:flex;gap:8px;flex-wrap:wrap}
+.badge,.chip,.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line2);border-radius:999px;padding:7px 12px;font-size:12px;background:rgba(59,244,170,.06);color:var(--text)}
+.badge.warn,.chip.warn{border-color:rgba(255,207,121,.35);color:var(--amber);background:rgba(255,207,121,.07)}
+.badge.red,.chip.red{border-color:rgba(255,138,138,.35);color:#ffd7d7;background:rgba(255,138,138,.06)}
+.badge.cyan,.chip.cyan{border-color:rgba(129,225,255,.35);color:var(--cyan);background:rgba(129,225,255,.06)}
+.btn{cursor:pointer;font-family:var(--mono);background:var(--panel2)}
+.btn.primary{background:var(--green);border-color:var(--green);color:#032012;font-weight:800}
+.btn.active{border-color:var(--green);color:var(--green);background:rgba(59,244,170,.12)}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px;margin:16px 0}
+.span-12{grid-column:span 12}.span-8{grid-column:span 8}.span-6{grid-column:span 6}.span-4{grid-column:span 4}.span-3{grid-column:span 3}
+@media(max-width:920px){.span-8,.span-6,.span-4,.span-3{grid-column:span 12}}
+.card{padding:18px}.toc{padding:18px;margin-bottom:16px}
+.table{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:10px}.table th,.table td{padding:9px 10px;border-bottom:1px dashed var(--line);text-align:left;vertical-align:top}.table th{font-size:11px;color:var(--green);letter-spacing:1px;text-transform:uppercase}.table tr:last-child td{border-bottom:none}
+.search{width:100%;background:var(--bg2);border:1px solid var(--line2);border-radius:12px;padding:12px 14px;color:var(--text);font-family:var(--mono);outline:none}
+.search:focus{border-color:var(--green)}
+.section{position:relative}.section.hidden{display:none}
+.bookmark{position:absolute;top:16px;right:16px;background:transparent;border:1px solid var(--line2);border-radius:999px;padding:7px 12px;color:var(--muted);cursor:pointer;font-family:var(--mono);font-size:12px}
+.bookmark.on{border-color:var(--green);color:var(--green);background:rgba(59,244,170,.1)}
+.list{padding-left:18px}.list li{margin-bottom:7px}
+.note,.ok,.warn{margin-top:12px;border-left:3px solid var(--amber);padding:10px 0 10px 12px;background:rgba(255,207,121,.06);font-size:13px;color:#ffe4b7}.ok{border-left-color:var(--green);background:rgba(59,244,170,.06);color:#d1fbe7}.warn{border-left-color:var(--red);background:rgba(255,138,138,.06);color:#ffd8d8}
+.tool-grid,.res-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:14px}
+@media(max-width:860px){.tool-grid,.res-grid{grid-template-columns:1fr}}
+.tile{border:1px solid var(--line);background:var(--panel2);border-radius:14px;padding:14px}
+.tile h4{font-size:14px;color:#effff6;margin-bottom:8px}.tile p,.tile li{font-size:12.8px}
+.tiny{padding:16px}.tiny b{color:#effff6}
+.footer{margin-top:18px;text-align:center;color:var(--muted);font-size:12px}
+code{font-family:var(--mono);background:var(--bg2);border:1px solid var(--line2);border-radius:6px;padding:1px 6px;color:var(--cyan)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <section class="hero">
+    <div class="k">// repo-derived bug bounty study system</div>
+    <h1>Bug Bounty <span>Vault</span></h1>
+    <p class="sub">Is page ko tumhari public repo <b>toxictest/bug-hunting</b> ko depth me review karne ke baad banaya gaya hai. Maine us repo ke text, docx, pdf, aur media structure ko study karke ek organized bug-hunting knowledge vault banaya hai — jisme detailed learning lanes, tool stack, resource sources, aur report-thinking add hai.</p>
+    <div class="badges" style="margin-top:14px">
+      <span class="badge">178 non-git files reviewed</span>
+      <span class="badge cyan">117 txt + 15 docx + 3 pdf</span>
+      <span class="badge cyan">16 images + 22 videos visually indexed</span>
+      <span class="badge warn">Public repo derived</span>
+      <span class="badge red">Original restructured notes only</span>
+    </div>
+    <div class="actions" style="margin-top:14px">
+      <button class="btn primary" id="showAllBtn">Show All</button>
+      <button class="btn" id="showBookmarksBtn">Bookmarked Only</button>
+      <button class="btn" id="printBtn">Print Current View</button>
+      <a class="btn" href="notes-import.html">Notes Import Template</a>
+      <a class="btn" href="notes.html">Notes Vault</a>
+      <a class="btn" href="index.html">Main Index</a>
+    </div>
+  </section>
+
+  <section class="toc">
+    <h2>Quick Filters & Jump</h2>
+    <div class="grid" style="margin:12px 0 0">
+      <div class="span-8"><input id="search" class="search" type="text" placeholder="search: xss, idor, oauth, rate limit, recon, tool, reporting, source..." autocomplete="off"></div>
+      <div class="span-4 tiny"><b id="count">10 / 10 sections visible</b><div style="margin-top:6px">Filter applies to the current page. Print button exports only the visible sections.</div></div>
+    </div>
+    <div class="filter-row" style="margin-top:14px">
+      <a class="chip" href="#section-review">Repo Review</a>
+      <a class="chip" href="#section-lanes">Study Lanes</a>
+      <a class="chip" href="#section-workflow">Workflow</a>
+      <a class="chip" href="#section-tools">Tools</a>
+      <a class="chip" href="#section-resources">Resources</a>
+      <a class="chip" href="#section-reporting">Reporting</a>
+      <a class="chip" href="#section-roadmap">Roadmap</a>
+      <a class="chip" href="#section-gaps">Skill Gaps</a>
+      <a class="chip" href="#section-intake">Future Intake</a>
+      <a class="chip" href="#section-sources">Source Board</a>
+    </div>
+  </section>
+
+  <section id="section-review" class="card section" data-title="repo review public repo toxictest bug-hunting patterns files pdf images videos auth session xss idor rate limit oauth ssrf recon">
+    <button class="bookmark" data-bookmark="section-review">☆ bookmark</button>
+    <h2>1) Tumhari public bug-hunting repo me kya strong patterns mile</h2>
+    <div class="grid">
+      <div class="card span-4 tile"><h4>Auth / Session heavy</h4><p>Password reset, registration, logout invalidation, token exposure, 2FA bypass, OTP/rate-limit themes bahut strongly repeat ho rahe hain. Iska matlab tumhara instinct authentication surfaces par naturally strong ho raha hai.</p></div>
+      <div class="card span-4 tile"><h4>Web logic & browser behavior</h4><p>Clickjacking, content spoofing, HTML email injection, iframe injection, referer token leak, source-code credential exposure, visible debug page jaise browser-facing observations repo me baar-baar dikhte hain.</p></div>
+      <div class="card span-4 tile"><h4>Escalation & object access</h4><p>IDOR, horizontal privilege escalation, vertical privilege escalation, auth bypass response/request manipulation aur OAuth misconfiguration se account impact wali categories bhi achchhi breadth cover karti hain.</p></div>
+      <div class="card span-6 tile"><h4>Exploit-class spread</h4><p>Repo me XSS, SSRF, SSTI, command injection, SQL injection, LFI, XXE, Log4J, file upload bypass, default credentials, subdomain takeover, and application DoS tak ki spread hai. Matlab coverage wide hai, par notes quality aur severity reasoning ko aur strong banana next step hai.</p></div>
+      <div class="card span-6 tile"><h4>Resource behavior</h4><p>Repo me kaafi files external writeups, hackerone reports, dorks, tools, and reference links collect karti hain. Ye achchha raw material hai, lekin next maturity stage me isi material ko structured decision trees aur reproducible checklists me compress karna hota hai.</p></div>
+    </div>
+    <div class="ok">Best insight: tumhari repo raw curiosity se bharpur hai. Ab us curiosity ko <b>repeatable methodology + severity language + better note architecture</b> me convert karna chahiye.</div>
+  </section>
+
+  <section id="section-lanes" class="card section" data-title="study lanes vulnerability families xss idor csrf oauth token session rate limit ssrf file upload lfi xxe log4j">
+    <button class="bookmark" data-bookmark="section-lanes">☆ bookmark</button>
+    <h2>2) Repo-derived study lanes — raw topics ko mastery tracks me kaise todna hai</h2>
+    <table class="table">
+      <tr><th>Lane</th><th>Repo signals</th><th>Deep skill goal</th></tr>
+      <tr><td>Auth & Session</td><td>Weak registration, weak reset, logout invalidation, token leak, 2FA bypass, OTP/rate limits</td><td>State transition map, trust boundary, session invalidation logic, token lifecycle analysis</td></tr>
+      <tr><td>Input & Rendering</td><td>Reflected XSS, stored XSS, blind XSS, iframe injection, HTML email injection</td><td>Input -> parser -> sink -> execution context model</td></tr>
+      <tr><td>Object Access & Roles</td><td>IDOR, horizontal/vertical privilege escalation, auth bypass manipulation</td><td>Role matrix, object ownership rules, authorization checkpoints</td></tr>
+      <tr><td>Infrastructure & Surface</td><td>Subdomain takeover, origin IP leakage, host header issues, visible debug pages</td><td>Asset ownership, trust edges, routing and front-door bypass logic</td></tr>
+      <tr><td>Server-side Impact</td><td>SSRF, command injection, SSTI, Log4J, LFI, XXE, file upload</td><td>Backend execution path, file/parser behavior, internal request boundaries</td></tr>
+      <tr><td>Abuse & Resilience</td><td>App-level DoS, pixel flood, zip bomb, rate-limit bypass</td><td>Resource exhaustion reasoning, control failure mapping, impact justification</td></tr>
+      <tr><td>Reporting & Severity</td><td>Bugcrowd VRT PDF, multiple writeup-style text notes</td><td>Baselines, exploit chain framing, technical vs business severity language</td></tr>
+    </table>
+  </section>
+
+  <section id="section-workflow" class="card section" data-title="workflow methodology bug bounty authorized scope recon verify compare evidence report">
+    <button class="bookmark" data-bookmark="section-workflow">☆ bookmark</button>
+    <h2>3) Detailed bug-hunting workflow — tumhari current repo se next maturity tak</h2>
+    <div class="grid">
+      <div class="span-3 tile"><h4>Step 1 — Scope</h4><p>Sabse pehle program rules, in-scope assets, authentication expectations, safe-harbor, and prohibited actions ko note karo. Scope reading pehli real recon command hai.</p></div>
+      <div class="span-3 tile"><h4>Step 2 — Surface Map</h4><p>Targets ko lanes me todho: auth pages, account settings, uploads, APIs, forgotten-password flow, onboarding, share/invite, email flows, payment/account deletion paths.</p></div>
+      <div class="span-3 tile"><h4>Step 3 — State Analysis</h4><p>Guest vs user vs admin vs expired-session vs reset-flow jaise states compare karo. Tumhari repo ka strongest signal यही hai.</p></div>
+      <div class="span-3 tile"><h4>Step 4 — Evidence</h4><p>Response diff, screenshots, curl/burp reproduction, affected endpoint, and exact impact notes save karo. Raw proof bina bug momentum toot jata hai.</p></div>
+      <div class="span-4 tile"><h4>Step 5 — Severity</h4><p>Bug ko sirf category se judge mat karo. User impact, account control, sensitive data exposure, exploitability, and workaround availability ko bhi weigh karo.</p></div>
+      <div class="span-4 tile"><h4>Step 6 — Report</h4><p>Title, summary, affected area, prerequisites, reproduction, impact, remediation, and post-fix verification. Communication quality bounty workflow me huge differentiator hai.</p></div>
+      <div class="span-4 tile"><h4>Step 7 — Knowledge Compression</h4><p>Har report ko 1-page revision, mistake log, and future pattern tag me compress karo. Isi se long-term intuition banti hai.</p></div>
+    </div>
+    <div class="note">Tumhari repo me raw finding patterns achchhe hain; ab har theme ko <b>state diagram + severity sentence + tool checklist</b> me convert karna sabse bada upgrade hoga.</div>
+  </section>
+
+  <section id="section-tools" class="card section" data-title="tools burp subfinder amass assetfinder waybackurls gau httpx katana ffuf nuclei dig curl jq search reporting">
+    <button class="bookmark" data-bookmark="section-tools">☆ bookmark</button>
+    <h2>4) Detailed tool stack — kya use karna hai, kab use karna hai, aur source kya hai</h2>
+    <div class="tool-grid">
+      <div class="tile"><h4>Browser DevTools</h4><p>Use for: request/response inspection, storage, cookies, CSP, JS sources, network waterfalls.</p><p>When: हर modern web target par baseline ke roop me.</p><p>Source: <a href="https://developer.chrome.com/docs/devtools" target="_blank" rel="noopener">developer.chrome.com/docs/devtools</a></p></div>
+      <div class="tile"><h4>Burp Suite Community</h4><p>Use for: proxying, repeater-style verification, request mutation, auth flow comparison.</p><p>When: session, token, IDOR, auth bypass, CSRF, response diff testing.</p><p>Source: <a href="https://portswigger.net/burp/communitydownload" target="_blank" rel="noopener">portswigger.net/burp/communitydownload</a></p></div>
+      <div class="tile"><h4>subfinder</h4><p>Use for: fast passive subdomain discovery.</p><p>When: target surface build karte waqt.</p><p>Source: <a href="https://docs.projectdiscovery.io/opensource/subfinder/overview" target="_blank" rel="noopener">docs.projectdiscovery.io/opensource/subfinder/overview</a></p></div>
+      <div class="tile"><h4>OWASP Amass</h4><p>Use for: deeper asset mapping and enum workflows.</p><p>When: larger domains ya wider asset relationship samajhni ho.</p><p>Source: <a href="https://owasp-amass.github.io/" target="_blank" rel="noopener">owasp-amass.github.io</a></p></div>
+      <div class="tile"><h4>assetfinder</h4><p>Use for: quick domain-related asset discovery.</p><p>When: subfinder/amass ke saath compare ya combine karna ho.</p><p>Source: <a href="https://github.com/tomnomnom/assetfinder" target="_blank" rel="noopener">github.com/tomnomnom/assetfinder</a></p></div>
+      <div class="tile"><h4>crt.sh</h4><p>Use for: certificate transparency based host discovery.</p><p>When: subdomain discovery aur historical names ke signals chahiye ho.</p><p>Source: <a href="https://crt.sh/" target="_blank" rel="noopener">crt.sh</a></p></div>
+      <div class="tile"><h4>httpx</h4><p>Use for: large host lists me live web services identify karna, titles/status/tech hints lena.</p><p>When: discovery ke baad alive endpoints shortlist karne ho.</p><p>Source: <a href="https://docs.projectdiscovery.io/opensource/httpx/overview" target="_blank" rel="noopener">docs.projectdiscovery.io/opensource/httpx/overview</a></p></div>
+      <div class="tile"><h4>waybackurls / gau</h4><p>Use for: archived and historical URLs collect karna.</p><p>When: hidden paths, old endpoints, legacy parameters dhundhne ho.</p><p>Sources: <a href="https://github.com/tomnomnom/waybackurls" target="_blank" rel="noopener">waybackurls</a> · <a href="https://github.com/lc/gau" target="_blank" rel="noopener">gau</a></p></div>
+      <div class="tile"><h4>Katana</h4><p>Use for: crawling and route discovery.</p><p>When: front-end path coverage aur hidden pages enumerate karni ho.</p><p>Source: <a href="https://docs.projectdiscovery.io/opensource/katana/overview" target="_blank" rel="noopener">docs.projectdiscovery.io/opensource/katana/overview</a></p></div>
+      <div class="tile"><h4>ffuf</h4><p>Use for: content discovery, parameter/path fuzzing in authorized environments.</p><p>When: hidden directories, files, or route variations verify karni ho.</p><p>Source: <a href="https://github.com/ffuf/ffuf" target="_blank" rel="noopener">github.com/ffuf/ffuf</a></p></div>
+      <div class="tile"><h4>curl + jq</h4><p>Use for: minimal reproducible HTTP/API proofs, especially report-friendly commands.</p><p>When: Burp se confirm hone ke baad clean CLI evidence banana ho.</p><p>Sources: <a href="https://curl.se/docs/" target="_blank" rel="noopener">curl.se/docs</a> · <a href="https://jqlang.org/" target="_blank" rel="noopener">jqlang.org</a></p></div>
+      <div class="tile"><h4>dig + dnsx</h4><p>Use for: DNS truth checking, CNAME chains, and surface verification.</p><p>When: DMARC/SPF, subdomain, takeover, origin-IP, ya mail-security context ho.</p><p>Sources: <a href="https://manpages.debian.org/dig" target="_blank" rel="noopener">dig docs</a> · <a href="https://docs.projectdiscovery.io/opensource/dnsx/overview" target="_blank" rel="noopener">dnsx docs</a></p></div>
+      <div class="tile"><h4>Nuclei</h4><p>Use for: template-driven checks in authorized scope.</p><p>When: known exposure classes ya safe detection automation karni ho.</p><p>Source: <a href="https://docs.projectdiscovery.io/opensource/nuclei/overview" target="_blank" rel="noopener">docs.projectdiscovery.io/opensource/nuclei/overview</a></p></div>
+      <div class="tile"><h4>SecLists</h4><p>Use for: wordlists, discovery lists, fuzz inputs, context-specific lists.</p><p>When: content discovery ya input-variation testing karni ho.</p><p>Source: <a href="https://github.com/danielmiessler/SecLists" target="_blank" rel="noopener">github.com/danielmiessler/SecLists</a></p></div>
+    </div>
+    <div class="ok">Practical rule: discovery tools se noise generate karo, lekin <b>report</b> हमेशा clean reproducible requests se submit karo.</div>
+  </section>
+
+  <section id="section-resources" class="card section" data-title="resources sources PortSwigger OWASP Bugcrowd VRT HackerOne Intigriti PayloadsAllTheThings can-i-take-over xyz">
+    <button class="bookmark" data-bookmark="section-resources">☆ bookmark</button>
+    <h2>5) Detailed online resources — kya padhna hai aur source kya hai</h2>
+    <div class="res-grid">
+      <div class="tile"><h4>PortSwigger Web Security Academy</h4><p>Best structured public web-bug learning path. Har topic me explanation + labs model milta hai.</p><p>Source: <a href="https://portswigger.net/web-security" target="_blank" rel="noopener">portswigger.net/web-security</a></p></div>
+      <div class="tile"><h4>PortSwigger XSS Cheat Sheet</h4><p>XSS context thinking ke liye strong reference. Payload memorization se zyada context compare karne ke liye use karo.</p><p>Source: <a href="https://portswigger.net/web-security/cross-site-scripting/cheat-sheet" target="_blank" rel="noopener">portswigger.net/web-security/cross-site-scripting/cheat-sheet</a></p></div>
+      <div class="tile"><h4>OWASP Web Security Testing Guide</h4><p>Methodology aur test objectives ke liye strong public framework. Manual testing thinking ko structure deta hai.</p><p>Source: <a href="https://owasp.org/www-project-web-security-testing-guide/" target="_blank" rel="noopener">owasp.org/www-project-web-security-testing-guide</a></p></div>
+      <div class="tile"><h4>OWASP Top 10</h4><p>Executive framing aur vulnerability family mapping ke liye useful. Report explanation ko improve karta hai.</p><p>Source: <a href="https://owasp.org/www-project-top-ten/" target="_blank" rel="noopener">owasp.org/www-project-top-ten</a></p></div>
+      <div class="tile"><h4>Bugcrowd VRT</h4><p>Severity baseline aur report prioritization language ke liye useful. Tumhari repo me iska PDF already tha — yahan official source bhi diya gaya hai.</p><p>Source: <a href="https://www.bugcrowd.com/vulnerability-rating-taxonomy/" target="_blank" rel="noopener">bugcrowd.com/vulnerability-rating-taxonomy</a></p></div>
+      <div class="tile"><h4>HackerOne Hacktivity</h4><p>Public reports aur accepted patterns dekhne ke liye useful. Report writing and impact framing me madad karta hai.</p><p>Source: <a href="https://hackerone.com/hacktivity" target="_blank" rel="noopener">hackerone.com/hacktivity</a></p></div>
+      <div class="tile"><h4>Intigriti Guides</h4><p>Research writeups aur methodology articles ke liye public learning layer.</p><p>Source: <a href="https://www.intigriti.com/researchers/blog" target="_blank" rel="noopener">intigriti.com/researchers/blog</a></p></div>
+      <div class="tile"><h4>PayloadsAllTheThings</h4><p>Reference library. Isse checklist aur edge-case ideas lo; blind copy-paste habit mat banao.</p><p>Source: <a href="https://github.com/swisskyrepo/PayloadsAllTheThings" target="_blank" rel="noopener">github.com/swisskyrepo/PayloadsAllTheThings</a></p></div>
+      <div class="tile"><h4>can-i-take-over-xyz</h4><p>Subdomain takeover verification reference. Repo ke takeover notes ko structure dene ke liye useful.</p><p>Source: <a href="https://github.com/EdOverflow/can-i-take-over-xyz" target="_blank" rel="noopener">github.com/EdOverflow/can-i-take-over-xyz</a></p></div>
+      <div class="tile"><h4>Default Credentials reference</h4><p>Default-creds category ko structured checklists me convert karne ke liye helpful.</p><p>Source: <a href="https://github.com/netbiosX/Default-Credentials" target="_blank" rel="noopener">github.com/netbiosX/Default-Credentials</a></p></div>
+    </div>
+  </section>
+
+  <section id="section-reporting" class="card section" data-title="reporting severity triage VRT summary impact remediation verification">
+    <button class="bookmark" data-bookmark="section-reporting">☆ bookmark</button>
+    <h2>6) Reporting & severity — raw finding ko bounty-grade report me kaise badlo</h2>
+    <table class="table">
+      <tr><th>Block</th><th>What to write</th></tr>
+      <tr><td>Title</td><td>Precise impact-first title. Example style: session invalidation failure leading to account actions after logout.</td></tr>
+      <tr><td>Summary</td><td>2-4 lines me problem, affected flow, and attacker outcome.</td></tr>
+      <tr><td>Prerequisites</td><td>Guest/user role, browser state, token, or specific endpoint requirements.</td></tr>
+      <tr><td>Steps</td><td>Minimal reproducible path. Noise kam rakho.</td></tr>
+      <tr><td>Observed result</td><td>Exactly kya hua? kya state mismatch tha? kya sensitive action possible hua?</td></tr>
+      <tr><td>Impact</td><td>Data exposure, account control, service abuse, internal reach, user trust, ya payment/security risk.</td></tr>
+      <tr><td>Remediation</td><td>Exact layer बताओ: server-side invalidation, authz check, secure cookie flags, parser hardening, rate limit, audit logging.</td></tr>
+      <tr><td>Verification</td><td>Fix ke baad expected safe behavior kya hona chahiye.</td></tr>
+    </table>
+    <div class="note">Tumhari repo me raw notes achchhe hain, lekin bounty-grade polish ke liye <b>summary sentence + severity reasoning + remediation exactness</b> ko standardize karna bahut zaroori hai.</div>
+  </section>
+
+  <section id="section-roadmap" class="card section" data-title="roadmap 30 day 60 day 90 day bug bounty training xss idor auth session recon reporting">
+    <button class="bookmark" data-bookmark="section-roadmap">☆ bookmark</button>
+    <h2>7) 30 / 60 / 90-day roadmap — tumhari repo strengths ke hisaab se</h2>
+    <div class="grid">
+      <div class="span-4 tile"><h4>Day 1–30</h4><p>Auth/session, rate limits, OTP, token exposure, logout invalidation, password reset, invite flows. Har issue ko role/state diagram me convert karo.</p></div>
+      <div class="span-4 tile"><h4>Day 31–60</h4><p>IDOR, privilege escalation, auth bypass manipulation, source-code creds, debug surfaces, host header, email-security context, recon hygiene.</p></div>
+      <div class="span-4 tile"><h4>Day 61–90</h4><p>SSRF, LFI, file upload, XXE, SSTI, command injection, API authz, severity triage, exploit chains, polished reporting.</p></div>
+    </div>
+    <div class="ok">Rule: har week 1 category ko <b>read -> test -> summarize -> report template -> mistakes log</b> loop me complete karo.</div>
+  </section>
+
+  <section id="section-gaps" class="card section" data-title="skill gaps improvements repo review gaps standardization automation severity structure">
+    <button class="bookmark" data-bookmark="section-gaps">☆ bookmark</button>
+    <h2>8) Tumhari repo se jo growth gaps clearly dikhte hain</h2>
+    <ul class="list">
+      <li>Raw examples bahut hain, lekin har category ke लिए consistent <b>decision tree</b> kam hai.</li>
+      <li>Severity reasoning aur business-impact language ko aur systematic banana chahiye.</li>
+      <li>Tool notes me output interpretation aur false-positive handling add karna chahiye.</li>
+      <li>Auth/session findings ko reusable state-diagram format me convert karna chahiye.</li>
+      <li>Recon resource collection ko curated official-source board me compress karna chahiye.</li>
+      <li>Duplicate/copy folders ke content ko normalize karke clean master notes banana better rahega.</li>
+    </ul>
+  </section>
+
+  <section id="section-intake" class="card section" data-title="notes intake personal files import template future workflow upload translation summary">
+    <button class="bookmark" data-bookmark="section-intake">☆ bookmark</button>
+    <h2>9) Future personal files intake — next phase ke liye ready structure</h2>
+    <p>Agli baar jab tum apni personal bug bounty files, PDFs, screenshots, reports, ya raw notes doge, to unhe process karne ke liye maine dedicated intake template page bhi add ki hai: <a href="notes-import.html" target="_blank" rel="noopener">notes-import.html</a>.</p>
+    <div class="grid">
+      <div class="span-6 tile"><h4>Expected inputs</h4><ul class="list"><li>Personal notes</li><li>Own screenshots</li><li>Own PDFs / exported docs</li><li>Accepted public reports you want summarized</li><li>Tool outputs and endpoint maps</li></ul></div>
+      <div class="span-6 tile"><h4>Expected outputs</h4><ul class="list"><li>Hindi deep notes</li><li>English translation</li><li>Revision sheet</li><li>Commands checklist</li><li>Weak-area tracker</li><li>Report-ready summary</li></ul></div>
+    </div>
+    <div class="warn">Boundary clear hai: tumhare khud ke lawful materials ko transform kiya ja sakta hai. Unauthorized private content ko mirror ya near-copy nahi kiya jayega.</div>
+  </section>
+
+  <section id="section-sources" class="card section" data-title="source board repo sources official public sources xss report oauth references bugcrowd owasp portswigger projectdiscovery">
+    <button class="bookmark" data-bookmark="section-sources">☆ bookmark</button>
+    <h2>10) Source board — repo references + official/public learning anchors</h2>
+    <div class="chips">
+      <span class="chip">Repo-reviewed anchors: Bugcrowd VRT PDF, Platforms.docx, For subdomain.docx, tools.txt, multiple per-day bug writeups</span>
+      <span class="chip cyan">External references seen in repo: PortSwigger, Brutelogic, HackerOne reports, can-i-take-over-xyz, Default-Credentials, dorks lists</span>
+      <span class="chip warn">Use sources for context, not blind copy-paste</span>
+    </div>
+    <div class="footer">Bug Bounty Vault — built after reading the public bug-hunting repository and restructuring it into a cleaner study system.</div>
+  </section>
+</div>
+<script>
+(() => {
+  const search = document.getElementById('search');
+  const count = document.getElementById('count');
+  const emptyText = '0 / 10 sections visible';
+  const sections = Array.from(document.querySelectorAll('.section'));
+  const bmKey = 'lm_bug_bounty_bookmarks_v1';
+  const modeKey = 'lm_bug_bounty_view_v1';
+  let bookmarks = new Set();
+  try { bookmarks = new Set(JSON.parse(localStorage.getItem(bmKey) || '[]')); } catch {}
+  function save(){ try { localStorage.setItem(bmKey, JSON.stringify([...bookmarks])); } catch {} }
+  function paintBookmarks(){
+    document.querySelectorAll('.bookmark').forEach(btn => {
+      const id = btn.dataset.bookmark;
+      const on = bookmarks.has(id);
+      btn.classList.toggle('on', on);
+      btn.textContent = on ? '★ bookmarked' : '☆ bookmark';
+    });
+  }
+  function activeMode(){
+    return document.body.dataset.mode || 'all';
+  }
+  function setMode(mode){
+    document.body.dataset.mode = mode;
+    try { localStorage.setItem(modeKey, mode); } catch {}
+    document.getElementById('showAllBtn')?.classList.toggle('active', mode === 'all');
+    document.getElementById('showBookmarksBtn')?.classList.toggle('active', mode === 'bookmarks');
+    apply();
+  }
+  function apply(){
+    const q = (search?.value || '').trim().toLowerCase();
+    const mode = activeMode();
+    let visible = 0;
+    sections.forEach(sec => {
+      const text = (sec.dataset.title + ' ' + sec.textContent).toLowerCase();
+      const okSearch = !q || text.includes(q);
+      const okBm = mode !== 'bookmarks' || bookmarks.has(sec.id);
+      const show = okSearch && okBm;
+      sec.classList.toggle('hidden', !show);
+      if (show) visible += 1;
+    });
+    if (count) count.textContent = `${visible} / ${sections.length} sections visible`;
+  }
+  paintBookmarks();
+  let storedMode = 'all';
+  try { storedMode = localStorage.getItem(modeKey) || 'all'; } catch {}
+  setMode(storedMode === 'bookmarks' ? 'bookmarks' : 'all');
+  document.querySelectorAll('.bookmark').forEach(btn => btn.addEventListener('click', () => {
+    const id = btn.dataset.bookmark;
+    if (bookmarks.has(id)) bookmarks.delete(id); else bookmarks.add(id);
+    save(); paintBookmarks(); apply();
+  }));
+  search?.addEventListener('input', apply);
+  document.getElementById('showAllBtn')?.addEventListener('click', () => setMode('all'));
+  document.getElementById('showBookmarksBtn')?.addEventListener('click', () => setMode('bookmarks'));
+  document.getElementById('printBtn')?.addEventListener('click', () => window.print());
+})();
+</script>
+</body>
+</html>
