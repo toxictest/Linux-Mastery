@@ -64,6 +64,7 @@ code{font-family:var(--mono);background:var(--bg2);border:1px solid var(--line2)
       <span class="badge cyan">16 images + 22 videos visually indexed</span>
       <span class="badge warn">Public repo derived</span>
       <span class="badge red">Original restructured notes only</span>
+      <span class="badge">120-day series added</span>
     </div>
     <div class="actions" style="margin-top:14px">
       <button class="btn primary" id="showAllBtn">Show All</button>
@@ -71,6 +72,7 @@ code{font-family:var(--mono);background:var(--bg2);border:1px solid var(--line2)
       <button class="btn" id="printBtn">Print Current View</button>
       <a class="btn" href="notes-import.html">Notes Import Template</a>
       <a class="btn" href="bug-hunting-source-map.md">Source Map</a>
+      <a class="btn" href="bug-bounty-series.html">120-Day Series</a>
       <a class="btn" href="notes.html">Notes Vault</a>
       <a class="btn" href="index.html">Main Index</a>
     </div>
@@ -80,7 +82,7 @@ code{font-family:var(--mono);background:var(--bg2);border:1px solid var(--line2)
     <h2>Quick Filters & Jump</h2>
     <div class="grid" style="margin:12px 0 0">
       <div class="span-8"><input id="search" class="search" type="text" placeholder="search: xss, idor, oauth, rate limit, recon, tool, reporting, source..." autocomplete="off"></div>
-      <div class="span-4 tiny"><b id="count">12 / 12 sections visible</b><div style="margin-top:6px">Filter applies to the current page. Print button exports only the visible sections.</div></div>
+      <div class="span-4 tiny"><b id="count">14 / 14 sections visible</b><div style="margin-top:6px">Filter applies to the current page. Print button exports only the visible sections.</div></div>
     </div>
     <div class="filter-row" style="margin-top:14px">
       <a class="chip" href="#section-review">Repo Review</a>
@@ -92,6 +94,8 @@ code{font-family:var(--mono);background:var(--bg2);border:1px solid var(--line2)
       <a class="chip" href="#section-roadmap">Roadmap</a>
       <a class="chip" href="#section-gaps">Skill Gaps</a>
       <a class="chip" href="#section-intake">Future Intake</a>
+      <a class="chip" href="#section-operation">Web Workflow</a>
+      <a class="chip" href="#section-series">120-Day Series</a>
       <a class="chip" href="#section-techniques">Techniques</a>
       <a class="chip" href="#section-modern-links">Modern Links</a>
       <a class="chip" href="#section-sources">Source Board</a>
@@ -232,10 +236,42 @@ code{font-family:var(--mono);background:var(--bg2);border:1px solid var(--line2)
     <div class="warn">Boundary clear hai: tumhare khud ke lawful materials ko transform kiya ja sakta hai. Unauthorized private content ko mirror ya near-copy nahi kiya jayega.</div>
   </section>
 
+  <section id="section-operation" class="card section" data-title="web workflow browser devtools compare states safe practice owned app official labs evidence capture operation page review">
+    <button class="bookmark" data-bookmark="section-operation">☆ bookmark</button>
+    <h2>10) Web page par practice kaise karni hai — safe operational workflow</h2>
+    <div class="grid">
+      <div class="span-3 tile"><h4>Step 1 — Feature choose karo</h4><p>Login, reset, settings, profile, upload, invite, checkout, support, webhook, ya admin-like area me se ek flow select karo. Random scanning se better focused workflow hota hai.</p></div>
+      <div class="span-3 tile"><h4>Step 2 — Page observe karo</h4><p>Visible form fields, buttons, error messages, redirects, email notifications, and state changes note karo. Browser UI khud kaafi clues de deti hai.</p></div>
+      <div class="span-3 tile"><h4>Step 3 — DevTools / proxy note</h4><p>Network tab me request, response, cookies, cache headers, and storage changes compare karo. Guest vs account A vs account B state dekhna bahut useful hai.</p></div>
+      <div class="span-3 tile"><h4>Step 4 — Controlled compare</h4><p>Sirf authorized lab ya apne owned app me compare karo. Same action ko different roles, tabs, browsers, or sessions me dekhkar logic clarity milti hai.</p></div>
+      <div class="span-4 tile"><h4>Step 5 — State machine likho</h4><p>Flow ko likho: before action -> during action -> after action. Yahi auth, session, OTP, invite, approval, refund, upload, and admin workflows me hidden gaps dikhata hai.</p></div>
+      <div class="span-4 tile"><h4>Step 6 — Minimal evidence nikalo</h4><p>Full noise mat save karo. Bas decisive screenshot, request name, response clue, and expected safe behavior vs observed risky behavior likho.</p></div>
+      <div class="span-4 tile"><h4>Step 7 — Report-ready output banao</h4><p>Title, affected feature, prerequisites, reproduction summary, impact, and fix-layer likho. Isi format me daily notes later bounty-grade report bante hain.</p></div>
+    </div>
+    <div class="ok">Practical rule: page par click karna testing ka start hai; real progress tab hoti hai jab tum <b>state + request + evidence + impact</b> ek saath dekhte ho.</div>
+  </section>
+
+  <section id="section-series" class="card section" data-title="120 day series repo mirror daily bugs process practice evidence reporting one page bug bounty series">
+    <button class="bookmark" data-bookmark="section-series">☆ bookmark</button>
+    <h2>11) 120-day bug bounty series — day-wise bug definitions + process</h2>
+    <p>Ab ek dedicated <a href="bug-bounty-series.html" target="_blank" rel="noopener"><b>bug-bounty-series.html</b></a> page add ki gayi hai jisme <b>120 days</b> ki day-wise learning series hai. Days 1–16 tumhari public repo ke visible daily structure se inspired hain, aur days 17–120 official/public research expansion par based hain.</p>
+    <div class="grid">
+      <div class="span-3 tile"><h4>Days 1–16</h4><p>Repo mirror foundation: weak registration, reset, cache, clickjacking, session invalidation, token leak, rate limits, open redirect, referer leak.</p></div>
+      <div class="span-3 tile"><h4>Days 17–45</h4><p>Auth/session deepening + browser-side logic: MFA, re-auth, XSS contexts, CORS, WebSockets, source exposure, DevTools workflow.</p></div>
+      <div class="span-3 tile"><h4>Days 46–75</h4><p>Access control + API + server-side trust: IDOR, role logic, GraphQL, race conditions, SSRF, file flows, templates, debug exposure.</p></div>
+      <div class="span-3 tile"><h4>Days 76–120</h4><p>Recon, prioritization, reporting, severity, and long-term practice system. Yani finding se lekar note architecture tak.</p></div>
+    </div>
+    <div class="actions" style="margin-top:14px">
+      <a class="btn primary" href="bug-bounty-series.html" target="_blank" rel="noopener">↗ OPEN 120-DAY SERIES</a>
+      <a class="btn" href="bug-hunting-source-map.md" target="_blank" rel="noopener">↗ OPEN SOURCE MAP</a>
+      <a class="btn" href="notes-import.html" target="_blank" rel="noopener">↗ OPEN NOTES IMPORT</a>
+    </div>
+    <div class="note">Series intentionally methodology-heavy hai. Iska goal bug classes ko day-wise organize karna aur authorized practice ko repeatable banana hai.</div>
+  </section>
 
   <section id="section-techniques" class="card section" data-title="modern techniques oauth oidc jwt graphql api testing race conditions cache poisoning request smuggling cors websockets second order state diffing webhook upload pipeline">
     <button class="bookmark" data-bookmark="section-techniques">☆ bookmark</button>
-    <h2>10) Deeper bug-hunting techniques — ab kis angle se sochna chahiye</h2>
+    <h2>12) Deeper bug-hunting techniques — ab kis angle se sochna chahiye</h2>
     <div class="tool-grid">
       <div class="tile"><h4>State-diff testing</h4><p>Same flow ko guest, fresh-user, old-user, invited-user, suspended-user, MFA-enabled-user, aur expired-session state me compare karo. Auth/session bugs isi contrast se nikalte hain.</p><p>Good for: reset flows, profile changes, invite acceptance, account deletion, role switch.</p></div>
       <div class="tile"><h4>Second-order tracing</h4><p>User input turant exploit na ho, lekin baad me email templates, admin dashboards, exports, PDFs, logs, ya support panels me execute/render ho sakta hai. Repo ke HTML-email aur browser-facing notes yahan relevant hain.</p><p>Good for: stored XSS, HTML injection, report export, moderation/admin views.</p></div>
@@ -254,7 +290,7 @@ code{font-family:var(--mono);background:var(--bg2);border:1px solid var(--line2)
 
   <section id="section-modern-links" class="card section" data-title="official modern links oauth jwt graphql api testing race condition cache deception request smuggling auth session file upload ssrf devtools techniques">
     <button class="bookmark" data-bookmark="section-modern-links">☆ bookmark</button>
-    <h2>11) Extra research links — modern bug bounty areas jo aur padne chahiye</h2>
+    <h2>13) Extra research links — modern bug bounty areas jo aur padne chahiye</h2>
     <table class="table">
       <tr><th>Technique area</th><th>What to focus on</th><th>Official/public links</th></tr>
       <tr><td>Authentication & Session</td><td>current-password checks, re-auth, session rotation, recovery abuse, MFA reset</td><td><a href="https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html" target="_blank" rel="noopener">OWASP Authentication Cheat Sheet</a> · <a href="https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html" target="_blank" rel="noopener">OWASP Session Management Cheat Sheet</a> · <a href="https://cheatsheetseries.owasp.org/cheatsheets/Forgot_Password_Cheat_Sheet.html" target="_blank" rel="noopener">OWASP Forgot Password Cheat Sheet</a></td></tr>
@@ -272,7 +308,7 @@ code{font-family:var(--mono);background:var(--bg2);border:1px solid var(--line2)
 
   <section id="section-sources" class="card section" data-title="source board repo sources official public sources xss report oauth references bugcrowd owasp portswigger projectdiscovery">
     <button class="bookmark" data-bookmark="section-sources">☆ bookmark</button>
-    <h2>12) Source board — repo references + official/public learning anchors</h2>
+    <h2>14) Source board — repo references + official/public learning anchors</h2>
     <div class="chips">
       <span class="chip">Repo-reviewed anchors: Bugcrowd VRT PDF, Platforms.docx, For subdomain.docx, tools.txt, multiple per-day bug writeups</span>
       <span class="chip cyan">External references seen in repo: PortSwigger, Brutelogic, HackerOne reports, can-i-take-over-xyz, Default-Credentials, dorks lists</span>
@@ -286,7 +322,7 @@ code{font-family:var(--mono);background:var(--bg2);border:1px solid var(--line2)
 (() => {
   const search = document.getElementById('search');
   const count = document.getElementById('count');
-  const emptyText = '0 / 12 sections visible';
+  const emptyText = '0 / 14 sections visible';
   const sections = Array.from(document.querySelectorAll('.section'));
   const bmKey = 'lm_bug_bounty_bookmarks_v1';
   const modeKey = 'lm_bug_bounty_view_v1';

@@ -344,6 +344,7 @@ footer .g{color:var(--green-dim)}
 .study-frame{display:block;width:100%;height:min(1100px,86vh);border:0;background:#071009}
 .notes-frame{display:block;width:100%;height:min(1260px,88vh);border:0;background:#071009}
 .bounty-frame{display:block;width:100%;height:min(1320px,90vh);border:0;background:#071009}
+.series-frame{display:block;width:100%;height:min(1460px,92vh);border:0;background:#071009}
 .intake-frame{display:block;width:100%;height:min(980px,84vh);border:0;background:#071009}
 .vault-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
 @media(max-width:860px){.vault-grid{grid-template-columns:1fr}}
@@ -367,6 +368,7 @@ footer .g{color:var(--green-dim)}
       <a href="#study-hub">Study Hub</a>
       <a href="#notes-vault">Notes</a>
       <a href="#bug-bounty-vault">Bug Bounty</a>
+      <a href="#bug-bounty-series">Bug Series</a>
       <a href="#notes-intake">Notes Intake</a>
       <a href="#advanced-vault">Advanced Vault</a>
       <a href="#resource-hub">Hub</a>
@@ -589,10 +591,12 @@ footer .g{color:var(--green-dim)}
         <span class="chip">178 files reviewed</span>
         <span class="chip">Tools + sources</span>
         <span class="chip">Bookmarks</span>
+        <span class="chip">120-day series</span>
         <span class="chip tl">Embedded + direct open</span>
       </div>
       <div class="cta-row">
         <a class="btn" href="bug-bounty-vault.html" target="_blank" rel="noopener">↗ OPEN BUG BOUNTY VAULT DIRECT</a>
+        <a class="btn" href="bug-bounty-series.html" target="_blank" rel="noopener">↗ OPEN 120-DAY SERIES</a>
         <a class="btn" href="bug-hunting-source-map.md" target="_blank" rel="noopener">↗ OPEN SOURCE MAP</a>
       </div>
     </div>
@@ -603,6 +607,38 @@ footer .g{color:var(--green-dim)}
         <span class="pill">same-origin embed</span>
       </div>
       <iframe class="bounty-frame" src="bug-bounty-vault.html" title="Bug Bounty Vault embedded" loading="lazy"></iframe>
+    </div>
+  </div>
+</section>
+
+
+<section id="bug-bounty-series" style="border-top:1px solid var(--line)">
+  <div class="wrap recon-wrap">
+    <div class="sec-head">
+      <div class="k">// day-wise bug bounty training</div>
+      <h2>Bug Bounty 120-Day Series — <span class="g">day-wise bugs + process + practice</span></h2>
+      <p class="sec-sub">Ek dedicated one-page day-wise series add ki gayi hai jisme 120 days ka structured bug bounty training flow hai. Days 1–16 repo-inspired hain, aur बाकी research-expanded phases auth, XSS, IDOR, APIs, GraphQL, SSRF, reporting, and long-term practice system cover karte hain.</p>
+    </div>
+    <div class="recon-card">
+      <h3>Day-wise series access</h3>
+      <p>Har day card me topic definition, web/app par kya inspect karna hai, authorized practice process, evidence expectations, aur source links diye gaye hain. Search, phase filters, local completion tracking, aur print-visible-days support bhi hai.</p>
+      <div class="recon-badges">
+        <span class="chip">120 days</span>
+        <span class="chip">Phase filters</span>
+        <span class="chip">Completion tracker</span>
+        <span class="chip tl">Embedded + direct open</span>
+      </div>
+      <div class="cta-row">
+        <a class="btn" href="bug-bounty-series.html" target="_blank" rel="noopener">↗ OPEN BUG BOUNTY SERIES DIRECT</a>
+      </div>
+    </div>
+    <div class="study-shell">
+      <div class="rk-top">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <span>embedded: /bug-bounty-series.html</span>
+        <span class="pill">same-origin embed</span>
+      </div>
+      <iframe class="series-frame" src="bug-bounty-series.html" title="Bug Bounty 120-Day Series embedded" loading="lazy"></iframe>
     </div>
   </div>
 </section>

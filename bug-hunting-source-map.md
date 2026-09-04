@@ -151,3 +151,5 @@ When adding your own lawful materials later, include:
 - OWASP SSRF Prevention Cheat Sheet — https://cheatsheetseries.owasp.org/cheatsheets/Server_Side_Request_Forgery_Prevention_Cheat_Sheet.html
 - Chrome DevTools Network — https://developer.chrome.com/docs/devtools/network
 - Chrome DevTools Security — https://developer.chrome.com/docs/devtools/security
+
+- Bug bounty 120-day series: `bug-bounty-series.html`

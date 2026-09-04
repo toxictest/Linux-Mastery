@@ -86,6 +86,15 @@
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
 
+# Bug Bounty 120-day series: iframe-embeddable from the same site
+[[headers]]
+  for = "/bug-bounty-series.html"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    Content-Security-Policy = "frame-ancestors 'self';"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
 # Default: no frame embedding
 [[headers]]
   for = "/*"
