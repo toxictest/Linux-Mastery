@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Linux-Mastery — Zero to Bug Hunter</title>
+<meta name="description" content="Linux Mastery: A complete beginner-to-advanced Linux, networking, Bash, security and authorized bug-hunting curriculum. 22 levels, 16+ labs, Hindi + English.">
+<style>
+:root{
+  --bg0:#040806; --bg1:#071009; --panel:#0a140e; --panel2:#0d1a12;
+  --line:#17352a; --line2:#1f4a38;
+  --green:#2bff9e; --green-dim:#19b57a; --green-soft:rgba(43,255,158,.08);
+  --text:#d2ecdf; --muted:#7fa392; --faint:#4d6a5d;
+  --amber:#ffc266; --red:#ff6b6b; --cyan:#6be3ff;
+  --mono:"JetBrains Mono","Fira Code","Cascadia Code","SF Mono",Consolas,"DejaVu Sans Mono",monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg0); color:var(--text); font-family:var(--mono); font-size:15px; line-height:1.65;
+  background-image:
+    radial-gradient(1200px 600px at 70% -10%, rgba(43,255,158,.05), transparent 60%),
+    linear-gradient(rgba(43,255,158,.028) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(43,255,158,.028) 1px, transparent 1px);
+  background-size:auto, 42px 42px, 42px 42px;
+}
+body::after{
+  content:""; position:fixed; inset:0; pointer-events:none; z-index:99;
+  background:repeating-linear-gradient(0deg, rgba(0,0,0,.14) 0 1px, transparent 1px 3px);
+  opacity:.35;
+}
+::selection{background:rgba(43,255,158,.25)}
+a{color:var(--green);text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:1100px;margin:0 auto;padding:0 20px}
+
+/* ---------- top bar ---------- */
+.topbar{
+  position:sticky;top:0;z-index:50;background:rgba(4,8,6,.92);backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--line);
+}
+.topbar .wrap{display:flex;align-items:center;gap:18px;height:56px}
+.logo{color:var(--green);font-weight:700;letter-spacing:.5px;white-space:nowrap}
+.logo .t{color:var(--muted)}
+.logo .cur{animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.nav{display:flex;gap:4px;margin-left:auto;flex-wrap:wrap}
+.nav a{color:var(--muted);font-size:12.5px;padding:6px 10px;border-radius:6px}
+.nav a:hover{color:var(--green);background:var(--green-soft);text-decoration:none}
+@media(max-width:820px){.nav{display:none}}
+
+/* ---------- hero ---------- */
+.hero{padding:64px 0 40px;border-bottom:1px solid var(--line)}
+.hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:36px;align-items:center}
+@media(max-width:900px){.hero-grid{grid-template-columns:1fr}}
+.kicker{color:var(--green-dim);font-size:12.5px;letter-spacing:2px;text-transform:uppercase}
+h1{font-size:clamp(30px,5vw,52px);line-height:1.12;margin:14px 0 6px;color:#eafff4;font-weight:800}
+h1 .g{color:var(--green);text-shadow:0 0 24px rgba(43,255,158,.45)}
+.tagline{color:var(--muted);max-width:52ch;margin-top:12px}
+.tagline b{color:var(--text)}
+.hindi-line{color:var(--amber);margin-top:10px;font-size:14px}
+.cta-row{display:flex;gap:12px;margin-top:26px;flex-wrap:wrap}
+.btn{
+  display:inline-block;padding:12px 20px;border-radius:8px;font-family:var(--mono);font-size:14px;font-weight:700;
+  border:1px solid var(--line2);color:var(--green);background:var(--panel);cursor:pointer;transition:.15s;
+}
+.btn:hover{background:var(--green-soft);border-color:var(--green-dim);text-decoration:none;transform:translateY(-1px)}
+.btn.primary{background:var(--green);color:#04140c;border-color:var(--green)}
+.btn.primary:hover{background:#5cffb8;box-shadow:0 0 24px rgba(43,255,158,.35)}
+/* terminal */
+.term{
+  background:#050b08;border:1px solid var(--line2);border-radius:12px;overflow:hidden;
+  box-shadow:0 0 0 1px rgba(43,255,158,.06), 0 24px 60px rgba(0,0,0,.55), 0 0 60px rgba(43,255,158,.05);
+}
+.term-bar{display:flex;align-items:center;gap:7px;padding:10px 14px;background:#0a150f;border-bottom:1px solid var(--line)}
+.dot{width:11px;height:11px;border-radius:50%}
+.dot.r{background:#ff5f57}.dot.y{background:#febc2e}.dot.g{background:#28c840}
+.term-title{margin-left:8px;color:var(--faint);font-size:11.5px}
+.term-body{padding:18px 18px 22px;font-size:13.5px;min-height:262px;white-space:pre-wrap;word-break:break-word}
+.term-body .p{color:var(--green)}
+.term-body .cmd{color:#eafff4}
+.term-body .out{color:var(--muted)}
+.term-body .ok{color:var(--green)}
+.term-body .warn{color:var(--amber)}
+.tcur{display:inline-block;width:9px;height:16px;background:var(--green);vertical-align:-2px;animation:blink 1s steps(1) infinite}
+
+/* ---------- stats ---------- */
+.stats{border-bottom:1px solid var(--line);background:var(--bg1)}
+.stats .wrap{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line)}
+.stat{background:var(--bg1);padding:22px 10px;text-align:center}
+.stat .n{font-size:28px;font-weight:800;color:var(--green)}
+.stat .l{color:var(--muted);font-size:11.5px;letter-spacing:1.5px;text-transform:uppercase;margin-top:4px}
+@media(max-width:700px){.stats .wrap{grid-template-columns:repeat(2,1fr)}}
+
+/* ---------- sections ---------- */
+section{padding:56px 0}
+.sec-head{margin-bottom:28px}
+.sec-head .k{color:var(--green-dim);font-size:12px;letter-spacing:2px;text-transform:uppercase}
+h2{font-size:clamp(22px,3.4vw,32px);color:#eafff4;margin-top:6px}
+h2 .g{color:var(--green)}
+.sec-sub{color:var(--muted);margin-top:8px;max-width:70ch}
+
+/* phases */
+.phase-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media(max-width:820px){.phase-grid{grid-template-columns:1fr}}
+.phase{border:1px solid var(--line);background:var(--panel);border-radius:12px;padding:22px;position:relative;overflow:hidden}
+.phase::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--green),transparent)}
+.phase .p-tag{color:var(--green-dim);font-size:11.5px;letter-spacing:2px}
+.phase h3{color:#eafff4;font-size:17px;margin:8px 0 4px}
+.phase .rng{color:var(--amber);font-size:12.5px;margin-bottom:10px}
+.phase p{color:var(--muted);font-size:13.5px}
+
+/* progress */
+.progress-box{border:1px solid var(--line);background:var(--panel);border-radius:12px;padding:18px 20px;margin-bottom:22px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.pbar{flex:1;min-width:200px;height:10px;background:#0a150f;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.pbar .fill{height:100%;width:0%;background:linear-gradient(90deg,var(--green-dim),var(--green));transition:width .4s;box-shadow:0 0 12px rgba(43,255,158,.5)}
+.pcount{color:var(--muted);font-size:13px;white-space:nowrap}
+.pcount b{color:var(--green)}
+.reset-btn{background:none;border:1px solid var(--line2);color:var(--faint);font-family:var(--mono);font-size:11.5px;padding:6px 10px;border-radius:6px;cursor:pointer}
+.reset-btn:hover{color:var(--red);border-color:var(--red)}
+
+/* search */
+.search-row{display:flex;gap:12px;align-items:center;margin-bottom:22px;flex-wrap:wrap}
+.search{
+  flex:1;min-width:240px;background:var(--panel);border:1px solid var(--line2);border-radius:8px;
+  padding:12px 16px;color:var(--text);font-family:var(--mono);font-size:14px;outline:none;
+}
+.search:focus{border-color:var(--green-dim);box-shadow:0 0 0 3px rgba(43,255,158,.1)}
+.search::placeholder{color:var(--faint)}
+.hint{color:var(--faint);font-size:12px}
+
+/* level cards */
+.lv{border:1px solid var(--line);background:var(--panel);border-radius:12px;margin-bottom:12px;overflow:hidden;transition:border-color .15s}
+.lv:hover{border-color:var(--line2)}
+.lv.open{border-color:var(--green-dim)}
+.lv summary{
+  list-style:none;cursor:pointer;display:flex;align-items:center;gap:14px;padding:16px 18px;user-select:none;
+}
+.lv summary::-webkit-details-marker{display:none}
+.lv-num{
+  flex:0 0 auto;font-weight:800;font-size:12px;color:var(--green);border:1px solid var(--green-dim);
+  border-radius:6px;padding:5px 8px;background:var(--green-soft);letter-spacing:1px;
+}
+.lv-name{font-weight:700;color:#eafff4;font-size:15.5px;flex:1;min-width:0}
+.lv-phase{font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:3px 10px;white-space:nowrap}
+.lv-arrow{color:var(--faint);transition:transform .2s;font-size:12px}
+.lv.open .lv-arrow{transform:rotate(90deg);color:var(--green)}
+.done-btn{
+  flex:0 0 auto;width:24px;height:24px;border-radius:50%;border:1px solid var(--line2);background:transparent;cursor:pointer;
+  color:transparent;font-size:13px;line-height:1;display:flex;align-items:center;justify-content:center;transition:.15s;
+}
+.done-btn:hover{border-color:var(--green-dim);color:var(--green-dim)}
+.lv.done .done-btn{background:var(--green);border-color:var(--green);color:#04140c}
+.lv.done .lv-name{color:var(--green);text-decoration:line-through;text-decoration-color:rgba(43,255,158,.4)}
+.lv-body{padding:4px 20px 22px;border-top:1px dashed var(--line)}
+.grp{margin-top:18px}
+.grp h4{font-size:11.5px;letter-spacing:2px;text-transform:uppercase;color:var(--green-dim);margin-bottom:10px}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{font-size:12.5px;color:var(--text);background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:5px 10px}
+.chip.tl{color:var(--cyan);border-color:rgba(107,227,255,.25);background:rgba(107,227,255,.05)}
+.lab{margin-top:18px;border:1px solid rgba(255,194,102,.35);background:rgba(255,194,102,.05);border-radius:10px;padding:14px 16px}
+.lab-tag{font-size:10.5px;letter-spacing:2px;color:var(--amber);margin-bottom:6px}
+.lab-name{color:#ffe3b3;font-weight:700;font-size:14px}
+.lab-desc{color:var(--muted);font-size:13px;margin-top:6px;white-space:pre-line}
+.learned{margin-top:18px;border:1px solid rgba(43,255,158,.3);background:var(--green-soft);border-radius:10px;padding:14px 16px}
+.lr{font-size:13.5px;margin-top:6px}
+.lr:first-child{margin-top:0}
+.lr .flag{margin-right:8px}
+.lr-hi{color:#c9f5dd}
+.lr-en{color:var(--muted)}
+.extra{margin-top:18px}
+.eval-table{width:100%;border-collapse:collapse;font-size:13px}
+.eval-table td{padding:6px 8px;border-bottom:1px dashed var(--line);color:var(--muted)}
+.eval-table td:last-child{text-align:right;color:var(--green)}
+.eval-table tr:last-child td{border-bottom:none;color:#eafff4;font-weight:700}
+.no-match{display:none;border:1px dashed var(--line2);border-radius:12px;padding:34px;text-align:center;color:var(--muted)}
+
+/* level 21 subgrid */
+.sub21{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:18px}
+@media(max-width:760px){.sub21{grid-template-columns:1fr}}
+.sub21 .s{border:1px solid var(--line);background:var(--panel2);border-radius:10px;padding:14px}
+.sub21 .s .sid{color:var(--green-dim);font-size:11px;letter-spacing:1px}
+.sub21 .s h5{color:#eafff4;font-size:14px;margin:4px 0 8px}
+.sub21 .s .note{color:var(--muted);font-size:12.5px;margin-top:8px;border-top:1px dashed var(--line);padding-top:8px}
+.six{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.six span{font-size:11.5px;color:var(--amber);border:1px solid rgba(255,194,102,.3);border-radius:5px;padding:3px 8px;background:rgba(255,194,102,.05)}
+.final-rule{margin-top:22px;border:1px solid var(--green-dim);background:var(--green-soft);border-radius:12px;padding:18px 20px}
+.final-rule h4{color:var(--green);font-size:14px;margin-bottom:8px}
+.final-rule p{color:var(--text);font-size:13.5px}
+.final-rule .quote{color:#eafff4;font-style:italic;margin-top:10px;border-left:3px solid var(--green);padding-left:12px}
+
+/* framework / ethics */
+.split{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:820px){.split{grid-template-columns:1fr}}
+.fcard{border:1px solid var(--line);background:var(--panel);border-radius:12px;padding:22px}
+.fcard h3{color:#eafff4;font-size:16px;margin-bottom:12px}
+.fcard h3 span{color:var(--green-dim);font-size:12px;display:block;letter-spacing:2px;margin-bottom:4px}
+.fcard ul{list-style:none}
+.fcard li{color:var(--muted);font-size:13.5px;padding:7px 0 7px 22px;position:relative;border-bottom:1px dashed var(--line)}
+.fcard li:last-child{border-bottom:none}
+.fcard li::before{content:"▸";position:absolute;left:2px;color:var(--green-dim)}
+.fcard li b{color:var(--text)}
+.ethics{border:1px solid rgba(255,107,107,.4);background:rgba(255,107,107,.04);border-radius:12px;padding:22px}
+.ethics h3{color:var(--red);font-size:16px;margin-bottom:4px}
+.ethics .sub{color:var(--muted);font-size:12.5px;margin-bottom:12px}
+.ethics li{color:var(--text)}
+.ethics li::before{content:"⚠";position:absolute;left:0;font-size:11px}
+.ethics .gold{margin-top:14px;border-left:3px solid var(--red);padding-left:12px;color:#ffd7d7;font-size:13.5px;font-style:italic}
+
+/* injections */
+.inj-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+@media(max-width:820px){.inj-grid{grid-template-columns:1fr}}
+.inj{border:1px solid var(--line);background:var(--panel);border-radius:12px;padding:20px}
+.inj .lv-tag{display:inline-block;font-size:11px;color:var(--amber);border:1px solid rgba(255,194,102,.4);border-radius:5px;padding:3px 9px;margin-bottom:10px;background:rgba(255,194,102,.06)}
+.inj h4{color:#eafff4;font-size:14.5px;margin-bottom:8px}
+.inj p, .inj li{color:var(--muted);font-size:13px}
+.inj ul{list-style:none;margin-top:6px}
+.inj li{padding:4px 0 4px 18px;position:relative}
+.inj li::before{content:"✦";position:absolute;left:0;color:var(--green-dim);font-size:11px}
+.inj code{background:#050b08;border:1px solid var(--line);border-radius:4px;padding:1px 6px;color:var(--cyan);font-size:12px}
+
+/* dashboard */
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:820px){.dash-grid{grid-template-columns:1fr}}
+.dash{border:1px solid var(--line);background:var(--panel);border-radius:12px;padding:22px}
+.dash h3{font-size:15px;margin-bottom:12px}
+.dash h3.hi{color:var(--green)}
+.dash h3.en{color:var(--cyan)}
+.dash ul{list-style:none}
+.dash li{color:var(--muted);font-size:13px;padding:6px 0 6px 26px;position:relative;border-bottom:1px dashed var(--line)}
+.dash li:last-child{border-bottom:none}
+.dash li::before{content:"✔";position:absolute;left:2px;color:var(--green-dim);font-size:12px}
+.outcome{margin-top:22px;border:1px solid var(--line2);background:var(--panel2);border-radius:12px;padding:20px}
+.outcome .row{display:flex;gap:14px;padding:8px 0;align-items:baseline;border-bottom:1px dashed var(--line)}
+.outcome .row:last-child{border-bottom:none}
+.outcome .who{flex:0 0 130px;color:var(--amber);font-size:12.5px;letter-spacing:1px;text-transform:uppercase}
+.outcome .say{color:var(--text);font-size:13.5px;font-style:italic}
+
+/* footer */
+footer{border-top:1px solid var(--line);background:var(--bg1);padding:30px 0;margin-top:20px}
+footer .wrap{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;color:var(--faint);font-size:12.5px}
+footer .g{color:var(--green-dim)}
+</style>
+</head>
+<body>
+
+<!-- ======= TOP BAR ======= -->
+<div class="topbar">
+  <div class="wrap">
+    <div class="logo">~/linux-mastery<span class="t">:~$</span> <span class="cur">▊</span></div>
+    <nav class="nav">
+      <a href="#phases">Phases</a>
+      <a href="#curriculum">Curriculum</a>
+      <a href="#framework">Framework</a>
+      <a href="#ethics">Red Line</a>
+      <a href="#dashboard">Dashboard</a>
+      <a href="https://github.com/toxictest/Linux-Mastery" target="_blank" rel="noopener">PRD ↗</a>
+    </nav>
+  </div>
+</div>
+
+<!-- ======= HERO ======= -->
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="kicker">[ curriculum.prv — advanced ]</div>
+      <h1>LINUX<span class="g">-MASTERY</span></h1>
+      <div class="tagline">Zero → Advanced <b>Bug Hunter + Linux Security Engineer</b>. 22 levels. 16+ hands-on labs. Hindi + English. Command ratna nahi — <b>system behavior samajhna</b> seekhna hai.</div>
+      <div class="hindi-line">Beginner se Bug Hunter tak — ek complete journey, ek system.</div>
+      <div class="cta-row">
+        <a class="btn primary" href="#curriculum" id="startBtn">▶ START LEVEL 0</a>
+        <a class="btn" href="https://github.com/toxictest/Linux-Mastery" target="_blank" rel="noopener">PRD padho →</a>
+      </div>
+    </div>
+    <div class="term">
+      <div class="term-bar">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <span class="term-title">learner@linux-mastery: ~</span>
+      </div>
+      <div class="term-body" id="termBody"></div>
+    </div>
+  </div>
+</header>
+
+<!-- ======= STATS ======= -->
+<div class="stats">
+  <div class="wrap">
+    <div class="stat"><div class="n">22</div><div class="l">Levels (0–21)</div></div>
+    <div class="stat"><div class="n">3</div><div class="l">Phases</div></div>
+    <div class="stat"><div class="n">16+</div><div class="l">Labs &amp; Projects</div></div>
+    <div class="stat"><div class="n">100%</div><div class="l">Free to Host</div></div>
+  </div>
+</div>
+
+<!-- ======= PHASES ======= -->
+<section id="phases">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="k">// progressive phasing</div>
+      <h2>3 Phases — <span class="g">Build Before You Break</span></h2>
+      <p class="sec-sub">Pehle banao, phir inspect karo, phir audit karo. Pehle server banao, fir inspect karo.</p>
+    </div>
+    <div class="phase-grid">
+      <div class="phase">
+        <div class="p-tag">PHASE 1</div>
+        <h3>The Builder &amp; Explorer</h3>
+        <div class="rng">Levels 0 – 2</div>
+        <p>Mental model, terminal mastery, filesystem deep dive. OverTheWire <b>Bandit</b> gamification se pipes, redirection aur cat/grep naturally master honge.</p>
+      </div>
+      <div class="phase">
+        <div class="p-tag">PHASE 2</div>
+        <h3>The Systems &amp; Web Administrator</h3>
+        <div class="rng">Levels 3 – 11</div>
+        <p>Permissions, processes, sysadmin, networking, HTTP, Bash, Python, Git, SSH. Pehle server banao, phir inspect karo.</p>
+      </div>
+      <div class="phase">
+        <div class="p-tag">PHASE 3</div>
+        <h3>The Security Researcher &amp; Auditor</h3>
+        <div class="rng">Levels 12 – 21</div>
+        <p>Security architecture, containers, forensics, debugging, authorized bug-hunting workflows, aur HOST-READY mastery.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======= CURRICULUM ======= -->
+<section id="curriculum">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="k">// full curriculum</div>
+      <h2>Level <span class="g">0 → 21</span></h2>
+      <p class="sec-sub">Har level ke end par “What You Learned / आपने क्या सीखा” — Hindi + English, taaki aapki actual capability clear dikhe. ✅ mark karke apna progress track karo (browser mein save hota hai).</p>
+    </div>
+
+    <div class="progress-box">
+      <div class="pcount">PROGRESS: <b id="pctTxt">0 / 22</b> levels complete</div>
+      <div class="pbar"><div class="fill" id="pfill"></div></div>
+      <button class="reset-btn" id="resetBtn">reset</button>
+    </div>
+
+    <div class="search-row">
+      <input class="search" id="search" type="text" placeholder="search levels… (e.g. 'tcpdump', 'bash', 'forensics')" autocomplete="off">
+      <span class="hint">tip: press <b>/</b> to search</span>
+    </div>
+
+    <div id="levels"></div>
+    <div class="no-match" id="noMatch">grep: no matches found — kuch nahi mila. Doosra keyword try karo.</div>
+  </div>
+</section>
+
+<!-- ======= FRAMEWORK ======= -->
+<section id="framework" style="border-top:1px solid var(--line)">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="k">// foundational framework</div>
+      <h2>Pedagogy — <span class="g">10-Year-Old Adaptation</span></h2>
+    </div>
+    <div class="split">
+      <div class="fcard">
+        <h3><span>0.1</span>Build Before You Break</h3>
+        <ul>
+          <li><b>Concrete Visuals First:</b> concepts ko real-world analogies aur visual utilities se link karein — Midnight Commander, Raspberry Pi GPIO, Wireshark visual stream.</li>
+          <li><b>“Ratna nahi, dekhna hai”:</b> command execute karne se pehle process tree aur data flow mentally visualize karwana.</li>
+          <li><b>Progressive Phasing:</b> Phase 1 → Builder (L0–2), Phase 2 → Sysadmin (L3–11), Phase 3 → Auditor (L12–21).</li>
+        </ul>
+      </div>
+      <div class="fcard" id="ethics">
+        <h3 style="color:var(--red)"><span style="color:var(--red)">0.2</span>The “Red Line” — Ethics &amp; Legal Guardrails</h3>
+        <ul>
+          <li><b>Golden Rule of Security:</b> “Bina written permission ke kisi network ya system ko chhoona hacking nahi, digital trespassing/crime hai.”</li>
+          <li><b>Strict Air-Gapped Sandbox:</b> sab exercises 100% offline ya host-only local VMs (VirtualBox/Docker) mein. Koi bhi scan (nmap, curl automation, brute-force) external public internet par <b>strictly prohibited</b>.</li>
+          <li><b>Scope Definition:</b> har lab ke shuru mein explicit “In-Scope” / “Out-of-Scope” checklist. Host OS ya home Wi-Fi router ko touch karna out-of-scope.</li>
+        </ul>
+        <div class="gold">“Authorized environment. Always. No exceptions.”</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======= INJECTIONS ======= -->
+<section style="border-top:1px solid var(--line)">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="k">// level-specific injections</div>
+      <h2>Extra <span class="g">Gamification &amp; Labs</span></h2>
+    </div>
+    <div class="inj-grid">
+      <div class="inj">
+        <span class="lv-tag">INSIDE LEVEL 0</span>
+        <h4>✦ Junior Intuition Analogy</h4>
+        <ul>
+          <li>Kernel = <b>School Principal</b> (ground, classrooms aur time manage karta hai)</li>
+          <li>Shell = <b>Mic</b> (principal aur teachers tak baat pahunchayi jaati hai)</li>
+          <li>Filesystem = <b>Physical File Cabinet</b> (drawers aur labeled folders)</li>
+        </ul>
+        <p style="margin-top:10px"><b>Hands-on Visual Bridge:</b> CLI ke saath <code>mc</code> (Midnight Commander) se filesystem visually explore karo. Optional: Raspberry Pi par <code>/sys/class/gpio</code> se physical LED ON/OFF.</p>
+      </div>
+      <div class="inj">
+        <span class="lv-tag">INSIDE LEVEL 1</span>
+        <h4>✦ Gamified Milestone</h4>
+        <ul>
+          <li>OverTheWire <b>“Bandit”</b> (Levels 0 → 10) integrate karna.</li>
+          <li>Har level ek password-hunt game — jisse pipes, redirection aur cat/grep naturally master honge.</li>
+        </ul>
+      </div>
+      <div class="inj">
+        <span class="lv-tag">INSIDE LEVEL 6 &amp; 7</span>
+        <h4>✦ The Builder Lab (Mini-Project)</h4>
+        <ul>
+          <li>Terminal 1: <code>python3 -m http.server 8080</code></li>
+          <li>Terminal 2: <code>curl -i http://localhost:8080</code></li>
+          <li>Server terminal par live access log — 200 OK, 404 Not Found — khud generate hote dekho.</li>
+        </ul>
+      </div>
+      <div class="inj">
+        <span class="lv-tag">INSIDE LEVEL 15</span>
+        <h4>✦ Safe Scope &amp; Practice Rules</h4>
+        <ul>
+          <li>Practice target sirf <b>local containerized environments</b> (e.g. OWASP Juice Shop local Docker).</li>
+          <li>“Responsible Disclosure” report template: Problem kya hai, proof kya hai, fix kaise hoga.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======= DASHBOARD ======= -->
+<section id="dashboard" style="border-top:1px solid var(--line)">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="k">// graduation standard</div>
+      <h2>Final <span class="g">“आपने क्या सीखा?”</span> Dashboard</h2>
+      <p class="sec-sub">Course complete hone par command memorization test nahi — scenario-based evaluation. (Level 20 evaluation: Linux fundamentals 10% · Filesystem &amp; permissions 10% · Processes &amp; services 10% · Networking 15% · Bash/Python 15% · Linux security 10% · Debugging 10% · Automation 10% · Security lab 5% · Professional report 5% = 100%)</p>
+    </div>
+    <div class="dash-grid">
+      <div class="dash">
+        <h3 class="hi">🇮🇳 आपने क्या सीखा?</h3>
+        <ul>
+          <li>Linux terminal confidently use kar sakte hain.</li>
+          <li>Linux filesystem deeply understand karte hain.</li>
+          <li>Users, groups aur permissions manage kar sakte hain.</li>
+          <li>Processes aur services troubleshoot kar sakte hain.</li>
+          <li>Network connections aur packets analyze kar sakte hain.</li>
+          <li>HTTP traffic terminal se investigate kar sakte hain.</li>
+          <li>Bash scripts likh sakte hain.</li>
+          <li>Python se automation tools bana sakte hain.</li>
+          <li>SSH se remote Linux systems manage kar sakte hain.</li>
+          <li>Linux security controls samajhte hain.</li>
+          <li>Containers aur isolation concepts samajhte hain.</li>
+          <li>Logs aur system artifacts investigate kar sakte hain.</li>
+          <li>Complex Linux problems systematically debug kar sakte hain.</li>
+          <li>Authorized security testing workflows automate kar sakte hain.</li>
+          <li>Professional security findings document aur report kar sakte hain.</li>
+        </ul>
+      </div>
+      <div class="dash">
+        <h3 class="en">🇬🇧 What You Learned</h3>
+        <ul>
+          <li>Confidently operate Linux from the terminal.</li>
+          <li>Understand Linux filesystems at a deeper level.</li>
+          <li>Manage users, groups, ownership, and permissions.</li>
+          <li>Investigate processes and services.</li>
+          <li>Analyze networking and packet behavior.</li>
+          <li>Inspect HTTP communication from Linux.</li>
+          <li>Write Bash automation.</li>
+          <li>Build automation utilities with Python.</li>
+          <li>Manage remote Linux systems over SSH.</li>
+          <li>Understand Linux security architecture.</li>
+          <li>Work with containers and isolation concepts.</li>
+          <li>Investigate logs and system artifacts.</li>
+          <li>Debug unfamiliar Linux problems systematically.</li>
+          <li>Build authorized security-testing automation workflows.</li>
+          <li>Document and report security findings professionally.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="outcome">
+      <div class="row"><div class="who">Beginner</div><div class="say">“Linux mein command kaise chalate hain?”</div></div>
+      <div class="row"><div class="who">Intermediate</div><div class="say">“Linux system kaise operate karte hain?”</div></div>
+      <div class="row"><div class="who">Advanced</div><div class="say">“Linux system mein problem kyun ho rahi hai?”</div></div>
+      <div class="row"><div class="who">Bug Hunter</div><div class="say">“Is behavior ko authorized environment mein systematically kaise investigate aur validate karun?”</div></div>
+      <div class="row"><div class="who">Expert Mindset</div><div class="say">“Mujhe command nahi pata, lekin mujhe pata hai ki answer systematically kaise find karna hai.”</div></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>Linux-Mastery · <span class="g">zero → bug hunter</span> · built from the PRD in this repo</div>
+    <div><a href="https://github.com/toxictest/Linux-Mastery" target="_blank" rel="noopener">github.com/toxictest/Linux-Mastery</a> · hosted 100% free</div>
+  </div>
+</footer>
+
+<script>
+/* ================= DATA ================= */
+const LEVELS = [
+{id:0, t:"Linux Mental Model", ph:1,
+ g:[{h:"सीखेंगे / You Will Learn", i:["Linux kya hai?","Kernel kya karta hai?","Distribution kya hoti hai?","GNU/Linux relationship","User space vs kernel space","Processes","Files","File descriptors","System calls","Shell","Terminal","Environment","/proc aur /sys ka purpose","Linux architecture"]},
+    {h:"Advanced Topics", i:["Kernel ↔ user-space interaction","syscall concept","virtual filesystem","process abstraction","namespaces (intro)","capabilities (intro)"]}],
+ lab:null,
+ lx:{hi:"Aapko Linux sirf commands ka collection nahi, balki ek complete operating-system architecture ke roop mein samajh aa gaya.",
+     en:"You now understand Linux as an operating-system architecture rather than just a collection of commands."}},
+
+{id:1, t:"Terminal Mastery", ph:1,
+ g:[{h:"Topics", i:["Bash fundamentals","shell parsing","quoting","escaping","globbing","command expansion","command substitution","environment variables","aliases","functions","history","readline","terminal control"]},
+    {h:"Advanced", i:["stdin","stdout","stderr","file descriptors","pipelines","process substitution","here-documents","here-strings","redirection","exit status"]}],
+ lab:{n:"✦ Gamified Milestone", d:"OverTheWire “Bandit” (Levels 0 → 10) — har level ek password hunt game. Pipes, redirection aur cat/grep naturally master honge."},
+ lx:{hi:"Aap terminal mein confidently kaam kar sakte hain aur shell command ko Linux ke internal data flow ke saath samajh sakte hain.",
+     en:"You can confidently operate the terminal and understand how shell commands interact through Linux data streams and processes."}},
+
+{id:2, t:"Filesystem Deep Dive", ph:1,
+ g:[{h:"Core", i:["absolute/relative paths","directories","hidden files","links","permissions","metadata"]},
+    {h:"Advanced", i:["inode","directory entries","hard links","symbolic links","mount points","filesystem types","/proc","/sys","/dev","/run"]},
+    {h:"Commands", i:["ls","stat","find","file","mount","df","du","lsblk","blkid"], tl:1}],
+ lab:{n:"Filesystem Forensics Lab", d:"Learner ko filesystem state investigate karni hogi aur unusual files / links / mounts identify karne honge."},
+ lx:{hi:"Aap Linux filesystem ko surface level par nahi, balki inode, metadata, links aur mounts ke level par samajhte hain.",
+     en:"You understand Linux filesystems beyond basic navigation, including inodes, metadata, links, mounts, and virtual filesystems."}},
+
+{id:3, t:"Permissions & Linux Access Control", ph:2,
+ g:[{h:"Topics", i:["UID/GID","ownership","rwx","octal permissions","chmod","chown","umask","sudo"]},
+    {h:"Advanced", i:["SUID","SGID","sticky bit","ACL","extended attributes","Linux capabilities","privilege boundaries"]}],
+ lab:{n:"Security Lab — Intentionally Misconfigured System", d:"Excessive permissions · incorrect ownership · unnecessary privileges · dangerous configuration.\nLearner: Find → Explain → Fix → Verify"},
+ lx:{hi:"Aap samajhte hain ki Linux mein “kaun kya access kar sakta hai” kaise decide hota hai.",
+     en:"You understand how Linux determines who can access, execute, modify, or administer resources."}},
+
+{id:4, t:"Processes & Internals", ph:2,
+ g:[{h:"Topics", i:["PID","PPID","process tree","foreground/background","jobs","signals","process states"]},
+    {h:"Advanced", i:["/proc/<pid>","process namespaces","file descriptors","environment inspection","zombie processes","orphan processes","scheduling basics","resource limits"]},
+    {h:"Tools", i:["ps","top","htop","pgrep","strace","lsof","fuser"], tl:1}],
+ lab:{n:"Process Investigation", d:"Learner ko unknown process identify karna, uska parent, open files, network connections aur environment inspect karna hoga."},
+ lx:{hi:"Aap Linux system ke andar chal rahe processes ko inspect aur troubleshoot kar sakte hain.",
+     en:"You can inspect, understand, and troubleshoot running Linux processes and their relationships."}},
+
+{id:5, t:"System Administration", ph:2,
+ g:[{h:"Topics", i:["services","systemd","boot process","targets","timers","logs","service dependencies"]},
+    {h:"Advanced", i:["unit files","service hardening","startup dependencies","system recovery","resource limits","scheduled tasks"]},
+    {h:"Tools", i:["systemctl","journalctl","systemd-analyze","crontab"], tl:1}],
+ lab:{n:"Broken Linux Server", d:"Observe → Diagnose → Find root cause → Fix → Verify → Document"},
+ lx:{hi:"Aap Linux server ko operate, diagnose aur recover kar sakte hain.",
+     en:"You can operate, diagnose, repair, and document Linux server environments."}},
+
+{id:6, t:"Networking Deep Dive", ph:2,
+ g:[{h:"Fundamentals", i:["OSI model","TCP/IP model","IPv4","IPv6","subnetting","routing","ARP","ICMP","TCP","UDP"]},
+    {h:"Advanced", i:["TCP handshake","connection states","ephemeral ports","sockets","routing tables","MTU","fragmentation","DNS resolution","caching","TLS fundamentals"]},
+    {h:"Tools", i:["ip","ss","ping","traceroute","dig","host","tcpdump"], tl:1}],
+ lab:{n:"Packet Analysis", d:"Learner ko packet capture dekar identify karna hoga: DNS query · TCP handshake · HTTP traffic · connection failures · retransmissions."},
+ lx:{hi:"Aap network ko sirf IP aur port ke level par nahi, packet aur connection behavior ke level par samajh sakte hain.",
+     en:"You can analyze networking at the packet and connection level rather than merely thinking in terms of IP addresses and ports."}},
+
+{id:7, t:"HTTP & Web From Linux", ph:2,
+ g:[{h:"Topics", i:["HTTP request","response","methods","headers","cookies","redirects","status codes","HTTPS","TLS basics"]},
+    {h:"Linux Workflow", i:["curl","wget","grep","sed","awk","jq"], tl:1},
+    {h:"Advanced", i:["request/response debugging","proxy concepts","authentication headers","content negotiation","JSON APIs","WebSockets concepts","HTTP/2 concepts"]}],
+ lab:{n:"HTTP Investigation Lab", d:"Learner ko controlled web application ke requests analyze karne honge."},
+ lx:{hi:"Aap browser ke peeche hone wale HTTP communication ko terminal se inspect aur analyze kar sakte hain.",
+     en:"You can inspect and analyze browser-style HTTP communication directly from the Linux terminal."}},
+
+{id:8, t:"Bash Programming", ph:2,
+ g:[{h:"Topics", i:["variables","conditions","loops","functions","arrays","arguments","exit codes"]},
+    {h:"Advanced", i:["robust quoting","error handling","traps","temporary files","parallel execution","logging","input validation","script portability"]},
+    {h:"Tools", i:["grep","sed","awk","cut","sort","uniq","xargs","jq"], tl:1}],
+ lab:{n:"Project — Build a Linux Investigation Toolkit", d:"Features: system information · network information · running services · open connections · disk usage · log summary"},
+ lx:{hi:"Aap repetitive Linux tasks ko Bash scripts ke through automate kar sakte hain.",
+     en:"You can automate repetitive Linux operations using reliable Bash scripts."}},
+
+{id:9, t:"Python for Linux & Security Automation", ph:2,
+ g:[{h:"Topics", i:["Python basics","variables","functions","modules","exceptions","files","JSON","regex","subprocess","HTTP clients"]},
+    {h:"Advanced", i:["sockets","concurrent requests","structured logging","CLI applications","API integration","parsing large datasets"]}],
+ lab:{n:"Project — Build a CLI Security Data Analyzer", d:"Input: authorized lab data\nOutput: cleaned → normalized → deduplicated → categorized → reported"},
+ lx:{hi:"Aap Bash ke saath Python ka use karke sophisticated Linux/security automation tools bana sakte hain.",
+     en:"You can combine Bash and Python to build sophisticated Linux and security automation tools."}},
+
+{id:10, t:"Git & Engineering Workflow", ph:2,
+ g:[{h:"Topics", i:["Git fundamentals","branches","commits","diffs","merges","tags","remotes"]},
+    {h:"Advanced", i:[".gitignore","clean commit history","debugging with Git","rollback","collaboration","documentation"]},
+    {h:"Security", i:["secrets accidentally commit NA karna","configuration separation","safe credential handling"]}],
+ lab:null,
+ lx:{hi:"Aap apne scripts, tools aur projects ko professional software-engineering workflow mein manage kar sakte hain.",
+     en:"You can manage Linux/security projects using a professional software-engineering workflow."}},
+
+{id:11, t:"SSH & Remote Linux", ph:2,
+ g:[{h:"Topics", i:["SSH architecture","keys","authentication","host verification","SSH configuration","port forwarding concepts"]},
+    {h:"Advanced", i:["agent","ProxyJump","bastion hosts","tunnels","secure remote administration"]}],
+ lab:{n:"Remote Infrastructure Lab", d:"Client → Jump Host → Lab Server\nMultiple authorized Linux machines ke beech securely navigate karna hoga."},
+ lx:{hi:"Aap remote Linux infrastructure ko securely access aur manage kar sakte hain.",
+     en:"You can securely access and administer remote Linux infrastructure."}},
+
+{id:12, t:"Linux Security Architecture", ph:3,
+ g:[{h:"Topics", i:["authentication","authorization","least privilege","attack surface","secure defaults"]},
+    {h:"Advanced", i:["Linux capabilities","namespaces","cgroups","seccomp concepts","MAC concepts","AppArmor","SELinux fundamentals"]}],
+ lab:{n:"Linux Hardening Lab", d:"Learner: exposed services identify kare → unnecessary privileges reduce kare → security controls inspect kare → logs verify kare."},
+ lx:{hi:"Aap Linux security ko commands ke bajay security architecture aur defense mechanisms ke perspective se samajhte hain.",
+     en:"You understand Linux security through architecture, isolation, access control, and defensive mechanisms."}},
+
+{id:13, t:"Containers & Linux Isolation", ph:3,
+ g:[{h:"Topics", i:["containers kya hain?","images","containers","namespaces","cgroups","container filesystem","Docker: images · containers · volumes · networks · environment variables"]},
+    {h:"Advanced", i:["container isolation","capabilities","root vs rootless containers","container security","image hygiene"]}],
+ lab:{n:"Container Security Lab", d:"Learner intentionally misconfigured containers ko inspect aur harden karega."},
+ lx:{hi:"Aap modern Linux environments mein containers aur isolation mechanisms ko samajh sakte hain.",
+     en:"You understand containers, Linux isolation, and basic container security."}},
+
+{id:14, t:"Linux Logging & Digital Forensics", ph:3,
+ g:[{h:"Topics", i:["system logs","authentication logs","application logs","timestamps","log rotation"]},
+    {h:"Advanced", i:["event correlation","process timeline","network evidence","filesystem metadata","suspicious activity indicators"]},
+    {h:"Tools", i:["journalctl","grep","awk","sed","find","stat","lsof"], tl:1}],
+ lab:{n:"Capstone Lab — Incident Investigation", d:"Fictional compromised Linux machine ki logs aur artifacts.\nTimeline → Evidence → Root cause hypothesis → Validation → Report"},
+ lx:{hi:"Aap Linux system mein hone wali activity ko logs aur artifacts se investigate kar sakte hain.",
+     en:"You can investigate Linux activity using logs, process information, filesystem artifacts, and timelines."}},
+
+{id:15, t:"Bug Hunter Linux Workflow", ph:3,
+ g:[{h:"Workflow", i:["Scope","Environment","Asset Information","DNS","HTTP","Data Processing","Manual Verification","Evidence","Report"]},
+    {h:"Learner Ko Sikhaya Jayega", i:["scope reading","authorization","asset organization","terminal workflow","data normalization","deduplication","evidence collection","reproducibility","responsible reporting"]}],
+ lab:{n:"Rule #1", d:"No blind automation."},
+ lx:{hi:"Aap authorized bug-hunting workflow mein Linux ko scope se report tak systematic tareeke se use kar sakte hain.",
+     en:"You can use Linux systematically in an authorized bug-hunting workflow — from scope reading to professional reporting."}},
+
+{id:16, t:"Advanced Recon Automation", ph:3,
+ g:[{h:"Topics", i:["pipeline architecture","input validation","output normalization","parallelization","retries","rate limiting","error handling","structured output"]}],
+ lab:{n:"Project — Authorized Recon Pipeline", d:"Input → Validation → Collection → Normalization → Deduplication → Analysis → Verification → Report\n\nAdvanced Engineering Requirements:\ncrash gracefully · logs maintain · invalid input reject · duplicate data handle · failures report · reproducible output generate"},
+ lx:{hi:"Aap security workflows ko reliable automation pipelines mein convert kar sakte hain.",
+     en:"You can transform repetitive security workflows into reliable, maintainable automation pipelines."}},
+
+{id:17, t:"Linux Debugging Mastery", ph:3,
+ g:[{h:"Problems", i:["application crash","permission error","network failure","service failure","high CPU","memory issue","disk full","process stuck"]},
+    {h:"Debugging Tools", i:["strace","lsof","ss","journalctl","dmesg","ps","top","gdb"], tl:1},
+    {h:"Methodology", i:["Symptom","Evidence","Hypothesis","Experiment","Root Cause","Fix","Regression Test"]}],
+ lab:null,
+ lx:{hi:"Aap “command yaad” karne ke bajay system behavior ko observe karke unknown problems solve kar sakte hain.",
+     en:"You can solve unfamiliar Linux problems through evidence-driven debugging rather than memorizing commands."}},
+
+{id:18, t:"Advanced Linux Internals", ph:3,
+ g:[{h:"Topics", i:["system calls","virtual memory concepts","process memory","file descriptors","sockets","signals","scheduling"]},
+    {h:"Advanced Tools", i:["strace","ltrace","gdb","readelf","objdump","nm","strings"], tl:1},
+    {h:"Concepts", i:["ELF binaries","dynamic linking","shared libraries","loader","symbols","debugging concepts"]}],
+ lab:null,
+ lx:{hi:"Aap Linux applications aur binaries ke operating-system level behavior ko samajhne ki foundation develop karte hain.",
+     en:"You develop a foundation for understanding how Linux applications and binaries interact with the operating system."}},
+
+{id:19, t:"Secure Coding & Shell Safety", ph:3,
+ g:[{h:"Topics", i:["unsafe input handling","quoting","command injection concepts","path handling","temporary files","permissions","secret management","Bash security"]}],
+ lab:{n:"Project — Secure Script Review", d:"Learner intentionally flawed scripts ko: Review → Identify weaknesses → Explain → Fix → Test"},
+ lx:{hi:"Aap Linux scripts ko sirf likhna nahi, balki securely review aur improve karna seekhte hain.",
+     en:"You can review, identify weaknesses in, and securely improve Linux automation scripts."}},
+
+{id:20, t:"Final Bug Hunter Operating System", ph:3,
+ g:[{h:"Mission", i:["Isolated, authorized enterprise-style lab"]},
+    {h:"Environment", i:["multiple Linux servers","web application","DNS","logs","users","services","containers","APIs","intentionally vulnerable components"]},
+    {h:"Learner Independently", i:["Linux environment understand karna","network topology samajhni","services inventory karna","HTTP behavior analyze karna","logs investigate karna","data process karna","automation scripts likhni","security findings identify karna","findings safely reproduce karna","evidence collect karna","impact explain karna","professional report banana","remediation suggest karni"]}],
+ lab:null,
+ eval:[["Linux fundamentals","10%"],["Filesystem & permissions","10%"],["Processes & services","10%"],["Networking","15%"],["Bash / Python","15%"],["Linux security","10%"],["Debugging","10%"],["Automation","10%"],["Security lab","5%"],["Professional report","5%"],["Total","100%"]],
+ lx:{hi:"Aap ek complete authorized enterprise-style Linux environment ko independently operate, investigate aur report kar sakte hain.",
+     en:"You can independently operate, investigate, and report on a complete authorized enterprise-style Linux environment."}},
+
+{id:21, t:"HOST-READY: Linux Command & Concept Mastery", ph:3, sub:true,
+ goal:{hi:"Is level ke baad learner ko Linux ki important command families, concepts aur workflows par practical mastery honi chahiye — kisi unfamiliar Linux host par documentation aur logical troubleshooting ke through independently kaam kar sake.",
+       en:"By the end of this level, the learner should have practical mastery of essential Linux command families, concepts, and workflows, and should be able to work independently on an unfamiliar Linux host using documentation and systematic troubleshooting."},
+ subs:[
+  {id:"21.1", t:"Command Mastery Map", n:"Har command ke liye 6 cheezein master karo:", six:["What?","Why?","Syntax","Options","Combine","Troubleshoot"]},
+  {id:"21.2", t:"Navigation & Files", c:["pwd","ls","cd","tree","find","locate","file","stat","touch","mkdir","cp","mv","rm","ln","readlink","basename","dirname","realpath"], n:"Test: unknown directory structure — files locate, type identify, metadata inspect, links understand, move/copy, structure analyze. No GUI."},
+  {id:"21.3", t:"Reading & Text Processing", c:["cat","less","more","head","tail","wc","sort","uniq","cut","tr","grep","sed","awk","xargs","tee"], n:"Test: large text/log file — Search → Filter → Extract → Transform → Sort → Deduplicate → Summarize."},
+  {id:"21.4", t:"Input / Output & Pipes", c:[">",">>","<","2>","2>>","2>&1","|","tee"], n:"Concepts: stdin, stdout, stderr, file descriptors, pipelines, exit codes. Challenge: ek multi-stage command pipeline khud design karo."},
+  {id:"21.5", t:"Users & Permissions", c:["whoami","id","who","w","groups","passwd","sudo","su","chmod","chown","chgrp","umask","getfacl","setfacl"], n:"Advanced: UID · GID · SUID · SGID · sticky bit · ACL · capabilities. Test: permission-denied scenario — guessing ke bina exactly access KYUN denied hai determine karo."},
+  {id:"21.6", t:"Processes", c:["ps","top","htop","pgrep","pkill","kill","killall","jobs","bg","fg","nohup","nice","renice"], n:"Advanced: lsof · fuser · strace. Process identify → parent-child → resource usage → open files → network correlate → troubleshoot."},
+  {id:"21.7", t:"System Information", c:["uname","hostname","hostnamectl","uptime","date","timedatectl","arch","lscpu","lsmem","lsblk","lsusb","lspci","free","df","du"], n:"Goal: ek fresh Linux host ka complete system profile generate karo."},
+  {id:"21.8", t:"Services & Boot", c:["systemctl","systemd-analyze","journalctl","service"], n:"Status · start/stop/restart · enable/disable · logs · dependencies · failed services · boot analysis. Challenge: “Service is down.” No instructions — root cause find karke recovery karo."},
+  {id:"21.9", t:"Networking", c:["ip","ss","ping","traceroute","tracepath","dig","host","nslookup","resolvectl","curl","wget","tcpdump"], n:"Concepts: IP · subnet · gateway · routing · DNS · TCP/UDP · ports · sockets · interfaces · HTTP. Host-Ready Test: broken network — Interface → IP → Route → DNS → Port → Service → Application."},
+  {id:"21.10", t:"Package Management", c:["apt","apt-cache","dpkg","dnf","rpm"], n:"Install · remove · update · search · package information · dependency troubleshooting · installed files identify karna. (Debian/Ubuntu + Fedora/RHEL)"},
+  {id:"21.11", t:"Storage", c:["df","du","lsblk","blkid","mount","umount","findmnt"], n:"Concepts: partitions · filesystems · mount points · disk usage · inode usage. Challenge: “Server disk full hai.” Root cause identify karo."},
+  {id:"21.12", t:"Archives & Compression", c:["tar","gzip","gunzip","zip","unzip","xz"], n:"Archive create · extract · inspect · compression/decompression · safe handling of paths."},
+  {id:"21.13", t:"Search & Investigation", c:["find","grep","locate","which","whereis","type","command"], n:"Test: “Is machine par X kaha hai?” — appropriate search strategy khud select karo."},
+  {id:"21.14", t:"Environment & Shell", c:["env","printenv","export","unset","source","alias","unalias","type","command"], n:"Master: $PATH · environment variables · shell configuration · aliases · functions · startup files."},
+  {id:"21.15", t:"Bash Mastery", c:["variables","conditions","loops","functions","arrays","arguments","exit codes","case","getopts","trap"], n:"Aur samjho: $? · $1 · $@ · $# · $$ · $!  Final Challenge: ek useful Linux administration/investigation utility from scratch banao."},
+  {id:"21.16", t:"Git", c:["git init","git clone","git status","git add","git commit","git log","git diff","git branch","git switch","git merge","git stash","git restore"], n:"Apne scripts aur projects Git ke through professionally maintain karo."},
+  {id:"21.17", t:"SSH", c:["ssh","ssh-keygen","ssh-add","scp","sftp"], n:"Key authentication · host verification · SSH config · agent · remote commands · secure file transfer · jump hosts."},
+  {id:"21.18", t:"Logs & Monitoring", c:["journalctl","dmesg","tail","grep","less","watch"], n:"Event → Timestamp → Process → User → Service → Network → Root Cause correlate karo."},
+  {id:"21.19", t:"Security Utilities & Concepts", c:["ss","lsof","find","ps","journalctl","systemctl","chmod","chown","sudo"], n:"Concepts: least privilege · attack surface · exposed services · insecure permissions · secrets · authentication · authorization · logging · hardening."},
+  {id:"21.20", t:"Binary & Application Investigation", c:["file","strings","ldd","readelf","objdump","nm","strace","ltrace"], n:"Binary ko blindly execute karne ke bajay uske basic structure aur behavior ko safely inspect karo."},
+  {id:"21.21", t:"Containers", c:["images","containers","volumes","networks","environment","isolation"], n:"Linux concepts: namespaces · cgroups · capabilities · root/rootless · filesystem isolation."},
+  {id:"21.22", t:"Documentation Mastery", c:["man command","command --help","info command","apropos keyword"], n:"Golden Rule: Unknown command ≠ blocked. Unknown command ka matlab = “Now investigate the documentation.”"},
+  {id:"21.23", t:"Command Chaining Mastery", n:"Final challenge mein individual commands nahi, workflow design karo: Collect → Filter → Transform → Sort → Deduplicate → Analyze → Report. Isse Linux ka Unix philosophy practically samajh aayega."},
+  {id:"21.24", t:"Host-Ready Simulation", n:"Missions: 1. Identify (whoami/uname/arch/hostname) · 2. Understand (fs/users/permissions/processes/services) · 3. Network (interfaces/IP/routes/DNS/listening/HTTP) · 4. Diagnose (random failures) · 5. Automate (Bash/Python utility) · 6. Investigate (authorized lab) · 7. Report (Problem→Evidence→Analysis→Root Cause→Fix→Verification→Recommendation). No predefined tutorial."}
+ ],
+ done:{hi:"Command families confidently use karte hain · Unknown commands documentation se khud seekhte hain · Filesystem, users, processes, networking, logs, storage diagnose karte hain · Bash + Python se automate karte hain · SSH se remote manage karte hain · Security misconfigurations identify karte hain · Containers + isolation samajhte hain · Unknown host independently explore karte hain · Bug-hunting ke authorized workflows mein Linux effectively use karte hain.",
+      en:"Confidently use essential command families · Learn unfamiliar commands through documentation · Investigate filesystem · Diagnose users/permissions · Troubleshoot processes & services · Isolate networking problems · Analyze logs · Automate with Bash · Build tooling with Python · Manage remote systems via SSH · Fix storage/package issues · Identify misconfigurations · Understand containers · Explore unfamiliar hosts independently · Apply Linux in authorized bug-hunting workflows."}}
+];
+
+/* ================= RENDER ================= */
+const PHASE = {1:"Phase 1 · Builder", 2:"Phase 2 · Sysadmin", 3:"Phase 3 · Auditor"};
+const esc = s => s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+
+function searchStr(L){
+  let s = L.t;
+  (L.g||[]).forEach(gr=>{ s += " " + gr.i.join(" "); });
+  if(L.lab) s += " " + L.lab.n + " " + L.lab.d;
+  if(L.subs) s += " " + L.subs.map(x=>x.t + " " + (x.c ? x.c.join(" ") : "") + " " + (x.n||"")).join(" ");
+  if(L.lx) s += " " + L.lx.hi + " " + L.lx.en;
+  if(L.goal) s += " " + L.goal.hi + " " + L.goal.en;
+  if(L.done) s += " " + L.done.hi + " " + L.done.en;
+  return s.toLowerCase();
+}
+
+function renderLevel(L){
+  let body = "";
+  if(L.goal){
+    body += `<div class="grp"><h4>Goal</h4>
+      <div class="lr lr-hi"><span class="flag">🇮🇳</span>${esc(L.goal.hi)}</div>
+      <div class="lr lr-en"><span class="flag">🇬🇧</span>${esc(L.goal.en)}</div></div>`;
+  }
+  (L.g||[]).forEach(gr=>{
+    body += `<div class="grp"><h4>${esc(gr.h)}</h4><div class="chips">` +
+      gr.i.map(x=>`<span class="chip${gr.tl?" tl":""}">${esc(x)}</span>`).join("") + `</div></div>`;
+  });
+  if(L.lab){
+    body += `<div class="lab"><div class="lab-tag">[ LAB / PROJECT ]</div>
+      <div class="lab-name">${esc(L.lab.n)}</div>
+      <div class="lab-desc">${esc(L.lab.d)}</div></div>`;
+  }
+  if(L.subs){
+    body += `<div class="sub21">` + L.subs.map(s=>`
+      <div class="s">
+        <div class="sid">MODULE ${s.id}</div>
+        <h5>${esc(s.t)}</h5>
+        ${s.c?`<div class="chips">${s.c.map(x=>`<span class="chip${s.id==="21.4"?" tl":""}">${esc(x)}</span>`).join("")}</div>`:""}
+        ${s.six?`<div class="six">${s.six.map(x=>`<span>${esc(x)}</span>`).join("")}</div>`:""}
+        ${s.n?`<div class="note">${esc(s.n)}</div>`:""}
+      </div>`).join("") + `</div>`;
+  }
+  if(L.eval){
+    body += `<div class="extra"><div class="grp"><h4>Graduation Evaluation</h4>
+      <table class="eval-table">${L.eval.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join("")}</table></div></div>`;
+  }
+  if(L.done){
+    body += `<div class="grp"><h4>🏆 Level 21 Completion — आपने क्या सीखा?</h4>
+      <div class="lr lr-hi"><span class="flag">🇮🇳</span>${esc(L.done.hi)}</div>
+      <div class="lr lr-en"><span class="flag">🇬🇧</span>${esc(L.done.en)}</div></div>`;
+  }
+  if(L.lx){
+    body += `<div class="learned">
+      <div class="lr lr-hi"><span class="flag">🇮🇳</span>आपने क्या सीखा: ${esc(L.lx.hi)}</div>
+      <div class="lr lr-en"><span class="flag">🇬🇧</span>What You Learned: ${esc(L.lx.en)}</div>
+    </div>`;
+  }
+  if(L.id===21){
+    body += `<div class="final-rule">
+      <h4>🔥 FINAL RULE: “Host Ready” तभी माना जाएगा</h4>
+      <p>Host Ready badge tabhi milega jab learner ye independently handle kar sake:</p>
+      <p style="color:var(--amber);margin-top:6px">Fresh Linux host + unfamiliar problem + no step-by-step guide</p>
+      <div class="quote">100% Linux mastery ka matlab 100% commands memorize karna nahi hai. Real mastery: “Mujhe command nahi pata → main man, --help, system state, logs aur experimentation se answer find kar sakta hoon.”</div>
+    </div>`;
+  }
+  return `<details class="lv" id="lv-${L.id}" data-search="${esc(searchStr(L))}">
+    <summary>
+      <span class="lv-num">LV ${String(L.id).padStart(2,"0")}</span>
+      <span class="lv-name">${esc(L.t)}</span>
+      <span class="lv-phase">${PHASE[L.ph]}</span>
+      <button class="done-btn" title="mark complete" aria-label="mark level ${L.id} complete">✓</button>
+      <span class="lv-arrow">▶</span>
+    </summary>
+    <div class="lv-body">${body}</div>
+  </details>`;
+}
+
+const el = document.getElementById("levels");
+el.innerHTML = LEVELS.map(renderLevel).join("");
+
+/* ================= PROGRESS ================= */
+const KEY = "lm_progress";
+let done = new Set(JSON.parse(localStorage.getItem(KEY)||"[]"));
+function saveDone(){ localStorage.setItem(KEY, JSON.stringify([...done])); }
+function paint(){
+  document.querySelectorAll(".lv").forEach(d=>{
+    const id = +d.id.split("-")[1];
+    d.classList.toggle("done", done.has(id));
+  });
+  const n = done.size;
+  document.getElementById("pfill").style.width = (n/LEVELS.length*100)+"%";
+  document.getElementById("pctTxt").textContent = n+" / "+LEVELS.length;
+}
+el.addEventListener("click", e=>{
+  const btn = e.target.closest(".done-btn");
+  if(!btn) return;
+  e.preventDefault(); e.stopPropagation();
+  const id = +btn.closest(".lv").id.split("-")[1];
+  done.has(id) ? done.delete(id) : done.add(id);
+  saveDone(); paint();
+});
+document.getElementById("resetBtn").onclick = ()=>{ done.clear(); saveDone(); paint(); };
+el.addEventListener("toggle", e=>{
+  const d = e.target;
+  if(d.classList.contains("lv")) d.classList.toggle("open", d.open);
+}, true);
+paint();
+
+/* ================= SEARCH ================= */
+const search = document.getElementById("search");
+const noMatch = document.getElementById("noMatch");
+function doSearch(){
+  const q = search.value.trim().toLowerCase();
+  let shown = 0;
+  document.querySelectorAll(".lv").forEach(d=>{
+    const hit = !q || d.dataset.search.includes(q);
+    d.style.display = hit ? "" : "none";
+    if(hit){ shown++; if(q && d.dataset.search.includes(q)) d.open = true; }
+  });
+  noMatch.style.display = shown ? "none" : "block";
+}
+search.addEventListener("input", doSearch);
+document.addEventListener("keydown", e=>{
+  if(e.key==="/" && document.activeElement!==search){ e.preventDefault(); search.focus(); }
+  if(e.key==="Escape" && document.activeElement===search){ search.value=""; doSearch(); search.blur(); }
+});
+
+/* ================= HERO CTA ================= */
+document.getElementById("startBtn").onclick = ()=>{
+  const d = document.getElementById("lv-0");
+  d.open = true; d.classList.add("open");
+  d.scrollIntoView({behavior:"smooth", block:"center"});
+};
+
+/* ================= TERMINAL ================= */
+const termLines = [
+  ["p","$ "], ["cmd","whoami"],
+  ["out","learner"],
+  ["p","$ "], ["cmd","uname -a"],
+  ["out","Linux learner 6.x LTS x86_64 GNU/Linux"],
+  ["p","$ "], ["cmd","cat /etc/motd"],
+  ["warn","Welcome to Linux-Mastery — Zero to Bug Hunter"],
+  ["p","$ "], ["cmd","./start --level 0"],
+  ["ok","[OK] 22 levels loaded · 16+ labs · Hindi+EN ready"],
+  ["ok","[OK] Red Line ethics: ACTIVE (authorized targets only)"]
+];
+const termBody = document.getElementById("termBody");
+const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+function typeTerminal(){
+  const lines = termLines;
+  function doneHtml(){
+    let html = "";
+    lines.forEach(l=>{
+      html += `<span class="${l[0]}">${esc(l[1])}</span>`;
+      if(l[0] !== "p") html += "<br>";
+    });
+    return html + `<span class="p">$</span> <span class="tcur"></span>`;
+  }
+  if(reduced){ termBody.innerHTML = doneHtml(); return; }
+  let li = 0, ci = 0;
+  function render(){
+    let html = "";
+    for(let i=0;i<li;i++){
+      html += `<span class="${lines[i][0]}">${esc(lines[i][1])}</span>`;
+      if(lines[i][0] !== "p") html += "<br>";
+    }
+    if(li < lines.length){
+      const [cls, txt] = lines[li];
+      html += `<span class="${cls}">${esc(txt.slice(0,ci))}${ci < txt.length ? '<span class="tcur"></span>' : ""}</span>`;
+    } else {
+      html += `<span class="p">$</span> <span class="tcur"></span>`;
+    }
+    termBody.innerHTML = html;
+  }
+  (function tick(){
+    render();
+    if(li >= lines.length) return;
+    const [cls, txt] = lines[li];
+    if(ci < txt.length){
+      ci++;
+      setTimeout(tick, (cls === "p" || cls === "cmd") ? 30 : 13);
+    } else {
+      li++; ci = 0;
+      if(li < lines.length){
+        const next = lines[li][0];
+        setTimeout(tick, (next === "p" || next === "cmd") ? 320 : 160);
+      }
+    }
+  })();
+}
+typeTerminal();
+</script>
+<noscript><div style="padding:30px;text-align:center;color:#ff6b6b">JavaScript disabled hai — curriculum ko dekhne ke liye please enable karo.</div></noscript>
+</body>
+</html>

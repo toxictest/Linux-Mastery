@@ -1715,3 +1715,32 @@ Yahi skill kisi Bug Hunter ko copy-paste beginner se genuinely Linux-proficient 
   - Practice ke liye target sirf local containerized environments honge (e.g., OWASP Juice Shop local Docker container).
   - "Responsible Disclosure" report template sikhana: Problem kya hai, proof kya hai, fix kaise hoga.
 ================================================================================
+
+---
+
+## 🌐 Deployment — 100% Free Hosting
+
+Ye site **100% static** hai (single `index.html` + `netlify.toml`) — koi build step nahi, koi server nahi, koi cost nahi.
+
+### Option A — Netlify (recommended, repo PRIVATE rahega)
+1. [netlify.com](https://app.netlify.com) pe **free account** banao (GitHub account se sign-in karo — "Continue with GitHub").
+2. Dashboard → **Add new site → Import an existing project** → GitHub repo `toxictest/Linux-Mastery` select karo (OAuth permission allow karo).
+3. Build settings:
+   - **Build command:** *(khali chhodo)*
+   - **Publish directory:** `.` (root)
+4. **Deploy site** click karo → ~10 seconds mein live: `https://<random-name>.netlify.app`
+5. Site settings → **Change site name** → e.g. `linux-mastery` → `https://linux-mastery.netlify.app` (free).
+
+**Credentials chahiye:** sirf ek free Netlify account (GitHub se sign-in — koi alag password/token nahi). Repo private rahega, Netlify ko GitHub OAuth se read access milega.
+
+### Option B — GitHub Pages (sirf agar repo PUBLIC ho)
+Private repos pe free GitHub Pages nahi chalta. Agar repo public karna ho toh:
+1. Repo Settings → Pages → Source: **Deploy from a branch** → `main` / root → Save.
+2. URL: `https://toxictest.github.io/Linux-Mastery/`
+
+### Local preview (testing ke liye)
+```bash
+cd Linux-Mastery
+python3 -m http.server 8080
+# open http://localhost:8080
+```
