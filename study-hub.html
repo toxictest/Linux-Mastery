@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Linux-Mastery Study Hub — HTB / THM / Writeup Mastery</title>
+<meta name="description" content="Original study hub for Hack The Box style prep, TryHackMe path mapping, and public writeup mastery workflows.">
+<style>
+:root{
+  --bg:#071009; --bg2:#0b1510; --panel:#0f1c15; --panel2:#12241a; --line:#1e3e30; --line2:#2a5b45;
+  --text:#d7f0e2; --muted:#86ab98; --faint:#567363; --green:#35f7a2; --amber:#ffca73; --cyan:#7ce8ff; --red:#ff7c7c;
+  --mono:"JetBrains Mono","Fira Code","Cascadia Code",Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--mono);background:var(--bg);color:var(--text);line-height:1.7;padding:28px;background-image:radial-gradient(1000px 500px at 80% -10%, rgba(53,247,162,.08), transparent 60%),linear-gradient(rgba(53,247,162,.03) 1px, transparent 1px),linear-gradient(90deg, rgba(53,247,162,.03) 1px, transparent 1px);background-size:auto,32px 32px,32px 32px}
+a{color:var(--green);text-decoration:none}a:hover{text-decoration:underline}
+.wrap{max-width:1180px;margin:0 auto}
+.hero,.card,details{border:1px solid var(--line);background:var(--panel);border-radius:16px;box-shadow:0 16px 40px rgba(0,0,0,.25)}
+.hero{padding:24px 24px 18px;margin-bottom:18px}
+.k{color:var(--green);font-size:12px;letter-spacing:2px;text-transform:uppercase}
+h1{font-size:clamp(28px,4vw,42px);line-height:1.15;margin:10px 0 8px;color:#ecfff5}
+h1 span{color:var(--green)}
+.sub{color:var(--muted);max-width:85ch}
+.badges,.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.badge,.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line2);border-radius:999px;padding:6px 12px;font-size:12px;background:rgba(53,247,162,.06);color:var(--text)}
+.badge.warn,.chip.warn{color:var(--amber);border-color:rgba(255,202,115,.35);background:rgba(255,202,115,.08)}
+.badge.red,.chip.red{color:#ffd0d0;border-color:rgba(255,124,124,.35);background:rgba(255,124,124,.08)}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px;margin:18px 0}
+.card{padding:18px}
+.card h2,.card h3{color:#effff6;margin-bottom:10px}
+.card h2 span,.card h3 span{color:var(--green)}
+.card p,.card li{color:var(--muted);font-size:13.5px}
+.card ul{padding-left:18px}
+.span-12{grid-column:span 12}.span-8{grid-column:span 8}.span-6{grid-column:span 6}.span-4{grid-column:span 4}
+@media(max-width:900px){.span-8,.span-6,.span-4{grid-column:span 12}}
+.kv{display:grid;grid-template-columns:180px 1fr;gap:6px 12px;font-size:13px;margin-top:10px}
+.kv div:nth-child(odd){color:var(--green)}
+.note{margin-top:12px;border-left:3px solid var(--amber);padding:10px 0 10px 12px;color:#f7ddb1;font-size:13px;background:rgba(255,202,115,.05)}
+.okbox{margin-top:12px;border-left:3px solid var(--green);padding:10px 0 10px 12px;color:#c8f7dd;font-size:13px;background:rgba(53,247,162,.05)}
+.warnbox{margin-top:12px;border-left:3px solid var(--red);padding:10px 0 10px 12px;color:#ffd8d8;font-size:13px;background:rgba(255,124,124,.05)}
+.table{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:12px}
+.table th,.table td{padding:8px 10px;border-bottom:1px dashed var(--line);text-align:left;vertical-align:top}
+.table th{color:var(--green);font-size:11.5px;letter-spacing:1px;text-transform:uppercase}
+.table td{color:var(--muted)}
+.table tr:last-child td{border-bottom:none}
+details{padding:14px 16px;margin-bottom:12px;background:var(--panel2)}
+details summary{cursor:pointer;color:#ebfff4;font-weight:700}
+details .inner{margin-top:12px}
+code,pre{font-family:var(--mono)}
+pre{background:var(--bg2);border:1px solid var(--line2);border-radius:12px;padding:14px;overflow:auto;color:#d8f7e7;font-size:12.5px;white-space:pre-wrap}
+.cols{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+@media(max-width:860px){.cols{grid-template-columns:1fr}}
+.track{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:14px}
+@media(max-width:860px){.track{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:540px){.track{grid-template-columns:1fr}}
+.tile{border:1px solid var(--line);background:var(--panel2);border-radius:12px;padding:14px}
+.tile b{display:block;color:#effff6;margin-bottom:8px}
+.tile span{display:block;color:var(--muted);font-size:12.5px}
+textarea{width:100%;min-height:140px;background:var(--bg2);border:1px solid var(--line2);border-radius:12px;padding:12px;color:var(--text);font-family:var(--mono);font-size:12.5px;outline:none;resize:vertical}
+textarea:focus{border-color:var(--green)}
+.footer{margin-top:18px;color:var(--faint);font-size:12px;text-align:center}
+.small{font-size:12px;color:var(--faint)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <section class="hero">
+    <div class="k">// original notes hub</div>
+    <h1>HTB / THM / Writeup <span>Study Hub</span></h1>
+    <p class="sub">Yeh file <b>original summary + study strategy</b> ke liye bani hai. Isme HTB Academy / TryHackMe ke publicly visible path outlines, public writeup ecosystems, aur exam-style preparation ko organize kiya gaya hai. <b>Paid/private course text same-to-same copy nahi kiya gaya.</b></p>
+    <div class="badges">
+      <span class="badge">Original derived notes</span>
+      <span class="badge">Publicly visible path mapping</span>
+      <span class="badge warn">500 writeup mastery loop</span>
+      <span class="badge">Embed-safe static page</span>
+      <span class="badge red">No verbatim paid-course dump</span>
+    </div>
+    <div class="warnbox">Important: HTB Academy, TryHackMe, and premium writeups ka copyrighted/paywalled text yahan mirror nahi kiya gaya. Is page ka purpose: structured learning roadmap, note system, concept map, aur legal/public source aggregation.</div>
+  </section>
+
+  <div class="grid">
+    <section class="card span-6">
+      <h2>What this file <span>does</span></h2>
+      <ul>
+        <li>HTB-style offensive preparation ko roadmap me todta hai</li>
+        <li>TryHackMe beginner → analyst/offensive progression map deta hai</li>
+        <li>500 public writeups ko consume karne ka repeatable template deta hai</li>
+        <li>Linux-Mastery ke current curriculum ko external practice ecosystems se connect karta hai</li>
+      </ul>
+    </section>
+
+    <section class="card span-6">
+      <h2>What this file <span>does not</span></h2>
+      <ul>
+        <li>HTB/THM ka locked lesson text paste nahi karta</li>
+        <li>Exam bypass ya leaked solutions bundle nahi deta</li>
+        <li>Retired/public writeup culture ko active/private target abuse me convert nahi karta</li>
+        <li>Linux-Mastery ke “authorized only” rule ko break nahi karta</li>
+      </ul>
+    </section>
+
+    <section class="card span-12">
+      <h2>Fast answer: exam crack mindset <span>kaise banta hai?</span></h2>
+      <div class="cols">
+        <div>
+          <ul>
+            <li><b>Platform se zyada pattern padho:</b> enum → foothold → lateral/privesc → proof → report</li>
+            <li><b>Writeups ko solution sheet ki tarah nahi:</b> reasoning document ki tarah padhna hai</li>
+            <li><b>Har box se 5 cheezein nikaalo:</b> initial access, blocker, bypass, privesc, reporting artifact</li>
+            <li><b>Linux notes separate rakho:</b> commands, log locations, services, privesc surfaces</li>
+          </ul>
+        </div>
+        <div>
+          <ul>
+            <li><b>HTB path + retired boxes</b> = depth</li>
+            <li><b>THM paths</b> = breadth + beginner sequencing</li>
+            <li><b>Public writeups</b> = exposure to repeated patterns</li>
+            <li><b>Apne distilled notes</b> = actual retention</li>
+          </ul>
+        </div>
+      </div>
+      <div class="okbox">Best study loop: <b>learn concept → do lab → read 2–3 writeups of same class → make one-page notes → redo from memory</b>.</div>
+    </section>
+  </div>
+
+  <details open>
+    <summary>1) HTB official path map — public overview</summary>
+    <div class="inner">
+      <div class="grid">
+        <section class="card span-4">
+          <h3>HTB Academy structure</h3>
+          <p>HTB Academy me <b>Job Role Paths</b> aur <b>Skill Paths</b> dono hote hain. Paths modules ko logical order me arrange karte hain taa ki learner role-based skill build kar sake.</p>
+          <div class="kv">
+            <div>Model</div><div>Paths → modules → sections</div>
+            <div>Public examples</div><div>Penetration Tester, Web Penetration Tester, Junior Cybersecurity Analyst, Active Directory Penetration Tester</div>
+            <div>Best use</div><div>Structured sequencing + practical labs + assessment mindset</div>
+          </div>
+        </section>
+        <section class="card span-4">
+          <h3>Penetration Tester path</h3>
+          <p>Official public preview ke according Penetration Tester path newcomers ko professional pentesting flow sikhane ke liye design ki gayi hai: recon, enumeration, exploitation, documentation, reporting.</p>
+          <div class="kv">
+            <div>Difficulty</div><div>Medium</div>
+            <div>Modules</div><div>28</div>
+            <div>Sections</div><div>495</div>
+            <div>Goal</div><div>Intermediate-level enterprise assessments ki practical skillset</div>
+          </div>
+        </section>
+        <section class="card span-4">
+          <h3>Web Penetration Tester path</h3>
+          <p>Official catalogue me Web Penetration Tester path web recon se lekar vendor-ready reporting tak cover karta hai. Web requests, proxies, fuzzing, XSS, SQLi, command injection, SSRF/SSTI class topics public preview me listed hain.</p>
+          <div class="kv">
+            <div>Difficulty</div><div>Medium</div>
+            <div>Modules</div><div>20</div>
+            <div>Sections</div><div>279</div>
+            <div>Best for</div><div>Web/API specialization</div>
+          </div>
+        </section>
+      </div>
+
+      <section class="card span-12">
+        <h3>Publicly visible HTB modules ko Linux-Mastery se map karo</h3>
+        <table class="table">
+          <tr><th>HTB public module area</th><th>Linux-Mastery linkage</th><th>Aapka output</th></tr>
+          <tr><td>Getting Started / Penetration Testing Process</td><td>Level 15, 16, 20, 21</td><td>Scope, methodology, evidence, reporting habit</td></tr>
+          <tr><td>Network Enumeration with Nmap / Footprinting</td><td>Level 6, 7, 15, 16</td><td>Ports, services, banners, DNS, HTTP baseline</td></tr>
+          <tr><td>Information Gathering - Web Edition</td><td>Level 7, ReconKit, Level 15</td><td>Headers, archive, tech stack, path discovery</td></tr>
+          <tr><td>File Transfers / Shells & Payloads</td><td>Level 8, 9, 11, 19</td><td>Payload movement, safe automation, shell hygiene</td></tr>
+          <tr><td>Password Attacks</td><td>Level 10, 11, 18</td><td>Hashes, auth surfaces, cracking workflow notes</td></tr>
+          <tr><td>Attacking Common Services / Pivoting</td><td>Level 6, 11, 20</td><td>Host pivot map, tunnel notes, service abuse patterns</td></tr>
+          <tr><td>AD / Windows areas</td><td>External practice companion</td><td>Separate notes file later bana sakte ho</td></tr>
+          <tr><td>Documentation & Reporting</td><td>Level 20 + Final dashboard</td><td>Reusable report templates</td></tr>
+        </table>
+      </section>
+    </div>
+  </details>
+
+  <details open>
+    <summary>2) TryHackMe official path map — public overview</summary>
+    <div class="inner">
+      <div class="grid">
+        <section class="card span-4">
+          <h3>Pre Security</h3>
+          <div class="kv">
+            <div>Modules</div><div>7</div>
+            <div>Labs</div><div>31</div>
+            <div>Estimated time</div><div>19h 10m</div>
+            <div>Use</div><div>Computer basics, OS basics, networking, web, attack/defense intro</div>
+          </div>
+          <div class="note">Agar learner bilkul zero pe ho to yeh Linux-Mastery Level 0 se pehle ya saath me kar sakta hai.</div>
+        </section>
+        <section class="card span-4">
+          <h3>Cyber Security 101</h3>
+          <div class="kv">
+            <div>Modules</div><div>14</div>
+            <div>Labs</div><div>56</div>
+            <div>Estimated time</div><div>45h 48m</div>
+            <div>Use</div><div>Linux, Windows, AD, command line, networking, crypto, exploitation, defensive basics</div>
+          </div>
+          <div class="note">Yeh breadth देता है. Linux-Mastery ke levels ke saath parallel reference bana sakte ho.</div>
+        </section>
+        <section class="card span-4">
+          <h3>SOC Level 1</h3>
+          <div class="kv">
+            <div>Modules</div><div>14</div>
+            <div>Labs</div><div>65</div>
+            <div>Estimated time</div><div>65h 29m</div>
+            <div>Use</div><div>Blue team intro, SIEM, EDR, phishing, web attacks, Windows/Linux monitoring</div>
+          </div>
+          <div class="note">Agar aapko Linux forensics + logs + detection strengthen karni hai to yeh Level 14/17 ke baad bahut useful hai.</div>
+        </section>
+      </div>
+
+      <section class="card span-12">
+        <h3>THM → Linux-Mastery parallel study map</h3>
+        <table class="table">
+          <tr><th>TryHackMe area</th><th>Linux-Mastery pairing</th><th>Expected gain</th></tr>
+          <tr><td>Linux Fundamentals / Linux CLI Basics / Linux Shells</td><td>Levels 0–3</td><td>Comfort and speed</td></tr>
+          <tr><td>Networking Concepts / Nmap / Tcpdump / Wireshark</td><td>Levels 6–7</td><td>Protocol intuition + packet workflow</td></tr>
+          <tr><td>Windows / AD Basics</td><td>Add-on specialization</td><td>Cross-platform exam confidence</td></tr>
+          <tr><td>Cryptography / Hashing / John</td><td>Levels 9, 18</td><td>Credential and artifact handling</td></tr>
+          <tr><td>SOC / SIEM / Logging</td><td>Levels 14, 17, 20</td><td>Defensive reasoning + alert triage</td></tr>
+        </table>
+      </section>
+    </div>
+  </details>
+
+  <details open>
+    <summary>3) 500 writeup mastery loop — actual retention system</summary>
+    <div class="inner">
+      <section class="card span-12">
+        <h3>Writeup padhne ka <span>sahi tareeqa</span></h3>
+        <p>500 writeups sirf padhne se kuch nahi hota. Har writeup se same extraction schema banao. Niche wala template har retired box / public walkthrough / public machine report par apply karo.</p>
+<pre>Machine / Room:
+OS:
+Initial foothold vector:
+Recon artifacts that mattered:
+Ignored noise:
+Exploit primitive:
+Credentials / hashes / tokens found:
+Privilege escalation primitive:
+Persistence / lateral relevance:
+Detection / logging clues:
+How I would report this:
+What I should memorize:
+What I should NOT memorize (just understand):</pre>
+      </section>
+
+      <div class="track">
+        <div class="tile"><b>Batch 1</b><span>50 Linux easy boxes</span><span>Goal: enum discipline</span></div>
+        <div class="tile"><b>Batch 2</b><span>50 Windows easy/medium boxes</span><span>Goal: auth + services</span></div>
+        <div class="tile"><b>Batch 3</b><span>100 Web-heavy boxes/writeups</span><span>Goal: web exploit taxonomy</span></div>
+        <div class="tile"><b>Batch 4</b><span>100 AD / enterprise chains</span><span>Goal: path building</span></div>
+        <div class="tile"><b>Batch 5</b><span>200 mixed retired writeups</span><span>Goal: speed + pattern recognition</span></div>
+      </div>
+
+      <section class="card span-12">
+        <h3>Har 25 writeups ke baad yeh distill karo</h3>
+        <table class="table">
+          <tr><th>Output</th><th>Why</th></tr>
+          <tr><td>Top 20 recurring footholds</td><td>Attack surface spotting speed badhegi</td></tr>
+          <tr><td>Top 20 recurring privesc paths</td><td>Privilege escalation intuition banegi</td></tr>
+          <tr><td>Top 30 enum commands</td><td>Command recall natural ho jayega</td></tr>
+          <tr><td>Top 15 web bug classes</td><td>ReconKit / web workflow stronger hoga</td></tr>
+          <tr><td>Top 10 reporting patterns</td><td>Professional output ready rahega</td></tr>
+        </table>
+      </section>
+    </div>
+  </details>
+
+  <details open>
+    <summary>4) Public writeup ecosystem — kya consume karna chahiye</summary>
+    <div class="inner">
+      <div class="grid">
+        <section class="card span-6">
+          <h3>Public sources worth following</h3>
+          <ul>
+            <li><b>0xdf</b> — retired HTB machine methodology, depth, reasoning</li>
+            <li><b>IppSec</b> — walkthrough-style pattern learning and debugging intuition</li>
+            <li><b>momenbasel/htb-writeups</b> — large indexed collection with techniques and certification relevance</li>
+            <li><b>zweilosec HTB writeups</b> — retired machine walkthrough archive</li>
+          </ul>
+          <div class="okbox">Best practice: same machine ke 2 अलग authors compare karo — technique choice aur reasoning gap samajh aayega.</div>
+        </section>
+        <section class="card span-6">
+          <h3>Consumption rules</h3>
+          <ul>
+            <li>Active/live machines ki writeups avoid karo agar platform rules allow nahi karte</li>
+            <li>Retired/public content ko learning artifact ki tarah use karo</li>
+            <li>Box solve karne se pehle <b>45–90 min self-attempt</b></li>
+            <li>Stuck hone par poora writeup mat padho — sirf next clue dekho</li>
+          </ul>
+          <div class="note">Goal writeup copy karna nahi, <b>methodology internalize</b> karna hai.</div>
+        </section>
+      </div>
+    </div>
+  </details>
+
+  <details open>
+    <summary>5) Study plans — beginner, offensive, defensive, advanced</summary>
+    <div class="inner cols">
+      <section class="card">
+        <h3>Plan A — zero to solid base</h3>
+        <ul>
+          <li>THM Pre Security</li>
+          <li>Linux-Mastery Levels 0–7</li>
+          <li>THM Cyber Security 101 selected Linux/network/web areas</li>
+          <li>10 retired Linux writeups</li>
+          <li>Start HTB Starting Point / easy retired practice</li>
+        </ul>
+      </section>
+      <section class="card">
+        <h3>Plan B — CPTS-style offensive build</h3>
+        <ul>
+          <li>Linux-Mastery complete core path</li>
+          <li>HTB Penetration Tester public path topics map karke practice</li>
+          <li>Retired boxes by category: network, web, AD, pivoting</li>
+          <li>100 writeup extraction sheets</li>
+          <li>Every exploit class ke liye one-page cheat summary</li>
+        </ul>
+      </section>
+      <section class="card">
+        <h3>Plan C — web specialist</h3>
+        <ul>
+          <li>Linux-Mastery Levels 6, 7, 8, 9, 15, 16, 19</li>
+          <li>HTB Web Penetration Tester public topic map</li>
+          <li>ReconKit daily use for recon workflow memory</li>
+          <li>XSS / SQLi / upload / SSRF / SSTI writeup clustering</li>
+          <li>Bug report template practice</li>
+        </ul>
+      </section>
+      <section class="card">
+        <h3>Plan D — blue / DFIR adjunct</h3>
+        <ul>
+          <li>Linux-Mastery Levels 14, 17, 20, 21</li>
+          <li>THM SOC Level 1 path mapping</li>
+          <li>Logs, SIEM, EDR, packet triage notebook</li>
+          <li>10 phishing + 10 traffic-analysis + 10 web-attack detection labs</li>
+        </ul>
+      </section>
+    </div>
+  </details>
+
+  <details open>
+    <summary>6) Attack pattern library — what to collect from writeups</summary>
+    <div class="inner">
+      <table class="table">
+        <tr><th>Category</th><th>Recurring examples to track</th><th>Linux-Mastery tie-in</th></tr>
+        <tr><td>Initial web foothold</td><td>SQLi, file upload, command injection, SSRF, auth bypass, path traversal</td><td>Levels 7, 15, 19 + ReconKit</td></tr>
+        <tr><td>Credential access</td><td>.env, config files, git leaks, backups, browser creds, logs, hashes</td><td>Levels 2, 10, 14, 18</td></tr>
+        <tr><td>Linux privesc</td><td>SUID, sudo, capabilities, cron, writable paths, kernel hints</td><td>Levels 3, 5, 12, 13, 19</td></tr>
+        <tr><td>Windows / AD</td><td>Kerberoast, relay, ACL abuse, ADCS, delegation, WinRM, tokens</td><td>Companion specialization</td></tr>
+        <tr><td>Pivoting</td><td>SSH tunnels, SOCKS, chisel, ligolo, internal-only services</td><td>Levels 6, 11, 20</td></tr>
+        <tr><td>Forensics / defense</td><td>logs, telemetry, suspicious services, memory clues, auth traces</td><td>Levels 14, 17</td></tr>
+      </table>
+    </div>
+  </details>
+
+  <details>
+    <summary>7) Personal notes board</summary>
+    <div class="inner">
+      <p class="small">Ye local browser me save hota hai. Isme tum apne distilled notes bhar sakte ho.</p>
+      <textarea id="notes" placeholder="Example:\n- Nmap service versioning + http-title + ssl-cert combo अक्सर enough hota hai\n- Linux privesc: sudo -l, SUID, writable cron, capabilities first\n- Read writeups for reasoning, not payload copy"></textarea>
+      <div class="chips">
+        <span class="chip">Auto-saved local notes</span>
+        <span class="chip warn">Browser-specific</span>
+      </div>
+    </div>
+  </details>
+
+  <details open>
+    <summary>8) Public source links</summary>
+    <div class="inner">
+<pre>HTB official:
+- https://academy.hackthebox.com/catalogue/paths
+- https://academy.hackthebox.com/path/preview/penetration-tester
+- https://academy.hackthebox.com/path/preview/web-penetration-tester
+- https://www.hackthebox.com/newsroom/certified-penetration-testing-specialist-cpts
+
+TryHackMe official:
+- https://tryhackme.com/path/outline/presecurity
+- https://tryhackme.com/path/outline/cybersecurity101
+- https://tryhackme.com/path/outline/soclevel1
+- https://help.tryhackme.com/en/articles/10632551-big-changes-on-tryhackme-retired-three-learning-paths
+
+Public writeup ecosystems:
+- https://momenbasel.github.io/htb-writeups/
+- https://zweilosec.gitbook.io/htb-writeups
+- https://0xdf.gitlab.io/
+- https://ippsec.rocks/</pre>
+    </div>
+  </details>
+
+  <div class="footer">Linux-Mastery Study Hub — original notes page for legal/public learning aggregation.</div>
+</div>
+<script>
+(() => {
+  const key = 'lm_studyhub_notes_v1';
+  const box = document.getElementById('notes');
+  if (!box) return;
+  try { box.value = localStorage.getItem(key) || ''; } catch {}
+  box.addEventListener('input', () => {
+    try { localStorage.setItem(key, box.value); } catch {}
+  });
+})();
+</script>
+</body>
+</html>
