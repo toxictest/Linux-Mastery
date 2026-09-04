@@ -1350,14 +1350,14 @@ trap
 
 
 Aur understand:
-
+```
 $?
 $1
 $@
 $#
 $$
 $!
-
+```
 Final Bash Challenge
 
 Ek useful Linux administration/investigation utility from scratch banana.
