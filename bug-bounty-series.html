@@ -17,12 +17,12 @@
 .table{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:10px} .table th,.table td{padding:8px 10px;border-bottom:1px dashed var(--line);text-align:left;vertical-align:top} .table th{color:var(--green);font-size:11px;letter-spacing:1px;text-transform:uppercase} .table tr:last-child td{border-bottom:none}
 .day-card{margin-bottom:10px;background:var(--panel2);scroll-margin-top:88px} .day-card summary{list-style:none;display:flex;align-items:center;gap:10px;padding:14px 16px;cursor:pointer} .day-card summary::-webkit-details-marker{display:none} .num{font-size:12px;font-weight:800;color:var(--green);border:1px solid var(--green);border-radius:8px;padding:6px 8px;background:rgba(59,244,170,.08);white-space:nowrap} .ttl{font-weight:700;color:#effff6;font-size:14px;flex:1} .mini-phase{font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:4px 9px;white-space:nowrap} .arrow{color:var(--muted);transition:transform .2s} .day-card[open] .arrow{transform:rotate(90deg);color:var(--green)} .day-card.done .ttl{color:var(--green);text-decoration:line-through;text-decoration-color:rgba(59,244,170,.35)} .day-card.done .complete-btn{background:var(--green);border-color:var(--green);color:#032113}
 .complete-btn{height:28px;width:28px;border-radius:7px;border:1px solid var(--line2);background:transparent;color:var(--muted);cursor:pointer;font-family:var(--mono)} .body{padding:0 16px 16px;border-top:1px dashed var(--line)} .tile{padding:14px;background:rgba(255,255,255,.02)} .sources{margin-top:12px;font-size:12.8px;color:var(--muted)}
-.footer{margin-top:16px;text-align:center;color:var(--muted);font-size:12px}
+.footer{margin-top:16px;text-align:center;color:var(--muted);font-size:12px} section[id],details[id]{scroll-margin-top:84px}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <section class="hero">
+  <section class="hero" id="top">
     <div class="k">// day-wise bug bounty learning system</div>
     <h1>Bug Bounty <span>120-Day Series</span></h1>
     <p>Yeh page tumhari public <b>toxictest/bug-hunting</b> repo ke first day-wise themes ko preserve karta hai, phir unhe expand karke ek <b>120-day authorized practice system</b> me convert karta hai. Isme bug definition, web-page/app inspection process, safe practice workflow, evidence expectations, aur official/public source links diye gaye hain.</p>
@@ -37,13 +37,17 @@
       <button class="btn primary" id="showAllBtn">Show All</button>
       <button class="btn" id="showDoneBtn">Completed Only</button>
       <button class="btn" id="printBtn">Print Visible Days</button>
+      <a class="btn" href="#how-to-use">How To Use</a>
+      <a class="btn" href="#workflow">Web Workflow</a>
+      <a class="btn" href="#phase-map">Phase Map</a>
+      <a class="btn" href="#day-cards">Day Cards</a>
       <a class="btn" href="bug-bounty-vault.html">Bug Bounty Vault</a>
       <a class="btn" href="bug-hunting-source-map.md">Source Map</a>
       <a class="btn" href="index.html">Main Index</a>
     </div>
   </section>
 
-  <section class="sticky">
+  <section class="sticky" id="how-to-use">
     <h2>How to use this page</h2>
     <div class="grid">
       <div class="span-6"><input id="search" class="search" type="text" placeholder="search day, bug, topic, tool, auth, xss, idor, graphql, ssrf, report..." autocomplete="off"></div>
@@ -56,7 +60,7 @@
     <div class="ok">Suggested routine: ek din ka card kholo → flow read karo → own app / official lab me observe karo → note banao → completion mark karo → next day par jao.</div>
   </section>
 
-  <section class="card">
+  <section class="card" id="workflow">
     <h2>Safe web-page operation workflow</h2>
     <table class="table">
       <tr><th>Step</th><th>Kya karna hai</th></tr>
@@ -70,14 +74,14 @@
     <div class="warn">Yeh series methodology aur observation ke liye hai. Real third-party systems par bina written authorization testing mat karo.</div>
   </section>
 
-  <section class="card" style="margin-top:16px">
+  <section class="card" id="phase-map" style="margin-top:16px">
     <h2>Phase map</h2>
     <div class="grid">
       <div class="tile span-3"><h4>Repo Mirror</h4><p><b style="color:var(--green)">1-16</b> · Public repo se directly inspired daily themes</p></div><div class="tile span-3"><h4>Auth &amp; Session Deepening</h4><p><b style="color:var(--green)">17-30</b> · Identity, recovery, session lifecycle, MFA, anti-automation</p></div><div class="tile span-3"><h4>Browser &amp; Client-Side Thinking</h4><p><b style="color:var(--green)">31-45</b> · UI, browser trust, rendering, caching, script exposure</p></div><div class="tile span-3"><h4>Access Control &amp; API Logic</h4><p><b style="color:var(--green)">46-60</b> · IDOR, authz, roles, GraphQL, race windows, workflows</p></div><div class="tile span-3"><h4>Server-Side Trust Boundaries</h4><p><b style="color:var(--green)">61-75</b> · SSRF, file flows, parsers, integrations, secrets, exposure</p></div><div class="tile span-3"><h4>Recon &amp; Surface Mapping</h4><p><b style="color:var(--green)">76-90</b> · Scope, assets, enrichment, crawls, mail security, prioritization</p></div><div class="tile span-3"><h4>Reporting &amp; Severity</h4><p><b style="color:var(--green)">91-105</b> · Evidence, impact, remediation, retest, duplicate handling</p></div><div class="tile span-3"><h4>Long-Term Practice System</h4><p><b style="color:var(--green)">106-120</b> · Routine, note quality, review loops, ethics, continuation plan</p></div>
     </div>
   </section>
 
-  <section class="card" style="margin-top:16px">
+  <section class="card" id="day-cards" style="margin-top:16px">
     <h2>Day cards</h2>
     <div id="days">
     <details class="day-card" id="day-1" data-day="1" data-phase="Repo Mirror" data-family="auth" data-search="day 1 weak registration implementation auth repo mirror auth session identity understand signup trust boundaries, verification states, and what should remain blocked before account verification.">
@@ -4419,6 +4423,19 @@
   try { mode = localStorage.getItem(modeKey) || 'all'; } catch {}
   try { phase = localStorage.getItem(phaseKey) || 'all'; } catch {}
 
+  function scrollToHash(id, smooth = true) {
+    const target = document.getElementById(id);
+    if (!target) return;
+    if (target.tagName === 'DETAILS') target.open = true;
+    const offset = 84;
+    const snap = (behavior) => {
+      const y = Math.max(0, target.getBoundingClientRect().top + window.scrollY - offset);
+      window.scrollTo({ top: y, behavior });
+    };
+    snap(smooth ? 'smooth' : 'auto');
+    [100, 260, 560, 1100].forEach(delay => setTimeout(() => snap('auto'), delay));
+  }
+
   function saveDone() { try { localStorage.setItem(doneKey, JSON.stringify([...done])); } catch {} }
   function paintDone() {
     document.querySelectorAll('[data-complete]').forEach(btn => {
@@ -4469,6 +4486,25 @@
     if (done.has(id)) done.delete(id); else done.add(id);
     saveDone(); paintDone(); apply();
   }));
+  document.body.addEventListener('click', (e) => {
+    const link = e.target.closest('a[href^="#"]');
+    if (!link) return;
+    const href = link.getAttribute('href') || '';
+    if (href.length < 2) return;
+    const id = href.slice(1);
+    if (!document.getElementById(id)) return;
+    e.preventDefault();
+    history.pushState(null, '', href);
+    scrollToHash(id, true);
+  });
+  window.addEventListener('hashchange', () => {
+    const id = (location.hash || '').replace(/^#/, '');
+    if (id) scrollToHash(id, false);
+  });
+  if (location.hash) {
+    const id = location.hash.replace(/^#/, '');
+    setTimeout(() => scrollToHash(id, false), 0);
+  }
 })();
 </script>
 </body>
