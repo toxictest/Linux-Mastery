@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Linux-Mastery — Exam Roadmap Hindi Companion</title>
+<style>
+:root{--bg:#071009;--bg2:#0b1510;--panel:#0f1c15;--panel2:#12241a;--line:#1e3e30;--line2:#2a5b45;--text:#d7f0e2;--muted:#86ab98;--faint:#567363;--green:#35f7a2;--amber:#ffca73;--cyan:#7ce8ff;--red:#ff7c7c;--mono:"JetBrains Mono","Fira Code","Cascadia Code",Consolas,monospace;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--mono);background:var(--bg);color:var(--text);line-height:1.7;padding:28px;background-image:radial-gradient(1000px 500px at 80% -10%, rgba(53,247,162,.08), transparent 60%),linear-gradient(rgba(53,247,162,.03) 1px, transparent 1px),linear-gradient(90deg, rgba(53,247,162,.03) 1px, transparent 1px);background-size:auto,32px 32px,32px 32px}
+a{color:var(--green);text-decoration:none}a:hover{text-decoration:underline}
+.wrap{max-width:1180px;margin:0 auto}
+.hero,.card,details{border:1px solid var(--line);background:var(--panel);border-radius:16px;box-shadow:0 16px 40px rgba(0,0,0,.25)}
+.hero{padding:24px 24px 18px;margin-bottom:18px}
+.k{color:var(--green);font-size:12px;letter-spacing:2px;text-transform:uppercase}
+h1{font-size:clamp(28px,4vw,42px);line-height:1.15;margin:10px 0 8px;color:#ecfff5}h1 span{color:var(--green)}
+h2,h3{color:#effff6;margin-bottom:10px}h2 span,h3 span{color:var(--green)}
+.sub{color:var(--muted);max-width:90ch}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px;margin:18px 0}
+.card{padding:18px}
+.card p,.card li,.card td{color:var(--muted);font-size:13.5px}
+.card ul{padding-left:18px}
+.span-12{grid-column:span 12}.span-6{grid-column:span 6}.span-4{grid-column:span 4}.span-3{grid-column:span 3}
+@media(max-width:920px){.span-6,.span-4,.span-3{grid-column:span 12}}
+.kv{display:grid;grid-template-columns:180px 1fr;gap:6px 12px;font-size:13px;margin-top:10px}.kv div:nth-child(odd){color:var(--green)}
+.badges,.chips,.toolrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.badge,.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line2);border-radius:999px;padding:6px 12px;font-size:12px;background:rgba(53,247,162,.06);color:var(--text)}
+.badge.warn,.chip.warn{color:var(--amber);border-color:rgba(255,202,115,.35);background:rgba(255,202,115,.08)}
+.badge.red,.chip.red{color:#ffd0d0;border-color:rgba(255,124,124,.35);background:rgba(255,124,124,.08)}
+.note,.okbox,.warnbox{margin-top:12px;border-left:3px solid var(--amber);padding:10px 0 10px 12px;font-size:13px;background:rgba(255,202,115,.05);color:#f7ddb1}
+.okbox{border-left-color:var(--green);background:rgba(53,247,162,.05);color:#c8f7dd}
+.warnbox{border-left-color:var(--red);background:rgba(255,124,124,.05);color:#ffd8d8}
+.table{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:12px}.table th,.table td{padding:8px 10px;border-bottom:1px dashed var(--line);text-align:left;vertical-align:top}.table th{color:var(--green);font-size:11.5px;letter-spacing:1px;text-transform:uppercase}.table tr:last-child td{border-bottom:none}
+details{padding:14px 16px;margin-bottom:12px;background:var(--panel2)}details summary{cursor:pointer;color:#ebfff4;font-weight:700}details .inner{margin-top:12px}
+pre,textarea,input{font-family:var(--mono)}
+pre{background:var(--bg2);border:1px solid var(--line2);border-radius:12px;padding:14px;overflow:auto;color:#d8f7e7;font-size:12.5px;white-space:pre-wrap}
+.cols{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}@media(max-width:860px){.cols{grid-template-columns:1fr}}
+textarea,input{width:100%;background:var(--bg2);border:1px solid var(--line2);border-radius:12px;padding:12px;color:var(--text);font-size:12.5px;outline:none}textarea{min-height:150px;resize:vertical}textarea:focus,input:focus{border-color:var(--green)}
+button.act{background:var(--green);color:#042213;border:0;border-radius:10px;padding:10px 14px;font-weight:800;cursor:pointer}button.ghost{background:transparent;color:var(--muted);border:1px solid var(--line2);border-radius:10px;padding:10px 14px;cursor:pointer}
+.footer{margin-top:18px;color:var(--faint);font-size:12px;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+<section class="hero">
+<div class="k">// advanced companion</div>
+<h1>Exam <span>Roadmap</span> Hindi Companion</h1>
+<p class="sub">Original advanced Hindi roadmap for exam preparation, time-boxing, writeup volume strategy, and low-budget study planning.</p>
+<div class="badges"><span class="badge">Original notes</span><span class="badge">Timed prep</span><span class="badge">500 writeup plan</span><span class="badge red">No copied dump</span></div>
+<div class="warnbox">Paid/private course content ka dump, translation-dump, ya mirror yahan include nahi kiya gaya. Yeh original explanation-based companion hai.</div>
+</section>
+<details open><summary>1) Advanced exam roadmap</summary><div class='inner'><table class="table"><tr><th>Phase</th><th>Duration</th><th>Focus</th></tr><tr><td>Foundation compression</td><td>2–3 weeks</td><td>Linux, networking, HTTP, shell, notes system</td></tr><tr><td>Exploit taxonomy build</td><td>3–4 weeks</td><td>Web classes, privesc classes, auth classes, AD basics</td></tr><tr><td>Retired/public repetition</td><td>6–8 weeks</td><td>Pattern recognition by reading + doing</td></tr><tr><td>Mock exam mode</td><td>2–4 weeks</td><td>Timed solving, notes ban, reporting practice</td></tr></table><div class="okbox">Exam clear karne ke liye har topic equal depth se nahi padhna — high-yield patterns par compound focus chahiye.</div></div></details><details open><summary>2) Time-boxing rules</summary><div class='inner'><ul><li><b>20-minute rule:</b> ek hypothesis par 20 min se zyada nahi</li><li><b>Parallel note rule:</b> har host/app ke liye ek scratchpad</li><li><b>Evidence first:</b> commands aur outputs preserve karo</li><li><b>Pivot rule:</b> jab 3 low-signal tests fail ho jayein, angle badlo</li><li><b>Report as you go:</b> end me sab yaad nahi rahega</li></ul><pre>Host A:
+- Open ports
+- Web surface
+- Cred hints
+- Local priv paths
+- Dead ends
+
+Host B:
+...</pre></div></details><details open><summary>3) Advanced practice matrix</summary><div class='inner'><div class="grid"><section class="card span-3"><h3>Linux</h3><p>50 hosts/writeups</p><div class="chips"><span class="chip">sudo</span><span class="chip">SUID</span><span class="chip">services</span></div></section><section class="card span-3"><h3>Web</h3><p>50 apps/writeups</p><div class="chips"><span class="chip">auth</span><span class="chip">IDOR</span><span class="chip">SSRF</span></div></section><section class="card span-3"><h3>AD</h3><p>40 chains/writeups</p><div class="chips"><span class="chip">Kerberos</span><span class="chip">ACL</span><span class="chip">ADCS</span></div></section><section class="card span-3"><h3>Reporting</h3><p>20 reports</p><div class="chips"><span class="chip">PoC</span><span class="chip">impact</span><span class="chip">remediation</span></div></section></div></div></details><details open><summary>4) When money is low — smartest path</summary><div class='inner'><ul><li>Linux-Mastery ko primary structured base banao</li><li>Public path outlines se sequencing lo</li><li>Public retired writeups se pattern depth lo</li><li>Apne notes ko Hindi me compress karo</li><li>Subscription wapas aane par sirf weak gaps cover karo, zero se sab mat repeat karo</li></ul><div class="note">Most learners content hoard karte hain. Smart learners <b>pattern inventory</b> build karte hain.</div></div></details>
+<details>
+<summary>Personal notes</summary>
+<div class='inner'>
+<p class='note'>Is page ke notes sirf local browser me save honge.</p>
+<textarea id='notes' placeholder='Yahan apne distilled notes likho...'></textarea>
+<div class='toolrow'><button class='act' id='saveNotes'>Save</button><button class='ghost' id='clearNotes'>Clear</button></div>
+</div>
+</details>
+<div class="footer">Linux-Mastery advanced companion page.</div>
+</div>
+<script>
+(() => {
+  const key = 'lm_exam_roadmap_notes_v1';
+  const box = document.getElementById('notes');
+  if (!box) return;
+  try { box.value = localStorage.getItem(key) || ''; } catch {}
+  document.getElementById('saveNotes')?.addEventListener('click', () => { try { localStorage.setItem(key, box.value); } catch {} });
+  document.getElementById('clearNotes')?.addEventListener('click', () => { box.value=''; try { localStorage.removeItem(key); } catch {} });
+  box.addEventListener('input', () => { try { localStorage.setItem(key, box.value); } catch {} });
+})();
+</script>
+</body>
+</html>

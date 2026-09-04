@@ -20,6 +20,43 @@
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
 
+
+# Linux PrivEsc Hindi companion: iframe-embeddable from the same site
+[[headers]]
+  for = "/linux-privesc-hindi.html"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    Content-Security-Policy = "frame-ancestors 'self';"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# Web Pentest Hindi companion: iframe-embeddable from the same site
+[[headers]]
+  for = "/web-pentest-hindi.html"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    Content-Security-Policy = "frame-ancestors 'self';"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# AD/Windows Hindi companion: iframe-embeddable from the same site
+[[headers]]
+  for = "/ad-windows-hindi.html"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    Content-Security-Policy = "frame-ancestors 'self';"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# Exam Roadmap Hindi companion: iframe-embeddable from the same site
+[[headers]]
+  for = "/exam-roadmap-hindi.html"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    Content-Security-Policy = "frame-ancestors 'self';"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
 # Default: no frame embedding
 [[headers]]
   for = "/*"
