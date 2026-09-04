@@ -1,0 +1,69 @@
+version: '3.8'
+
+networks:
+  sandbox_net:
+    name: sandbox_net
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.28.0.0/16
+          gateway: 172.28.0.1
+
+volumes:
+  shared_workspace:
+    name: mastery_shared_workspace
+
+services:
+  auditor:
+    build:
+      context: ./auditor
+      dockerfile: Dockerfile
+    container_name: mastery_auditor
+    hostname: auditor-workstation
+    networks:
+      sandbox_net:
+        ipv4_address: 172.28.0.10
+    volumes:
+      - shared_workspace:/workspace
+    stdin_open: true
+    tty: true
+    cap_add:
+      - SYS_PTRACE
+      - NET_ADMIN
+    security_opt:
+      - seccomp:unconfined
+    command: /bin/bash
+
+  target:
+    build:
+      context: ./target
+      dockerfile: Dockerfile
+    container_name: mastery_target
+    hostname: vulnerable-server
+    networks:
+      sandbox_net:
+        ipv4_address: 172.28.0.20
+    volumes:
+      - shared_workspace:/workspace
+    privileged: false
+    cap_add:
+      - CHOWN
+      - SETUID
+      - SETGID
+      - DAC_OVERRIDE
+    command: /entrypoint.sh
+
+  webapp:
+    build:
+      context: ./webapp
+      dockerfile: Dockerfile
+    container_name: mastery_webapp
+    hostname: webapp-internal
+    networks:
+      sandbox_net:
+        ipv4_address: 172.28.0.30
+    ports:
+      - "127.0.0.1:3000:3000"
+    volumes:
+      - shared_workspace:/workspace
