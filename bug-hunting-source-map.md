@@ -96,3 +96,58 @@ When adding your own lawful materials later, include:
 - Notes vault: `notes.html`
 - Bug bounty vault: `bug-bounty-vault.html`
 - Personal intake template: `notes-import.html`
+
+
+## Extra modern technique lanes added after additional research
+- OAuth / OIDC review
+  - redirect trust
+  - state binding
+  - scope and audience checks
+  - refresh-token handling and replay resistance
+- JWT review
+  - claim trust
+  - signature validation path
+  - key lookup behavior
+  - revocation/session-lifecycle thinking
+- GraphQL review
+  - introspection exposure
+  - batching abuse
+  - query depth / cost
+  - broken authorization in nested objects
+- Race-condition review
+  - temporary sub-states
+  - single-use logic collisions
+  - concurrent request edge cases
+- Cache / CDN review
+  - cache key confusion
+  - personalized/public response mixing
+  - variation inputs
+- Upload pipeline review
+  - upload -> transform -> preview -> download chain
+  - filename, content-type, size, and storage controls
+- Webhook / integration review
+  - outbound requests
+  - destination validation
+  - metadata/internal reach thinking
+
+## Extra official/public links added after research
+- PortSwigger OAuth — https://portswigger.net/web-security/oauth
+- PortSwigger JWT — https://portswigger.net/web-security/jwt
+- PortSwigger GraphQL API vulnerabilities — https://portswigger.net/web-security/graphql
+- PortSwigger Race Conditions — https://portswigger.net/web-security/race-conditions
+- PortSwigger Web Cache Poisoning — https://portswigger.net/web-security/web-cache-poisoning
+- PortSwigger Web Cache Deception — https://portswigger.net/web-security/web-cache-deception
+- PortSwigger API Testing — https://portswigger.net/web-security/api-testing
+- PortSwigger Request Smuggling — https://portswigger.net/web-security/request-smuggling
+- PortSwigger WebSockets — https://portswigger.net/web-security/websockets
+- PortSwigger CORS — https://portswigger.net/web-security/cors
+- OWASP Authentication Cheat Sheet — https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html
+- OWASP Session Management Cheat Sheet — https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html
+- OWASP Forgot Password Cheat Sheet — https://cheatsheetseries.owasp.org/cheatsheets/Forgot_Password_Cheat_Sheet.html
+- OWASP OAuth 2.0 Protocol Cheatsheet — https://cheatsheetseries.owasp.org/cheatsheets/OAuth2_Cheat_Sheet.html
+- OWASP JSON Web Token Cheat Sheet — https://cheatsheetseries.owasp.org/cheatsheets/JSON_Web_Token_Cheat_Sheet.html
+- OWASP GraphQL Cheat Sheet — https://cheatsheetseries.owasp.org/cheatsheets/GraphQL_Cheat_Sheet.html
+- OWASP File Upload Cheat Sheet — https://cheatsheetseries.owasp.org/cheatsheets/File_Upload_Cheat_Sheet.html
+- OWASP SSRF Prevention Cheat Sheet — https://cheatsheetseries.owasp.org/cheatsheets/Server_Side_Request_Forgery_Prevention_Cheat_Sheet.html
+- Chrome DevTools Network — https://developer.chrome.com/docs/devtools/network
+- Chrome DevTools Security — https://developer.chrome.com/docs/devtools/security

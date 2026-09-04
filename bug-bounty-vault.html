@@ -80,7 +80,7 @@ code{font-family:var(--mono);background:var(--bg2);border:1px solid var(--line2)
     <h2>Quick Filters & Jump</h2>
     <div class="grid" style="margin:12px 0 0">
       <div class="span-8"><input id="search" class="search" type="text" placeholder="search: xss, idor, oauth, rate limit, recon, tool, reporting, source..." autocomplete="off"></div>
-      <div class="span-4 tiny"><b id="count">10 / 10 sections visible</b><div style="margin-top:6px">Filter applies to the current page. Print button exports only the visible sections.</div></div>
+      <div class="span-4 tiny"><b id="count">12 / 12 sections visible</b><div style="margin-top:6px">Filter applies to the current page. Print button exports only the visible sections.</div></div>
     </div>
     <div class="filter-row" style="margin-top:14px">
       <a class="chip" href="#section-review">Repo Review</a>
@@ -92,6 +92,8 @@ code{font-family:var(--mono);background:var(--bg2);border:1px solid var(--line2)
       <a class="chip" href="#section-roadmap">Roadmap</a>
       <a class="chip" href="#section-gaps">Skill Gaps</a>
       <a class="chip" href="#section-intake">Future Intake</a>
+      <a class="chip" href="#section-techniques">Techniques</a>
+      <a class="chip" href="#section-modern-links">Modern Links</a>
       <a class="chip" href="#section-sources">Source Board</a>
     </div>
   </section>
@@ -230,9 +232,47 @@ code{font-family:var(--mono);background:var(--bg2);border:1px solid var(--line2)
     <div class="warn">Boundary clear hai: tumhare khud ke lawful materials ko transform kiya ja sakta hai. Unauthorized private content ko mirror ya near-copy nahi kiya jayega.</div>
   </section>
 
+
+  <section id="section-techniques" class="card section" data-title="modern techniques oauth oidc jwt graphql api testing race conditions cache poisoning request smuggling cors websockets second order state diffing webhook upload pipeline">
+    <button class="bookmark" data-bookmark="section-techniques">☆ bookmark</button>
+    <h2>10) Deeper bug-hunting techniques — ab kis angle se sochna chahiye</h2>
+    <div class="tool-grid">
+      <div class="tile"><h4>State-diff testing</h4><p>Same flow ko guest, fresh-user, old-user, invited-user, suspended-user, MFA-enabled-user, aur expired-session state me compare karo. Auth/session bugs isi contrast se nikalte hain.</p><p>Good for: reset flows, profile changes, invite acceptance, account deletion, role switch.</p></div>
+      <div class="tile"><h4>Second-order tracing</h4><p>User input turant exploit na ho, lekin baad me email templates, admin dashboards, exports, PDFs, logs, ya support panels me execute/render ho sakta hai. Repo ke HTML-email aur browser-facing notes yahan relevant hain.</p><p>Good for: stored XSS, HTML injection, report export, moderation/admin views.</p></div>
+      <div class="tile"><h4>OAuth / OIDC thinking</h4><p>Redirect URI, state handling, scope mismatch, client trust, token audience, session binding, and re-authentication points observe karo. Category ko sirf login bug mat samjho — identity handoff bug samjho.</p><p>Read: <a href="https://portswigger.net/web-security/oauth" target="_blank" rel="noopener">PortSwigger OAuth</a> · <a href="https://cheatsheetseries.owasp.org/cheatsheets/OAuth2_Cheat_Sheet.html" target="_blank" rel="noopener">OWASP OAuth2 Cheat Sheet</a></p></div>
+      <div class="tile"><h4>JWT / token trust review</h4><p>Header, claims, validation path, revocation model, and key lookup trust chain dekho. Token sirf decode karna enough nahi; token ka life-cycle aur verification behavior samajhna zaroori hai.</p><p>Read: <a href="https://portswigger.net/web-security/jwt" target="_blank" rel="noopener">PortSwigger JWT</a> · <a href="https://cheatsheetseries.owasp.org/cheatsheets/JSON_Web_Token_Cheat_Sheet.html" target="_blank" rel="noopener">OWASP JWT Cheat Sheet</a></p></div>
+      <div class="tile"><h4>GraphQL-specific testing</h4><p>Schema exposure, introspection, over-fetching, nested authorization, batching, query depth, and error verbosity par focus karo. GraphQL me authz aur resource controls dono saath me test hote hain.</p><p>Read: <a href="https://portswigger.net/web-security/graphql" target="_blank" rel="noopener">PortSwigger GraphQL</a> · <a href="https://cheatsheetseries.owasp.org/cheatsheets/GraphQL_Cheat_Sheet.html" target="_blank" rel="noopener">OWASP GraphQL Cheat Sheet</a></p></div>
+      <div class="tile"><h4>Race-window hunting</h4><p>Single-use coupon, password reset, cart credits, invite acceptance, withdrawal, and MFA sub-state jaisi logic ko concurrent request angle se dekho. Timing se zyada state collision samjho.</p><p>Read: <a href="https://portswigger.net/web-security/race-conditions" target="_blank" rel="noopener">PortSwigger Race Conditions</a></p></div>
+      <div class="tile"><h4>Cache / CDN edge behavior</h4><p>Response variation, keying confusion, header-based behavior, and authenticated/public caching boundaries samjho. Public surface aur personalized state jab mix hote hain tab high-value leaks mil sakte hain.</p><p>Read: <a href="https://portswigger.net/web-security/web-cache-poisoning" target="_blank" rel="noopener">PortSwigger Web Cache Poisoning</a> · <a href="https://portswigger.net/web-security/web-cache-deception" target="_blank" rel="noopener">PortSwigger Web Cache Deception</a></p></div>
+      <div class="tile"><h4>API and mobile-backend parity</h4><p>Web UI, mobile app, SPA, and raw API alag trust layers jaise treat mat karo. Same action ke multiple front doors compare karo. Often UI blocks hota hai, API allow kar deta hai.</p><p>Read: <a href="https://portswigger.net/web-security/api-testing" target="_blank" rel="noopener">PortSwigger API Testing</a> · <a href="https://owasp.org/www-project-api-security/" target="_blank" rel="noopener">OWASP API Security</a></p></div>
+      <div class="tile"><h4>Upload pipeline analysis</h4><p>Upload -> scan -> resize/convert -> store -> preview -> download पूरी chain ko map karo. Bahut bugs sirf upload endpoint par nahi, balki preview/export/download stage par milte hain.</p><p>Read: <a href="https://portswigger.net/web-security/file-upload" target="_blank" rel="noopener">PortSwigger File Upload</a> · <a href="https://cheatsheetseries.owasp.org/cheatsheets/File_Upload_Cheat_Sheet.html" target="_blank" rel="noopener">OWASP File Upload Cheat Sheet</a></p></div>
+      <div class="tile"><h4>Outbound trust and webhooks</h4><p>Webhook setup, URL validation, retry behavior, content fetching, previewers, importers, and integrations SSRF-type trust bugs ke natural homes hote hain. Internal reach aur metadata exposure dono socho.</p><p>Read: <a href="https://portswigger.net/web-security/ssrf" target="_blank" rel="noopener">PortSwigger SSRF</a> · <a href="https://cheatsheetseries.owasp.org/cheatsheets/Server_Side_Request_Forgery_Prevention_Cheat_Sheet.html" target="_blank" rel="noopener">OWASP SSRF Cheat Sheet</a></p></div>
+      <div class="tile"><h4>CORS, WebSockets, request desync surfaces</h4><p>Browser trust boundaries me sirf XSS hi nahi hota. Origin trust, WebSocket auth, and front-door/back-door request interpretation differences ko bhi map karo. Ye advanced web behavior buckets hain.</p><p>Read: <a href="https://portswigger.net/web-security/cors" target="_blank" rel="noopener">PortSwigger CORS</a> · <a href="https://portswigger.net/web-security/websockets" target="_blank" rel="noopener">PortSwigger WebSockets</a> · <a href="https://portswigger.net/web-security/request-smuggling" target="_blank" rel="noopener">PortSwigger Request Smuggling</a></p></div>
+    </div>
+    <div class="ok">Advanced habit: vulnerability naam se pehle <b>state machine, parser chain, trust boundary, and backend side effect</b> identify karo.</div>
+  </section>
+
+  <section id="section-modern-links" class="card section" data-title="official modern links oauth jwt graphql api testing race condition cache deception request smuggling auth session file upload ssrf devtools techniques">
+    <button class="bookmark" data-bookmark="section-modern-links">☆ bookmark</button>
+    <h2>11) Extra research links — modern bug bounty areas jo aur padne chahiye</h2>
+    <table class="table">
+      <tr><th>Technique area</th><th>What to focus on</th><th>Official/public links</th></tr>
+      <tr><td>Authentication & Session</td><td>current-password checks, re-auth, session rotation, recovery abuse, MFA reset</td><td><a href="https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html" target="_blank" rel="noopener">OWASP Authentication Cheat Sheet</a> · <a href="https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html" target="_blank" rel="noopener">OWASP Session Management Cheat Sheet</a> · <a href="https://cheatsheetseries.owasp.org/cheatsheets/Forgot_Password_Cheat_Sheet.html" target="_blank" rel="noopener">OWASP Forgot Password Cheat Sheet</a></td></tr>
+      <tr><td>OAuth / OIDC</td><td>PKCE, redirects, replay resistance, audience/scope restrictions, refresh-token rotation</td><td><a href="https://portswigger.net/web-security/oauth" target="_blank" rel="noopener">PortSwigger OAuth</a> · <a href="https://cheatsheetseries.owasp.org/cheatsheets/OAuth2_Cheat_Sheet.html" target="_blank" rel="noopener">OWASP OAuth2 Cheat Sheet</a></td></tr>
+      <tr><td>JWT / Token Handling</td><td>claims trust, key lookup, revocation, audience, signature validation, session-vs-token design</td><td><a href="https://portswigger.net/web-security/jwt" target="_blank" rel="noopener">PortSwigger JWT</a> · <a href="https://cheatsheetseries.owasp.org/cheatsheets/JSON_Web_Token_Cheat_Sheet.html" target="_blank" rel="noopener">OWASP JWT Cheat Sheet</a></td></tr>
+      <tr><td>GraphQL</td><td>introspection, broken authz, batching, depth, cost, excessive errors</td><td><a href="https://portswigger.net/web-security/graphql" target="_blank" rel="noopener">PortSwigger GraphQL</a> · <a href="https://cheatsheetseries.owasp.org/cheatsheets/GraphQL_Cheat_Sheet.html" target="_blank" rel="noopener">OWASP GraphQL Cheat Sheet</a></td></tr>
+      <tr><td>Race Conditions</td><td>sub-states, concurrent flows, single-use logic, async processing</td><td><a href="https://portswigger.net/web-security/race-conditions" target="_blank" rel="noopener">PortSwigger Race Conditions</a></td></tr>
+      <tr><td>Caching Bugs</td><td>cache keys, variation sources, personalized response confusion, edge behavior</td><td><a href="https://portswigger.net/web-security/web-cache-poisoning" target="_blank" rel="noopener">PortSwigger Web Cache Poisoning</a> · <a href="https://portswigger.net/web-security/web-cache-deception" target="_blank" rel="noopener">PortSwigger Web Cache Deception</a></td></tr>
+      <tr><td>Upload / Transform Pipelines</td><td>allowlists, spoofed content-type, filename safety, preview/download path</td><td><a href="https://portswigger.net/web-security/file-upload" target="_blank" rel="noopener">PortSwigger File Upload</a> · <a href="https://cheatsheetseries.owasp.org/cheatsheets/File_Upload_Cheat_Sheet.html" target="_blank" rel="noopener">OWASP File Upload Cheat Sheet</a></td></tr>
+      <tr><td>SSRF & Integrations</td><td>trusted destinations, non-HTTP schemes, webhook/importer behavior, internal reach</td><td><a href="https://portswigger.net/web-security/ssrf" target="_blank" rel="noopener">PortSwigger SSRF</a> · <a href="https://cheatsheetseries.owasp.org/cheatsheets/Server_Side_Request_Forgery_Prevention_Cheat_Sheet.html" target="_blank" rel="noopener">OWASP SSRF Prevention Cheat Sheet</a></td></tr>
+      <tr><td>Browser-side inspection</td><td>Network tab, header search, request blocking, storage, security panel</td><td><a href="https://developer.chrome.com/docs/devtools/network" target="_blank" rel="noopener">Chrome DevTools Network</a> · <a href="https://developer.chrome.com/docs/devtools/security" target="_blank" rel="noopener">Chrome DevTools Security</a></td></tr>
+      <tr><td>Recon toolchain</td><td>passive discovery, HTTP enrichment, JS-aware crawling, template-based validation</td><td><a href="https://docs.projectdiscovery.io/opensource/subfinder/overview" target="_blank" rel="noopener">Subfinder</a> · <a href="https://docs.projectdiscovery.io/opensource/httpx/overview" target="_blank" rel="noopener">httpx</a> · <a href="https://docs.projectdiscovery.io/opensource/katana/overview" target="_blank" rel="noopener">Katana</a> · <a href="https://docs.projectdiscovery.io/opensource/nuclei/overview" target="_blank" rel="noopener">Nuclei</a></td></tr>
+    </table>
+  </section>
+
   <section id="section-sources" class="card section" data-title="source board repo sources official public sources xss report oauth references bugcrowd owasp portswigger projectdiscovery">
     <button class="bookmark" data-bookmark="section-sources">☆ bookmark</button>
-    <h2>10) Source board — repo references + official/public learning anchors</h2>
+    <h2>12) Source board — repo references + official/public learning anchors</h2>
     <div class="chips">
       <span class="chip">Repo-reviewed anchors: Bugcrowd VRT PDF, Platforms.docx, For subdomain.docx, tools.txt, multiple per-day bug writeups</span>
       <span class="chip cyan">External references seen in repo: PortSwigger, Brutelogic, HackerOne reports, can-i-take-over-xyz, Default-Credentials, dorks lists</span>
@@ -246,7 +286,7 @@ code{font-family:var(--mono);background:var(--bg2);border:1px solid var(--line2)
 (() => {
   const search = document.getElementById('search');
   const count = document.getElementById('count');
-  const emptyText = '0 / 10 sections visible';
+  const emptyText = '0 / 12 sections visible';
   const sections = Array.from(document.querySelectorAll('.section'));
   const bmKey = 'lm_bug_bounty_bookmarks_v1';
   const modeKey = 'lm_bug_bounty_view_v1';
