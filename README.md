@@ -1662,3 +1662,56 @@ Real mastery ka matlab hai:
 “Mujhe command nahi pata → main man, --help, system state, logs aur experimentation se answer find kar sakta hoon.”
 
 Yahi skill kisi Bug Hunter ko copy-paste beginner se genuinely Linux-proficient operator banati hai.
+
+
+================================================================================
+### 0. FOUNDATIONAL FRAMEWORK (10-Year-Old Adaptation)
+================================================================================
+
+#### 0.1 Pedagogy & Learning Model: "Build Before You Break"
+1. Concrete Visuals First:
+   - Concepts ko real-world analogies aur visual utilities se link karein (e.g., Midnight Commander, Raspberry Pi GPIO, Wireshark visual stream).
+   - "Ratna nahi, dekhna hai": Command execute karne se pehle process tree aur data flow mentally visualize karwana.
+2. Progressive Phasing:
+   - Phase 1: The Builder & Explorer (Levels 0–2 + OverTheWire Bandit gamification)
+   - Phase 2: The Systems & Web Administrator (Levels 3–11: Pehle server banao, fir inspect karo)
+   - Phase 3: The Security Researcher & Auditor (Levels 12–21: Defensive isolation, logs, debugging, authorization)
+
+#### 0.2 The "Red Line" Ethics & Legal Guardrails
+1. The Golden Rule of Security:
+   - "Bina written permission ke kisi network ya system ko chhoona hacking nahi, digital trespassing/crime hai."
+2. Strict Air-Gapped Sandbox Environment:
+   - Sabhi exercises 100% offline ya Host-only local Virtual Machines (VirtualBox/Docker bridge) mein chalengi.
+   - Koi bhi scan (nmap, curl automation, brute-force) external public internet par strictly prohibited hai.
+3. Scope Definition:
+   - Har lab ke shuru mein explicit "In-Scope" aur "Out-of-Scope" checklist define hogi. Host OS ya home Wi-Fi router ko touch karna out-of-scope mana jayega.
+
+================================================================================
+### LEVEL-SPECIFIC INJECTIONS (To Add Inside Existing Levels)
+================================================================================
+
+[Add inside Level 0 — Linux Mental Model]
+✦ Junior Intuition Analogy:
+  - Kernel = School Principal (jo ground, classrooms aur time manage karta hai).
+  - Shell = Mic (jisse principal aur teachers tak baat pahunchayi jaati hai).
+  - Filesystem = Physical File Cabinet (drawers aur labeled folders).
+✦ Hands-on Visual Bridge:
+  - CLI ke saath Midnight Commander (`mc`) run karke file system ko visually explore karna.
+  - Optional: Raspberry Pi par `/sys/class/gpio` se physical LED turn ON/OFF karna.
+
+[Add inside Level 1 — Terminal Mastery]
+✦ Gamified Milestone:
+  - OverTheWire "Bandit" (Levels 0 to 10) integrate karna.
+  - Har level ek password hunt game banega jisse pipes, redirection aur cat/grep naturally master honge.
+
+[Add inside Level 6 & Level 7 — Networking & Web]
+✦ The Builder Lab (Mini-Project):
+  - Pehle Python se local static web server start karna: `python3 -m http.server 8080`.
+  - Terminal 2 se `curl -i http://localhost:8080` run karke headers bhejna.
+  - Server terminal par live access log (200 OK, 404 Not Found) bache ko khud generate hote dekhna.
+
+[Add inside Level 15 — Bug Hunter Linux Workflow]
+✦ Safe Scope & Practice Rules:
+  - Practice ke liye target sirf local containerized environments honge (e.g., OWASP Juice Shop local Docker container).
+  - "Responsible Disclosure" report template sikhana: Problem kya hai, proof kya hai, fix kaise hoga.
+================================================================================
