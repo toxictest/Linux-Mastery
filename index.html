@@ -341,6 +341,7 @@ footer .g{color:var(--green-dim)}
 .recon-badges .chip{font-size:11.5px}
 .study-shell{border:1px solid var(--line2);background:#05080d;border-radius:14px;overflow:hidden;box-shadow:0 16px 50px rgba(0,0,0,.45), 0 0 40px rgba(43,255,158,.05)}
 .study-frame{display:block;width:100%;height:min(1100px,86vh);border:0;background:#071009}
+.notes-frame{display:block;width:100%;height:min(1260px,88vh);border:0;background:#071009}
 .vault-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
 @media(max-width:860px){.vault-grid{grid-template-columns:1fr}}
 .vault-item{border:1px solid var(--line);background:var(--panel);border-radius:14px;padding:18px}
@@ -361,6 +362,7 @@ footer .g{color:var(--green-dim)}
       <a href="#curriculum">Curriculum</a>
       <a href="#reconkit">ReconKit</a>
       <a href="#study-hub">Study Hub</a>
+      <a href="#notes-vault">Notes</a>
       <a href="#advanced-vault">Advanced Vault</a>
       <a href="#resource-hub">Hub</a>
       <a href="#framework">Framework</a>
@@ -533,6 +535,38 @@ footer .g{color:var(--green-dim)}
   </div>
 </section>
 
+
+
+<section id="notes-vault" style="border-top:1px solid var(--line)">
+  <div class="wrap recon-wrap">
+    <div class="sec-head">
+      <div class="k">// mega notes companion</div>
+      <h2>Notes Vault — <span class="g">130+ printable Hindi pages</span></h2>
+      <p class="sec-sub">Ek dedicated <b>notes.html</b> add ki gayi hai jisme large original Hindi notes vault hai, English translation toggle button hai, aur print/save-PDF friendly page layout hai. Yeh direct open bhi hoti hai aur yahin embedded bhi hai.</p>
+    </div>
+    <div class="recon-card">
+      <h3>Notes mega-book access</h3>
+      <p>Ye section long-form revision ke liye hai. Notes page ko direct tab me khol sakte ho, English me toggle kar sakte ho, aur printable binder/PDF ki tarah use kar sakte ho. Future me tumhare khud ke lawful personal notes ko bhi isi structure me expand kiya ja sakta hai.</p>
+      <div class="recon-badges">
+        <span class="chip">130 content pages</span>
+        <span class="chip">Hindi default</span>
+        <span class="chip">English toggle</span>
+        <span class="chip tl">Embedded + direct open</span>
+      </div>
+      <div class="cta-row">
+        <a class="btn" href="notes.html" target="_blank" rel="noopener">↗ OPEN NOTES DIRECT</a>
+      </div>
+    </div>
+    <div class="study-shell">
+      <div class="rk-top">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <span>embedded: /notes.html</span>
+        <span class="pill">same-origin embed</span>
+      </div>
+      <iframe class="notes-frame" src="notes.html" title="Notes Vault embedded" loading="lazy"></iframe>
+    </div>
+  </div>
+</section>
 
 <section id="advanced-vault" style="border-top:1px solid var(--line)">
   <div class="wrap recon-wrap">
