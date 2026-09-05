@@ -153,3 +153,4 @@ When adding your own lawful materials later, include:
 - Chrome DevTools Security — https://developer.chrome.com/docs/devtools/security
 
 - Bug bounty 170-day series: `bug-bounty-series.html`
+- Ops reference panel for HackTricks, WADCOMS, GTFOBins, LOLBAS, PayloadsAllTheThings, AD MindMap, precompiled binaries, and CPTS: `ops-reference-panel.html`
