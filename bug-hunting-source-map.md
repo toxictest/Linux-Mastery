@@ -152,4 +152,4 @@ When adding your own lawful materials later, include:
 - Chrome DevTools Network — https://developer.chrome.com/docs/devtools/network
 - Chrome DevTools Security — https://developer.chrome.com/docs/devtools/security
 
-- Bug bounty 160-day series: `bug-bounty-series.html`
+- Bug bounty 170-day series: `bug-bounty-series.html`

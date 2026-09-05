@@ -86,7 +86,7 @@
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
 
-# Bug Bounty 160-day series: iframe-embeddable from the same site
+# Bug Bounty 170-day series: iframe-embeddable from the same site
 [[headers]]
   for = "/bug-bounty-series.html"
   [headers.values]
